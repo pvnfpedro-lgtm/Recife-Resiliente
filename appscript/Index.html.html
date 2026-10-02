@@ -856,8 +856,6 @@ require([
         '<b>Nível de risco:</b><span><span class="rr-dot" style="background:' + corIndice(p.indice) + '"></span>' + (nivel || "—") + '</span>' +
         '<b>Índice de risco:</b><span>' + fmtN(p.indice, 3) + ' <span style="color:#9ca3af">(0 a 1)</span></span>' +
         '<b>Posição:</b><span>' + (p.posicao != null ? p.posicao + 'º de 21' : '—') + '</span>' +
-        '<b>Risco:</b><span>' + fmtN(p.P, 2) + ' × ' + fmtN(p.C, 2) + ' = ' + fmtN(p.risco, 2) +
-          ' <span style="color:#9ca3af">(Probabilidade × Consequência)</span></span>' +
       '</div>' +
       '<table class="rr-tab"><tr><th>Critério / subcritério</th><th>Avaliação</th></tr>' + linhas + '</table>' +
       '<div class="rr-pe">Avaliação de 1 a 5 (5 = mais crítico) · Lat ' + fmtN(p.lat, 6) + ' · Lon ' + fmtN(p.lon, 6) +
