@@ -270,7 +270,6 @@
   .rr-card.lado-esq .rr-card-seta{left:auto;right:-7px;border:none;border-right:1px solid var(--border);border-top:1px solid var(--border);}
   .rr-pop{--rr:#334155;--rr-2:#64748b;--rr-3:#94a3b8;--rr-cinza:rgba(242,242,242,.70);font-size:12.5px;line-height:1.45;color:#1f2937;}
   .rr-titulo{border-left:4px solid var(--rr-3);padding-left:8px;font-size:14px;font-weight:800;text-transform:uppercase;letter-spacing:.01em;color:var(--rr);line-height:1.25;}
-  .rr-sub{font-style:italic;color:#6b7280;margin-top:2px;}
   .rr-fatos{margin:12px 0;display:grid;grid-template-columns:1fr 1fr;gap:8px;}
   .rr-kpi{background:var(--rr-cinza);border-top:4px solid var(--rr-2);border-radius:8px;padding:8px 10px;text-align:center;}
   .rr-kpi-v{font-size:26px;font-weight:800;color:var(--rr);line-height:1.1;}
@@ -278,7 +277,7 @@
   .rr-kpi-n{font-size:10.5px;color:#6b7280;}
   .rr-tab{width:100%;border-collapse:separate;border-spacing:0 2px;}
   .rr-tab th{background:var(--rr);color:#fff;font-size:10.5px;font-weight:600;text-align:left;padding:5px 8px;}
-  .rr-tab th:first-child{border-radius:6px 0 0 6px;} .rr-tab th:last-child{border-radius:0 6px 6px 0;text-align:center;width:72px;}
+  .rr-tab th:first-child{border-radius:6px 0 0 6px;} .rr-tab th:last-child{border-radius:0 6px 6px 0;text-align:center;width:78px;line-height:1.2;}
   .rr-tab td{padding:4px 8px;font-size:11.5px;}
   .rr-tab td:last-child{text-align:center;}
   .rr-tab tr.rr-crit td{font-weight:700;color:#111827;padding-top:6px;}
@@ -287,7 +286,15 @@
   .rr-tab tr td:first-child{border-radius:4px 0 0 4px;} .rr-tab tr td:last-child{border-radius:0 4px 4px 0;}
   .rr-ini{display:inline-block;width:18px;height:18px;line-height:18px;border-radius:50%;background:var(--rr-2);color:#fff;
           font-size:10px;font-weight:700;text-align:center;margin-right:6px;}
-  .rr-tab tr.rr-subl td:first-child{padding-left:32px;color:#374151;}
+  .rr-tab tr.rr-subl td:first-child{padding-left:46px;color:#374151;}
+  /* Subcritérios recolhidos por padrão; clicar no critério expande */
+  .rr-tab tr.rr-subl{display:none;}
+  .rr-tab tr.rr-subl.aberto{display:table-row;}
+  .rr-tab tr.rr-crit{cursor:pointer;}
+  .rr-tab tr.rr-crit:hover td{background:rgba(226,232,240,.85);}
+  .rr-seta{display:inline-block;width:12px;margin-right:2px;color:#64748b;font-size:10px;transition:transform .15s;}
+  .rr-tab tr.rr-crit.aberto .rr-seta{transform:rotate(90deg);}
+  .rr-th-n{font-weight:400;font-size:9.5px;opacity:.85;}
   .rr-pe{margin-top:10px;font-size:10.5px;color:#9ca3af;}
   .rr-pe a{color:var(--rr);font-weight:600;}
 </style>
@@ -828,31 +835,28 @@ require([
     { nome:"Impacto",         cods:["I1","I2"] }
   ];
 
-  // Tipo de localização da planilha da EMLURB, em linguagem simples.
-  var TIPOS_LOCAL = { "Ponto":"local específico", "Linha":"trecho de rua", "Vários":"vários locais na via" };
   function popupPonto(p){
     var linhas = "";
     GRUPOS_SUB.forEach(function(g, gi){
       var notaCrit = { Probabilidade:p.P, "Exposição":p.E, Vulnerabilidade:p.V, Impacto:p.I }[g.nome];
       var cls = "rr-g" + (gi % 2);
-      linhas += '<tr class="rr-crit ' + cls + '"><td><span class="rr-ini">' + g.nome.charAt(0) + '</span>' + g.nome +
+      linhas += '<tr class="rr-crit ' + cls + '" data-g="' + gi + '" title="Mostrar ou esconder os subcritérios"><td><span class="rr-seta">▸</span><span class="rr-ini">' + g.nome.charAt(0) + '</span>' + g.nome +
                 '</td><td>' + fmtN(notaCrit, 1) + '</td></tr>';
       g.cods.forEach(function(c){
         if(p.notas[c] == null) return;
-        linhas += '<tr class="rr-subl ' + cls + '"><td>' + NOMES_SUB[c] + '</td><td>' + p.notas[c] + '</td></tr>';
+        linhas += '<tr class="rr-subl ' + cls + '" data-g="' + gi + '"><td>' + NOMES_SUB[c] + '</td><td>' + p.notas[c] + '</td></tr>';
       });
     });
     return '' +
       '<div class="rr-pop">' +
       '<div class="rr-titulo">' + escHtml(p.trecho) + '</div>' +
-      '<div class="rr-sub">' + escHtml(p.bairro) + ' · ' + escHtml(TIPOS_LOCAL[p.tipo] || p.tipo) + '</div>' +
       '<div class="rr-fatos">' +
         '<div class="rr-kpi" style="border-top-color:' + corIndice(p.indice) + '"><div class="rr-kpi-v">' + fmtN(p.indice, 3) + '</div>' +
           '<div class="rr-kpi-r">Índice de risco</div><div class="rr-kpi-n">de 0 a 1</div></div>' +
         '<div class="rr-kpi"><div class="rr-kpi-v">' + (p.posicao != null ? p.posicao + 'º' : '—') + '</div>' +
           '<div class="rr-kpi-r">Posição no ranking</div><div class="rr-kpi-n">de 21 pontos</div></div>' +
       '</div>' +
-      '<table class="rr-tab"><tr><th>Critério / subcritério</th><th>Avaliação</th></tr>' + linhas + '</table>' +
+      '<table class="rr-tab"><tr><th>Critério / subcritério</th><th>Avaliação<br><span class="rr-th-n">(nota 1–5)</span></th></tr>' + linhas + '</table>' +
       '<div class="rr-pe">Avaliação de 1 a 5 (5 = mais crítico) · Lat ' + fmtN(p.lat, 6) + ' · Lon ' + fmtN(p.lon, 6) +
         ' (' + escHtml(p.precisao).toLowerCase() + ')</div>' +
       '</div>';
@@ -882,6 +886,14 @@ require([
       cartao.addEventListener(t, function(e){ e.stopPropagation(); });
     });
     cartao.querySelector(".rr-card-x").addEventListener("click", fecharCartao);
+    cartao.querySelector(".rr-card-corpo").addEventListener("click", function(e){
+      var tr = e.target.closest("tr.rr-crit");
+      if(!tr) return;
+      var abrir = !tr.classList.contains("aberto");
+      tr.classList.toggle("aberto", abrir);
+      cartao.querySelectorAll('tr.rr-subl[data-g="' + tr.getAttribute("data-g") + '"]').forEach(function(r){ r.classList.toggle("aberto", abrir); });
+      posicionarCartao();
+    });
     cartao.querySelector('[data-a="zoom"]').addEventListener("click", function(){
       if(cartaoGeom) view.goTo({ target: cartaoGeom, zoom: Math.max(view.zoom, 17) }, { duration: 400 });
     });
