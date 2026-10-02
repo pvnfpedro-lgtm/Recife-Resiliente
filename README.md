@@ -35,6 +35,7 @@ entregas/        slides, resumo executivo, plano de 90 dias
 5. [Pendências e dados não verificados](docs/05-pendencias.md)
 6. [Plano de Pedro até a Etapa 2](docs/06-plano-pedro-ate-etapa2.md)
 7. [Revisão dos critérios](docs/07-revisao-criterios.md)
+8. [Painel](docs/08-painel.md)
 
 Checklist de subcritérios, escalas de nota (1 a 5), fontes, notas dos 21
 pontos com o cálculo do risco e glossário:
