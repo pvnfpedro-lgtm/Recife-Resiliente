@@ -364,7 +364,8 @@ def gerar_notas(wb):
         "Preencha as notas (1 a 5, 5 = mais crítico) nas células amarelas, conforme as escalas da aba "
         "'Checklist subcritérios'. Linha 'Peso': vazia = todos os pesos iguais. Nota em branco fica fora "
         "da média (não vira zero). Sem nota de Probabilidade não há risco. P6 e V1 são condicionais: "
-        "deixe em branco se não forem usados. Colunas cinza são calculadas: não edite."
+        "deixe em branco se não forem usados. Colunas cinza são calculadas: não edite. 'Grupo de "
+        "sobreposição' (G1–G5) = pontos cujos círculos de 300 m se sobrepõem; vazio = ponto isolado."
     )
     ws["A2"].font = Font(name=FONTE, italic=True, size=9)
     ws["A2"].alignment = Alignment(wrap_text=True, vertical="top")
@@ -387,7 +388,7 @@ def gerar_notas(wb):
         return c
 
     ident = [("ID", "ponto_id", 6), ("Bairro", "bairro", 13), ("Trecho", "trecho", 42),
-             ("Tipo", "tipo", 8), ("Grupo", "grupo_sobreposicao", 7)]
+             ("Tipo", "tipo", 8), ("Grupo de\nsobreposição", "grupo_sobreposicao", 12)]
     for j, (titulo, _, larg) in enumerate(ident, 1):
         cab(j, titulo)
         ws.column_dimensions[L(j)].width = larg
