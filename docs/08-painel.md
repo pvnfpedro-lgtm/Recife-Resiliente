@@ -20,6 +20,15 @@ O painel em Google Apps Script já existente é a base. Muita coisa vai mudar.
 | Pontos críticos no painel | Teste: o painel lê a aba "Notas dos pontos" da planilha Google Sheets `1DN3abWIPk0dvOkh-28D2NGYBLgMI437Vx7Sk7TqpDc0` e mostra os pontos com popup |
 | Rede hidrográfica | Removida do código (`HidroData.html`); virá das camadas do ArcGIS |
 
+## Implantações
+- **Teste (HEAD, sempre o código mais recente):**
+  https://script.google.com/macros/s/AKfycbwHvKBxXuhdg200oKKwCvdF4uZPHBWsiEE9kTqK5TI/dev
+  (só abre para quem é editor do projeto).
+- Versões publicadas: 9 implantações; a mais recente é a @9 "Primeira versão
+  que deu certo". O `clasp push` não altera nenhuma delas.
+- 02/10/2026: primeiro `clasp push` (pontos críticos lidos da planilha,
+  sem HidroData).
+
 ## Como trabalhar no código
 1. Editar os arquivos em `appscript/`; cada mudança vira um commit.
 2. Enviar ao Apps Script com `clasp push` **só depois da aprovação de Pedro**.
