@@ -16,8 +16,8 @@ Etapa atual: hierarquização de pontos críticos na RPA 6 (21 trechos da
 EMLURB), adaptando os critérios do Plano Diretor de Drenagem de São Paulo
 (FCTH/SIURB). Detalhes em `docs/02-metodologia-hierarquizacao.md`.
 
-Arquivo de trabalho da equipe (fora do repositório até ser enviado):
-`Recife_Resiliente_RPA6_Criterios_Pontos_Criticos.xlsx`, com as abas Leia-me,
+Arquivo de trabalho da equipe:
+`dados/Recife_Resiliente_RPA6_Criterios_Pontos_Criticos.xlsx`, com as abas Leia-me,
 Critérios, Fontes de dados e Pontos RPA 6.
 
 ## Como trabalhar

@@ -34,6 +34,7 @@ entregas/        slides, resumo executivo, plano de 90 dias
 4. [Cronograma](docs/04-cronograma.md)
 5. [Pendências e dados não verificados](docs/05-pendencias.md)
 6. [Plano de Pedro até a Etapa 2](docs/06-plano-pedro-ate-etapa2.md)
+7. [Revisão dos critérios](docs/07-revisao-criterios.md)
 
 ## Calcular a hierarquização
 
