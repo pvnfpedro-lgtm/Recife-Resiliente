@@ -172,16 +172,16 @@
   .kpi-tile{
     pointer-events:auto;min-width:0;flex:0 0 auto;
     display:flex;flex-direction:column;gap:2px;
-    padding:8px 16px;border-radius:12px;
+    padding:12px 22px;border-radius:14px;
     background:rgba(255,255,255,.28);
     border:1px solid rgba(255,255,255,.40);
     box-shadow:0 4px 16px rgba(15,23,42,.10);
     backdrop-filter:blur(10px) saturate(160%);
     -webkit-backdrop-filter:blur(10px) saturate(160%);
   }
-  .kpi-label{font-size:10px;font-weight:700;color:#3d4653;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;}
-  .kpi-value{font-size:18px;font-weight:700;color:var(--text);font-variant-numeric:tabular-nums;letter-spacing:-.01em;white-space:nowrap;}
-  .kpi-value small{font-size:11px;font-weight:600;color:var(--text-dim);}
+  .kpi-label{font-size:12px;font-weight:700;color:#3d4653;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;}
+  .kpi-value{font-size:28px;font-weight:700;color:var(--text);font-variant-numeric:tabular-nums;letter-spacing:-.01em;white-space:nowrap;}
+  .kpi-value small{font-size:14px;font-weight:600;color:var(--text-dim);}
 
   .list-panel{
     grid-column:1;grid-row:2;min-height:0;padding:12px 2px 14px;display:flex;flex-direction:column;gap:10px;
@@ -271,7 +271,6 @@
   .rr-pop{--rr:var(--azul-1);--rr-2:var(--azul-2);--rr-3:var(--azul-3);--rr-cinza:#F2F2F2;font-size:12.5px;line-height:1.45;color:#1f2937;}
   .rr-titulo{border-left:4px solid var(--rr-3);padding-left:8px;font-size:14px;font-weight:800;text-transform:uppercase;letter-spacing:.01em;color:var(--rr);line-height:1.25;}
   .rr-sub{font-style:italic;color:#6b7280;margin-top:2px;}
-  .rr-aviso{font-size:10.5px;color:#9ca3af;margin-top:6px;}
   .rr-fatos{margin:12px 0;display:grid;grid-template-columns:1fr 1fr;gap:8px;}
   .rr-kpi{background:var(--rr-cinza);border-top:4px solid var(--rr-2);border-radius:8px;padding:8px 10px;text-align:center;}
   .rr-kpi-v{font-size:26px;font-weight:800;color:var(--rr);line-height:1.1;}
@@ -843,12 +842,10 @@ require([
         linhas += '<tr class="rr-subl ' + cls + '"><td>' + NOMES_SUB[c] + '</td><td>' + p.notas[c] + '</td></tr>';
       });
     });
-    var gmaps = "https://www.google.com/maps/search/?api=1&query=" + p.lat + "," + p.lon;
     return '' +
       '<div class="rr-pop">' +
       '<div class="rr-titulo">' + escHtml(p.trecho) + '</div>' +
       '<div class="rr-sub">' + escHtml(p.bairro) + ' · ' + escHtml(TIPOS_LOCAL[p.tipo] || p.tipo) + '</div>' +
-      '<div class="rr-aviso">Dados em validação: notas de teste e coordenada não verificada.</div>' +
       '<div class="rr-fatos">' +
         '<div class="rr-kpi" style="border-top-color:' + corIndice(p.indice) + '"><div class="rr-kpi-v">' + fmtN(p.indice, 3) + '</div>' +
           '<div class="rr-kpi-r">Índice de risco</div><div class="rr-kpi-n">de 0 a 1</div></div>' +
@@ -857,7 +854,7 @@ require([
       '</div>' +
       '<table class="rr-tab"><tr><th>Critério / subcritério</th><th>Avaliação</th></tr>' + linhas + '</table>' +
       '<div class="rr-pe">Avaliação de 1 a 5 (5 = mais crítico) · Lat ' + fmtN(p.lat, 6) + ' · Lon ' + fmtN(p.lon, 6) +
-        ' (' + escHtml(p.precisao).toLowerCase() + ')<br><a href="' + gmaps + '" target="_blank" rel="noopener">Abrir no Google Maps ↗</a></div>' +
+        ' (' + escHtml(p.precisao).toLowerCase() + ')</div>' +
       '</div>';
   }
   /* ---------------------------------------------------------------------
@@ -878,7 +875,7 @@ require([
           '<button type="button" class="rr-card-x" title="Fechar">×</button></div>' +
         '<div class="rr-card-corpo"></div>' +
         '<div class="rr-card-acoes"><button type="button" data-a="zoom">Aproximar</button>' +
-          '<button type="button" data-a="sv">Street View</button></div>' +
+          '<button type="button" data-a="gmaps">Abrir no Google Maps ↗</button></div>' +
       '</div>';
     view.container.appendChild(cartao);
     ["click", "dblclick", "pointerdown", "pointerup", "mousedown", "wheel"].forEach(function(t){
@@ -888,8 +885,8 @@ require([
     cartao.querySelector('[data-a="zoom"]').addEventListener("click", function(){
       if(cartaoGeom) view.goTo({ target: cartaoGeom, zoom: Math.max(view.zoom, 17) }, { duration: 400 });
     });
-    cartao.querySelector('[data-a="sv"]').addEventListener("click", function(){
-      if(cartaoPonto) openStreetView(cartaoPonto.lat, cartaoPonto.lon);
+    cartao.querySelector('[data-a="gmaps"]').addEventListener("click", function(){
+      if(cartaoPonto) window.open("https://www.google.com/maps/search/?api=1&query=" + cartaoPonto.lat + "," + cartaoPonto.lon, "_blank", "noopener");
     });
   }
   function posicionarCartao(){
@@ -1209,12 +1206,10 @@ require([
     var list = filteredProjects();
     var totalInvest = list.reduce(function(s,p){return s+p.investNum;},0);
     var mitigados = list.filter(function(p){return p.status==="concluido";}).length;
-    var baciasAtendidas = new Set(list.map(function(p){return p.bacia;})).size;
     var bairros = new Set(list.map(function(p){return p.bairro;})).size;
     kpiStripEl.innerHTML =
       kpiTile("Investimento Total", "R$ " + totalInvest.toLocaleString("pt-BR",{minimumFractionDigits:1,maximumFractionDigits:1}), "Mi") +
       kpiTile("Pontos Mitigados", mitigados, "/ " + list.length) +
-      kpiTile("Bacias Atendidas", baciasAtendidas, "/ 5") +
       kpiTile("Bairros Impactados", bairros, "");
   }
   function kpiTile(label, value, small){
