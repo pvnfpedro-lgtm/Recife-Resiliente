@@ -1190,6 +1190,87 @@ require([
   var pontoSymbol = { type:"simple-marker", style:"triangle", color:[239,68,68,1], size:16, outline:{ color:[255,255,255,1], width:1.6 } };
 
   /* =====================================================================
+     PONTOS CRÍTICOS — lidos da planilha de notas pelo Apps Script (TESTE)
+     Código.js > getPontosCriticos(). Cor pelo índice de risco (0–1);
+     corte da matriz = risco 9 = índice 0,333.
+     ===================================================================== */
+  var PONTOS_TITULO = "Pontos críticos — RPA 6 (teste)";
+  var CORTE_RISCO = 9;
+  var pontosLayer = new GraphicsLayer({ title: PONTOS_TITULO });
+  map.add(pontosLayer);
+
+  var CLASSES_INDICE = [
+    { max: 0.2,      cor: "#1a9850", rotulo: "< 0,200" },
+    { max: 1/3,      cor: "#fee08b", rotulo: "0,200 – 0,333" },
+    { max: 0.5,      cor: "#fc8d59", rotulo: "0,333 – 0,500" },
+    { max: Infinity, cor: "#d73027", rotulo: "≥ 0,500" }
+  ];
+  function corIndice(i){
+    if(i == null) return "#9ca3af";
+    for(var k=0;k<CLASSES_INDICE.length;k++){ if(i < CLASSES_INDICE[k].max) return CLASSES_INDICE[k].cor; }
+    return CLASSES_INDICE[CLASSES_INDICE.length-1].cor;
+  }
+  function fmtN(v, casas){ return v == null ? "—" : v.toFixed(casas).replace(".", ","); }
+  function escHtml(t){ return String(t == null ? "" : t).replace(/[&<>"]/g, function(ch){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[ch]; }); }
+
+  function popupPonto(p){
+    var corte = p.risco == null ? "Sem risco calculado (falta nota de Probabilidade)"
+      : (p.risco >= CORTE_RISCO ? "Acima do corte da matriz (risco ≥ 9)" : "Abaixo do corte da matriz (risco < 9)");
+    var notas = Object.keys(p.notas).filter(function(k){ return p.notas[k] != null; })
+      .map(function(k){ return k + ": <b>" + p.notas[k] + "</b>"; }).join(" · ");
+    var gmaps = "https://www.google.com/maps/search/?api=1&query=" + p.lat + "," + p.lon;
+    return '' +
+      '<div style="font-size:12px;line-height:1.5">' +
+      '<div style="background:#fff7ed;color:#9a3412;border:1px solid #fdba74;border-radius:6px;padding:4px 8px;margin-bottom:8px">' +
+        '<b>Dados em validação</b>: notas de teste e coordenada não verificada.</div>' +
+      '<div><b>' + escHtml(p.bairro) + '</b> — ' + escHtml(p.trecho) + '</div>' +
+      '<div style="color:#64748b">Tipo: ' + escHtml(p.tipo) + (p.grupo ? ' · Grupo de sobreposição: ' + escHtml(p.grupo) : ' · Ponto isolado') + '</div>' +
+      '<hr style="border:none;border-top:1px solid #e5e7eb;margin:8px 0">' +
+      '<div style="font-size:14px"><b>Índice de risco: ' + fmtN(p.indice, 3) + '</b>' +
+        (p.posicao != null ? ' · ' + p.posicao + 'º de 21' : '') + '</div>' +
+      '<div style="color:#64748b">' + corte + '</div>' +
+      '<div style="margin-top:6px">Risco (P × C): <b>' + fmtN(p.risco, 2) + '</b> = Probabilidade <b>' + fmtN(p.P, 2) +
+        '</b> × Consequência <b>' + fmtN(p.C, 2) + '</b></div>' +
+      '<div>Exposição <b>' + fmtN(p.E, 2) + '</b> · Vulnerabilidade <b>' + fmtN(p.V, 2) + '</b> · Impacto <b>' + fmtN(p.I, 2) + '</b></div>' +
+      '<div style="margin-top:6px;color:#475569">Notas (1–5): ' + (notas || "—") + '</div>' +
+      '<div style="color:#64748b">Notas preenchidas: ' + (p.preenchidas == null ? "—" : p.preenchidas) + ' de 15</div>' +
+      '<hr style="border:none;border-top:1px solid #e5e7eb;margin:8px 0">' +
+      '<div style="color:#64748b">Coordenada: ' + fmtN(p.lat, 6) + ', ' + fmtN(p.lon, 6) + ' (' + escHtml(p.precisao) + ', não verificada)</div>' +
+      '<div style="margin-top:4px"><a href="' + gmaps + '" target="_blank" rel="noopener">Abrir no Google Maps ↗</a> · ' +
+        '<a href="#" onclick="window.__rrStreetView(' + p.lat + ',' + p.lon + ');return false;">Street View</a></div>' +
+      '</div>';
+  }
+  window.__rrStreetView = function(lat, lng){ openStreetView(lat, lng); };
+
+  function desenharPontos(res){
+    if(!res || res.erro){
+      console.error("Pontos críticos: ", res && res.erro);
+      pontosLayer.title = PONTOS_TITULO + " — erro ao ler a planilha";
+      buildLayerToggle();
+      return;
+    }
+    pontosLayer.removeAll();
+    res.pontos.forEach(function(p){
+      if(p.lat == null || p.lon == null) return;
+      pontosLayer.add(new Graphic({
+        geometry: { type:"point", longitude:p.lon, latitude:p.lat },
+        symbol: { type:"simple-marker", style:"circle", color: corIndice(p.indice), size: 14,
+                  outline:{ color:[255,255,255,1], width:1.6 } },
+        attributes: { id: p.id },
+        popupTemplate: new PopupTemplate({ title: "Ponto crítico " + p.id, content: popupPonto(p) })
+      }));
+    });
+    console.log("Pontos críticos carregados da planilha: " + res.pontos.length + " (" + res.lidoEm + ")");
+    buildLayerToggle();
+  }
+  if(typeof google !== "undefined" && google.script && google.script.run){
+    google.script.run
+      .withSuccessHandler(desenharPontos)
+      .withFailureHandler(function(e){ desenharPontos({ erro: String(e && e.message ? e.message : e) }); })
+      .getPontosCriticos();
+  }
+
+  /* =====================================================================
      GOOGLE STREET VIEW (modal embutido, sem precisar de chave de API)
      ===================================================================== */
   function streetViewCoords(p){
@@ -1340,6 +1421,10 @@ require([
      LEGENDA E CAMADAS (simbologia + liga/desliga de cada camada do mapa)
      ===================================================================== */
   function layerSwatchSvg(title){
+    if(title && title.indexOf("Pontos críticos") === 0){
+      return '<svg width="44" height="12" viewBox="0 0 44 12">' + CLASSES_INDICE.map(function(c, i){
+        return '<circle cx="' + (6 + i*11) + '" cy="6" r="5" fill="' + c.cor + '" stroke="#fff"/>'; }).join("") + '</svg>';
+    }
     if(title === "Rede Hidrográfica"){
       return '<svg width="18" height="10" viewBox="0 0 18 10"><line x1="0" y1="5" x2="18" y2="5" stroke="#7fb8e0" stroke-width="2.5"/></svg>';
     }
