@@ -36,6 +36,8 @@ entregas/        slides, resumo executivo, plano de 90 dias
 6. [Plano de Pedro até a Etapa 2](docs/06-plano-pedro-ate-etapa2.md)
 7. [Revisão dos critérios](docs/07-revisao-criterios.md)
 
+Checklist de subcritérios e fontes: `dados/Recife_Resiliente_Checklist_Subcriterios.xlsx`.
+
 ## Calcular a hierarquização
 
 O script usa só a biblioteca padrão do Python 3.9+.
