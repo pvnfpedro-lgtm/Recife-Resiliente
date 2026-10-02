@@ -365,7 +365,9 @@ def gerar_notas(wb):
         "'Checklist subcritérios'. Linha 'Peso': vazia = todos os pesos iguais. Nota em branco fica fora "
         "da média (não vira zero). Sem nota de Probabilidade não há risco. P6 e V1 são condicionais: "
         "deixe em branco se não forem usados. Colunas cinza são calculadas: não edite. 'Grupo de "
-        "sobreposição' (G1–G5) = pontos cujos círculos de 300 m se sobrepõem; vazio = ponto isolado."
+        "sobreposição' (G1–G5) = pontos cujos círculos de 300 m se sobrepõem; vazio = ponto isolado. "
+        "Coordenadas em graus decimais (WGS 84), ainda NÃO verificadas: 'Aproximado' e 'Interseção' "
+        "foram localizadas automaticamente pelo OpenStreetMap."
     )
     ws["A2"].font = Font(name=FONTE, italic=True, size=9)
     ws["A2"].alignment = Alignment(wrap_text=True, vertical="top")
@@ -388,7 +390,9 @@ def gerar_notas(wb):
         return c
 
     ident = [("ID", "ponto_id", 6), ("Bairro", "bairro", 13), ("Trecho", "trecho", 42),
-             ("Tipo", "tipo", 8), ("Grupo de\nsobreposição", "grupo_sobreposicao", 12)]
+             ("Tipo", "tipo", 8), ("Grupo de\nsobreposição", "grupo_sobreposicao", 12),
+             ("Latitude", "lat", 11), ("Longitude", "lon", 11),
+             ("Precisão da\ncoordenada", "precisao_coordenada", 12)]
     for j, (titulo, _, larg) in enumerate(ident, 1):
         cab(j, titulo)
         ws.column_dimensions[L(j)].width = larg
@@ -462,7 +466,13 @@ def gerar_notas(wb):
         r = r0 + i
         for j, (_, chave, _) in enumerate(ident, 1):
             v = pt[chave]
-            c = ws.cell(row=r, column=j, value=int(v) if chave == "ponto_id" else v)
+            if chave == "ponto_id":
+                v = int(v)
+            elif chave in ("lat", "lon"):
+                v = float(v)
+            c = ws.cell(row=r, column=j, value=v)
+            if chave in ("lat", "lon"):
+                c.number_format = "0.000000"
             c.font = Font(name=FONTE, size=10)
             c.alignment = Alignment(vertical="top", wrap_text=(chave == "trecho"))
             c.border = borda
