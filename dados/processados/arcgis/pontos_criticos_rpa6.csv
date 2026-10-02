@@ -1,0 +1,22 @@
+ponto_id,bairro,trecho,tipo,precisao,verificada,prior_emlurb,grupo,lat,lon
+5,Boa Viagem,Avenida Conselheiro Aguiar (Interseção com a Rua Tenente João Cícero),Ponto,Interseção,não,Não,G1,-8.113732,-34.893163
+6,Boa Viagem,Avenida Conselheiro Aguiar (Interseção com a Rua Dona Benvinda),Ponto,Interseção,não,Não,G1,-8.111009,-34.891491
+7,Boa Viagem,Avenida Conselheiro Aguiar (Interseção com a Rua Maria Carolina),Ponto,Interseção,não,Não,G1,-8.11538,-34.894176
+8,Boa Viagem,Avenida Conselheiro Aguiar (Do nº 1501 até a Rua Baltazar Pereira),Linha,Interseção,não,Não,G2,-8.101066,-34.886765
+9,Imbiribeira,Avenida Mascarenhas de Moraes (Da Rua General Mac Arthur até a Universo),Linha,Interseção,não,Não,G3,-8.108934,-34.911777
+11,Boa Viagem,Rua Professor José Brandão (Toda a extensão),Linha,Aproximado,não,Não,G1,-8.111816,-34.894789
+12,Boa Viagem,Rua Padre Bernardino Pessoa (Da Avenida Conselheiro Aguiar até a Via Mangue),Linha,Aproximado,não,Não,G1,-8.112935,-34.896796
+18,Boa Viagem,Rua Jornalista Alfredo Porto Silveira (Toda a extensão),Linha,Aproximado,não,Não,isolado,-8.138796,-34.913979
+19,Pina,Rua São Luiz (Final da rua),Ponto,Aproximado,não,Não,isolado,-8.089716,-34.888275
+22,Jordão,Avenida Maria Irene (Vários trechos),Vários,Aproximado,não,Não,isolado,-8.140505,-34.927358
+24,Ipsep,Rua Blumenau (Até a maré),Linha,Aproximado,não,Sim,isolado,-8.107611,-34.920256
+25,Ipsep,Rua Raimundo Diniz (Vários trechos),Vários,Aproximado,não,Não,isolado,-8.114288,-34.921465
+26,Boa Viagem,Avenida Boa Viagem (Antes da Rua Baltazar Passos),Ponto,Interseção,não,Não,isolado,-8.145055,-34.905114
+33,Ibura,Avenida Dois Rios (Interseção da Avenida Dois Rios com a Rua Rio Pajeú até a Rua Ecoporanga / interseção da Avenida Dois Rios com a Rua Rio Prado),Linha,Interseção,não,Sim,G4,-8.113526,-34.939007
+34,Ibura,Avenida Dom Helder Câmara (Interseção da Avenida Dom Helder Câmara com a Rua Achiles Amorim),Ponto,Interseção,não,Sim,G5,-8.107493,-34.929853
+35,Ibura,Avenida Dois Rios (Próximo ao SESI),Ponto,Aproximado,não,Sim,G4,-8.110391,-34.93687
+36,Imbiribeira,Avenida Mascarenhas de Moraes (Trecho da Ferreira Costa),Ponto,Aproximado,não,Sim,G3,-8.111915,-34.912386
+37,Ipsep,Avenida Recife (Da Avenida Dom Helder Câmara até o Rio Tejipió),Linha,Aproximado,não,Sim,G5,-8.105179,-34.927549
+41,Boa Viagem,Rua Thomé Gibson (Da Avenida Encanta Moça até a Via Mangue),Linha,Aproximado,não,Não,G2,-8.098066,-34.888129
+51,Pina,Avenida Antônio de Góes (Da saída da Via Mangue até a Bacia do Pina (Rio Capibaribe) e cruzamento com a Avenida Conselheiro Aguiar),Linha,Interseção,não,Não,isolado,-8.089423,-34.882717
+54,Ibura,Rua Rio Prado (Interseção da Rua Rio Prado com a Rua Rio Brígida),Ponto,Interseção,não,Não,G4,-8.113869,-34.940702
