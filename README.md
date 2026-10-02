@@ -36,7 +36,8 @@ entregas/        slides, resumo executivo, plano de 90 dias
 6. [Plano de Pedro até a Etapa 2](docs/06-plano-pedro-ate-etapa2.md)
 7. [Revisão dos critérios](docs/07-revisao-criterios.md)
 
-Checklist de subcritérios, escalas de nota (1 a 5) e fontes:
+Checklist de subcritérios, escalas de nota (1 a 5), fontes, notas dos 21
+pontos com o cálculo do risco e glossário:
 `dados/Recife_Resiliente_Checklist_Subcriterios.xlsx` (gerado por
 `scripts/gerar_checklist_subcriterios.py`).
 

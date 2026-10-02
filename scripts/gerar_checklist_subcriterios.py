@@ -6,15 +6,17 @@ faixa, recomendação, fonte e checklist de confirmação dos dados. Editar a
 lista SUBCRITERIOS abaixo e rodar de novo para atualizar a planilha.
 """
 
+import csv
 from pathlib import Path
 
 from openpyxl import Workbook
-from openpyxl.formatting.rule import CellIsRule
+from openpyxl.formatting.rule import CellIsRule, ColorScaleRule
 from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 from openpyxl.worksheet.datavalidation import DataValidation
 
 SAIDA = Path(__file__).resolve().parent.parent / "dados" / "Recife_Resiliente_Checklist_Subcriterios.xlsx"
 FONTE = "Arial"
+PONTOS = SAIDA.parent / "processados" / "pontos_rpa6.csv"
 Q = ("Quintil 1 (20% menores)", "Quintil 2", "Quintil 3", "Quintil 4", "Quintil 5 (20% maiores)")
 
 # (critério, código, subcritério, como medir, tipo de nota, (nota 1..5), origem da faixa,
@@ -338,6 +340,182 @@ def gerar_glossario(wb):
     ws.auto_filter.ref = f"A4:D{4 + len(GLOSSARIO)}"
 
 
+# Blocos da aba de notas: (critério, [códigos dos subcritérios], tem peso de critério?)
+BLOCOS = [
+    ("Probabilidade", ["P1", "P2", "P3", "P4", "P5", "P6"], False),
+    ("Exposição", ["E1", "E2", "E3"], True),
+    ("Vulnerabilidade", ["V2", "V3", "V4", "V1"], True),
+    ("Impacto", ["I1", "I2"], True),
+]
+
+
+def gerar_notas(wb):
+    """Aba com uma linha por ponto, notas de 1 a 5 e o cálculo do risco."""
+    from openpyxl.utils import get_column_letter as L
+
+    ws = wb.create_sheet("Notas dos pontos")
+    nomes = {cod: sub for _, cod, sub, *_ in SUBCRITERIOS}
+    with open(PONTOS, encoding="utf-8") as f:
+        pontos = list(csv.DictReader(f))
+
+    ws["A1"] = "Recife Resiliente — Notas dos pontos críticos da RPA 6 e cálculo do risco"
+    ws["A1"].font = Font(name=FONTE, bold=True, size=13)
+    ws["A2"] = (
+        "Preencha as notas (1 a 5, 5 = mais crítico) nas células amarelas, conforme as escalas da aba "
+        "'Checklist subcritérios'. Linha 'Peso': vazia = todos os pesos iguais. Nota em branco fica fora "
+        "da média (não vira zero). Sem nota de Probabilidade não há risco. P6 e V1 são condicionais: "
+        "deixe em branco se não forem usados. Colunas cinza são calculadas: não edite."
+    )
+    ws["A2"].font = Font(name=FONTE, italic=True, size=9)
+    ws["A2"].alignment = Alignment(wrap_text=True, vertical="top")
+    ws.row_dimensions[2].height = 40
+
+    LG, LP, LH = 4, 5, 6  # linhas: grupo, peso, cabeçalho
+    r0 = LH + 1
+    r1 = r0 + len(pontos) - 1
+    branco = Font(name=FONTE, bold=True, color="FFFFFF")
+    azul_esc = PatternFill("solid", fgColor="1F4E78")
+    cinza = PatternFill("solid", fgColor="EDEDED")
+    amarelo = PatternFill("solid", fgColor="FFF2CC")
+    fino = Side(style="thin", color="BFBFBF")
+    borda = Border(left=fino, right=fino, top=fino, bottom=fino)
+    centro = Alignment(horizontal="center", vertical="center", wrap_text=True)
+
+    def cab(col, texto, fill=azul_esc, font=branco, linha=LH):
+        c = ws.cell(row=linha, column=col, value=texto)
+        c.fill, c.font, c.alignment, c.border = fill, font, centro, borda
+        return c
+
+    ident = [("ID", "ponto_id", 6), ("Bairro", "bairro", 13), ("Trecho", "trecho", 42),
+             ("Tipo", "tipo", 8), ("Grupo", "grupo_sobreposicao", 7)]
+    for j, (titulo, _, larg) in enumerate(ident, 1):
+        cab(j, titulo)
+        ws.column_dimensions[L(j)].width = larg
+    ws.cell(row=LP, column=len(ident), value="Peso →").font = Font(name=FONTE, bold=True, size=9)
+    ws.cell(row=LP, column=len(ident)).alignment = Alignment(horizontal="right")
+
+    col = len(ident) + 1
+    nota_criterio = {}   # critério -> coluna da nota do critério
+    notas_cols = []      # colunas de notas de subcritério
+    for crit, codigos, tem_peso in BLOCOS:
+        cor = PatternFill("solid", fgColor=COR_CRITERIO[crit])
+        ini = col
+        for cod in codigos:
+            cab(col, f"{cod}\n{nomes[cod]}", fill=cor, font=Font(name=FONTE, bold=True, size=9))
+            p = ws.cell(row=LP, column=col)
+            p.fill, p.border, p.alignment = amarelo, borda, centro
+            p.font = Font(name=FONTE, size=9, color="0000FF")
+            ws.column_dimensions[L(col)].width = 11
+            notas_cols.append(col)
+            col += 1
+        fim = col - 1
+        cab(col, f"Nota\n{crit}", fill=PatternFill("solid", fgColor="595959"))
+        ws.column_dimensions[L(col)].width = 13
+        if tem_peso:
+            p = ws.cell(row=LP, column=col)
+            p.fill, p.border, p.alignment = amarelo, borda, centro
+            p.font = Font(name=FONTE, size=9, color="0000FF", bold=True)
+        else:
+            ws.cell(row=LP, column=col, value="(multiplica)").font = Font(name=FONTE, size=8, italic=True)
+            ws.cell(row=LP, column=col).alignment = centro
+        g = ws.cell(row=LG, column=ini, value=crit)
+        g.font, g.fill, g.alignment = Font(name=FONTE, bold=True), cor, centro
+        ws.merge_cells(start_row=LG, start_column=ini, end_row=LG, end_column=col)
+        for r in range(r0, r1 + 1):
+            a, b = f"{L(ini)}{r}", f"{L(fim)}{r}"
+            pa, pb = f"{L(ini)}${LP}", f"{L(fim)}${LP}"
+            peso = f"({pa}:{pb}+({pa}:{pb}=\"\"))"
+            ws[f"{L(col)}{r}"] = (
+                f'=IF(COUNT({a}:{b})=0,"",IFERROR(SUMPRODUCT({a}:{b},{peso})'
+                f'/SUMPRODUCT(({a}:{b}<>"")*{peso}),""))'
+            )
+        nota_criterio[crit] = col
+        col += 1
+
+    # Resultado
+    cC, cR, cI, cPos, cCob = col, col + 1, col + 2, col + 3, col + 4
+    resultado = [(cC, "Consequência\n(1–5)"), (cR, "Risco\nP × C (1–25)"),
+                 (cI, "Índice de risco\n(0–1)"), (cPos, "Posição"), (cCob, "Notas\npreenchidas")]
+    for c, t in resultado:
+        cab(c, t, fill=PatternFill("solid", fgColor="C00000"))
+        ws.column_dimensions[L(c)].width = 13
+    g = ws.cell(row=LG, column=cC, value="Resultado")
+    g.font, g.fill, g.alignment = Font(name=FONTE, bold=True, color="FFFFFF"), PatternFill("solid", fgColor="C00000"), centro
+    ws.merge_cells(start_row=LG, start_column=cC, end_row=LG, end_column=cCob)
+
+    cons = [nota_criterio[c] for c in ("Exposição", "Vulnerabilidade", "Impacto")]
+    cp = L(nota_criterio["Probabilidade"])
+    for r in range(r0, r1 + 1):
+        w = {c: f"({L(c)}${LP}+({L(c)}${LP}=\"\"))" for c in cons}
+        num = "+".join(f"N({L(c)}{r})*{w[c]}" for c in cons)
+        den = "+".join(f"ISNUMBER({L(c)}{r})*{w[c]}" for c in cons)
+        ws[f"{L(cC)}{r}"] = f'=IFERROR(IF(({den})=0,"",({num})/({den})),"")'
+        ws[f"{L(cR)}{r}"] = f'=IF(AND(ISNUMBER({cp}{r}),ISNUMBER({L(cC)}{r})),{cp}{r}*{L(cC)}{r},"")'
+        ws[f"{L(cI)}{r}"] = f'=IF(ISNUMBER({L(cR)}{r}),({L(cR)}{r}-1)/24,"")'
+        ws[f"{L(cPos)}{r}"] = f'=IF(ISNUMBER({L(cR)}{r}),COUNTIF({L(cR)}${r0}:{L(cR)}${r1},">"&{L(cR)}{r})+1,"")'
+        cols_n = ",".join(f"{L(c)}{r}" for c in notas_cols)
+        ws[f"{L(cCob)}{r}"] = f"=COUNT({cols_n})"
+
+    # Corpo da tabela
+    for i, pt in enumerate(pontos):
+        r = r0 + i
+        for j, (_, chave, _) in enumerate(ident, 1):
+            v = pt[chave]
+            c = ws.cell(row=r, column=j, value=int(v) if chave == "ponto_id" else v)
+            c.font = Font(name=FONTE, size=10)
+            c.alignment = Alignment(vertical="top", wrap_text=(chave == "trecho"))
+            c.border = borda
+        for c in notas_cols:
+            cel = ws.cell(row=r, column=c)
+            cel.fill, cel.border, cel.alignment = amarelo, borda, centro
+            cel.font = Font(name=FONTE, size=10, color="0000FF")
+        for c in list(nota_criterio.values()) + [cC, cR, cI, cPos, cCob]:
+            cel = ws.cell(row=r, column=c)
+            cel.fill, cel.border, cel.alignment = cinza, borda, centro
+            cel.font = Font(name=FONTE, size=10, bold=c in (cR, cI, cPos))
+            cel.number_format = "0.00" if c not in (cPos, cCob) else "0"
+        ws.cell(row=r, column=cI).number_format = "0.000"
+
+    dv = DataValidation(type="whole", operator="between", formula1="1", formula2="5", allow_blank=True,
+                        showErrorMessage=True, errorTitle="Nota inválida",
+                        error="Use um número inteiro de 1 a 5 (5 = mais crítico).")
+    ws.add_data_validation(dv)
+    for c in notas_cols:
+        dv.add(f"{L(c)}{r0}:{L(c)}{r1}")
+    dvp = DataValidation(type="decimal", operator="greaterThanOrEqual", formula1="0", allow_blank=True,
+                         showErrorMessage=True, error="Peso deve ser um número maior ou igual a zero.")
+    ws.add_data_validation(dvp)
+    for c in notas_cols + cons:
+        dvp.add(f"{L(c)}{LP}")
+    ws.conditional_formatting.add(
+        f"{L(cI)}{r0}:{L(cI)}{r1}",
+        ColorScaleRule(start_type="num", start_value=0, start_color="FFFFFF",
+                       mid_type="num", mid_value=8 / 24, mid_color="FFEB84",
+                       end_type="num", end_value=1, end_color="F8696B"))
+
+    nota = r1 + 2
+    textos = [
+        "Como o cálculo funciona:",
+        "• Nota do critério = média ponderada das notas dos subcritérios preenchidos (pesos da linha 5; vazio = 1).",
+        "• Consequência = média ponderada das notas de Exposição, Vulnerabilidade e Impacto (pesos da linha 5 nas colunas cinza 'Nota').",
+        "• Risco = nota da Probabilidade × Consequência (1 a 25).",
+        "• Índice de risco (0–1) = (Risco − 1) ÷ 24. 0 = risco mínimo (P = 1 e C = 1); 1 = risco máximo (P = 5 e C = 5). "
+        "Corte da matriz (risco 9) = índice 0,333. O ranking é o mesmo do Risco.",
+        "• Posição = ranking pelo Risco (1 = maior risco). Empates recebem a mesma posição.",
+    ]
+    for k, t in enumerate(textos):
+        c = ws.cell(row=nota + k, column=1, value=t)
+        c.font = Font(name=FONTE, size=9, bold=(k == 0))
+
+    ws.freeze_panes = ws.cell(row=r0, column=len(ident) + 1)
+    ws.row_dimensions[LH].height = 54
+    ws.page_setup.orientation = "landscape"
+    ws.sheet_properties.pageSetUpPr.fitToPage = True
+    ws.page_setup.fitToWidth = 1
+    ws.page_setup.fitToHeight = 0
+    return r0, r1, cR, cI
+
+
 def gerar(saida=SAIDA):
     wb = Workbook()
     ws = wb.active
@@ -427,6 +605,7 @@ def gerar(saida=SAIDA):
     ws.sheet_properties.pageSetUpPr.fitToPage = True
     ws.page_setup.fitToWidth = 1
     ws.page_setup.fitToHeight = 0
+    gerar_notas(wb)
     gerar_glossario(wb)
     wb.calculation.fullCalcOnLoad = True
     wb.save(saida)

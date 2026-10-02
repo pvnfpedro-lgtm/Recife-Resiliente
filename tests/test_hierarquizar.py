@@ -33,6 +33,7 @@ class TestHierarquizar(unittest.TestCase):
         self.assertAlmostEqual(p01["probabilidade"], 4.0)
         self.assertAlmostEqual(p01["consequencia"], 3.0)
         self.assertAlmostEqual(p01["risco"], 12.0)
+        self.assertAlmostEqual(p01["indice"], 11 / 24)
         self.assertEqual(p01["cobertura"], "5/5")
 
     def test_nota_ausente_nao_imputada(self):
@@ -91,8 +92,8 @@ class TestHierarquizar(unittest.TestCase):
         h.escrever(rodar(), buf)
         linhas = buf.getvalue().splitlines()
         self.assertTrue(linhas[0].startswith(
-            "posicao,ponto_id,risco,probabilidade,consequencia"))
-        self.assertIn("1,P01,12.00,4.00,3.00,5/5,3.00,Agir já", linhas[1])
+            "posicao,ponto_id,risco,indice,probabilidade,consequencia"))
+        self.assertIn("1,P01,12.00,0.46,4.00,3.00,5/5,3.00,Agir já", linhas[1])
 
 
 if __name__ == "__main__":

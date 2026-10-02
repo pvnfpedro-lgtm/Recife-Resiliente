@@ -65,6 +65,13 @@ Como se lê: um ponto que quase não alaga (P = 1) fica com risco baixo, por
 mais gente que more perto. O ranking segue o raciocínio de risco e não premia
 apenas a exposição.
 
+**Índice de risco (0 a 1)** = (Risco − 1) ÷ 24. 0 corresponde a P = 1 e
+C = 1; 1 corresponde a P = 5 e C = 5. O corte da matriz (risco 9) equivale a
+0,333. Serve para comunicar o resultado e mantém o mesmo ranking do Risco.
+Decidimos **não** converter cada nota para 0–1 antes de multiplicar (nota
+convertida = (nota − 1) ÷ 4): com essa conversão, um ponto com P = 1 ficaria
+com risco zero, e a ordem do ranking mudaria em relação ao modelo P × C.
+
 **Consequência direta:** **sem nota de Probabilidade não há risco.** O ponto
 fica sem posição no ranking até receber essa nota. Por isso a Probabilidade
 dos 21 pontos é o dado prioritário: ficha da EMLURB agora e dados do COP

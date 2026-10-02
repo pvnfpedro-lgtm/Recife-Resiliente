@@ -158,6 +158,7 @@ def hierarquizar(criterios_linhas, notas_linhas, trat_linhas=None,
         resultado.append({
             "ponto_id": ponto,
             "risco": risco,
+            "indice": None if risco is None else (risco - 1) / 24,
             "probabilidade": prob,
             "consequencia": cons,
             "cobertura": f"{len(notas.get(ponto, {}))}/{len(criterios)}",
@@ -189,7 +190,7 @@ def _formatar(valor):
 def escrever(resultado, destino):
     if not resultado:
         return
-    campos = ["posicao", "ponto_id", "risco", "probabilidade", "consequencia",
+    campos = ["posicao", "ponto_id", "risco", "indice", "probabilidade", "consequencia",
               "cobertura", "tratabilidade", "quadrante"]
     campos += [k for k in resultado[0] if k.startswith("dim_")]
     escritor = csv.DictWriter(destino, fieldnames=campos)
