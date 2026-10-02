@@ -36,6 +36,7 @@ entregas/        slides, resumo executivo, plano de 90 dias
 6. [Plano de Pedro até a Etapa 2](docs/06-plano-pedro-ate-etapa2.md)
 7. [Revisão dos critérios](docs/07-revisao-criterios.md)
 8. [Painel](docs/08-painel.md)
+9. [Identidade visual do mapa](docs/09-identidade-visual-mapa.md)
 
 Checklist de subcritérios, escalas de nota (1 a 5), fontes, notas dos 21
 pontos com o cálculo do risco e glossário:
