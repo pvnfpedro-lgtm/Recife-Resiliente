@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# ArcGIS / SIG pesados
+*.gdb/
+*.aprx
+*.atbx
+*.lock
+*.sr.lock
+
+# Temporários do Office
+~$*
+
+# Sistema
+.DS_Store
+Thumbs.db
