@@ -26,11 +26,13 @@
     --azul-4:#96BFD9;
     --accent:var(--azul-1);
     --accent-soft:rgba(150,191,217,.35);
-    /* Vidro (cards translúcidos sobre o mapa), tingido com #96BFD9; borda em #5496BF */
-    --vidro:rgba(150,191,217,.32);
-    --vidro-forte:rgba(150,191,217,.50);
-    --vidro-borda:rgba(84,150,191,.40);
-    --vidro-borda-forte:rgba(84,150,191,.70);
+    /* Azul-marinho da marca da Prefeitura (amostrado do logo: #002060; não é o código oficial) */
+    --marinho:#002060;
+    /* Vidro (cards translúcidos sobre o mapa): marinho translúcido, borda em #96BFD9 */
+    --vidro:rgba(0,32,96,.70);
+    --vidro-forte:rgba(0,32,96,.86);
+    --vidro-borda:rgba(150,191,217,.35);
+    --vidro-borda-forte:rgba(150,191,217,.75);
     --canal:#8b5cf6;
     --critico:#ef4444;
     --hidro:var(--azul-4);
@@ -158,6 +160,15 @@
   .map-area{position:absolute;inset:0;}
   #viewDiv{position:absolute;inset:0;}
 
+  /* Sobre o vidro marinho, os textos ficam claros */
+  .overlay-grid{--text:#FFFFFF;--text-dim:rgba(255,255,255,.80);--text-faint:rgba(255,255,255,.62);--accent:var(--azul-4);--accent-soft:rgba(150,191,217,.30);}
+  .overlay-grid .kpi-label,.overlay-grid .filterbar label,.overlay-grid .list-panel-header h3{color:var(--azul-4);}
+  .overlay-grid .project-title,.overlay-grid .pcard-line b{color:#FFFFFF;}
+  .overlay-grid .pbar-track{background:rgba(255,255,255,.18);}
+  .overlay-grid select option{color:#1e2430;background:#FFFFFF;}
+  .overlay-grid .search-box input::placeholder{color:rgba(255,255,255,.72);}
+  .overlay-grid .project-card{background:rgba(255,255,255,.06);}
+  .overlay-grid .project-card:hover,.overlay-grid .project-card.active{background:rgba(255,255,255,.13);}
   .overlay-grid{
     position:absolute;inset:16px;z-index:15;
     display:grid;
