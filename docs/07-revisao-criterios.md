@@ -3,8 +3,12 @@
 > **Atualização 02/10/2026:** Pedro decidiu os **4 critérios principais**
 > (Probabilidade, Exposição, Vulnerabilidade e Impacto), o cálculo
 > **Probabilidade × Consequência** e o raio de **300 m** no score, com 1 km no
-> painel. Ver `02-metodologia-hierarquizacao.md`. **Os subcritérios abaixo
-> ainda são proposta.**
+> painel. Ver `02-metodologia-hierarquizacao.md`.
+>
+> **Lista atual de subcritérios:** ver a seção *Lista proposta de 02/10*
+> no fim deste documento e a planilha
+> `dados/Recife_Resiliente_Checklist_Subcriterios.xlsx`. A tabela de 12
+> subcritérios logo abaixo é a versão de 01/10, mantida como histórico.
 
 Revisão da aba *Critérios* de `dados/Recife_Resiliente_RPA6_Criterios_Pontos_Criticos.xlsx`
 (24 subcritérios no score e 7 itens de tratabilidade). Esta é uma
@@ -108,3 +112,36 @@ dentro da Consequência.
 - Qualidade do MapBiomas (30 m) num círculo de 300 m: são cerca de 300 pixels,
   o que deve bastar, mas é preciso conferir.
 - O resultado da sobreposição muda depois da conferência das coordenadas.
+
+## Lista proposta de 02/10/2026 (13 subcritérios)
+
+Pedro aprovou os subcritérios recomendados, incluiu favelas e comunidades
+(V3) e pediu sugestões. A lista abaixo junta as duas coisas. **Ainda depende
+da confirmação dos dados.** O checklist de cada fonte está em
+`dados/Recife_Resiliente_Checklist_Subcriterios.xlsx`.
+
+| Critério | Código | Subcritério | Situação |
+|---|---|---|---|
+| Probabilidade | P1 | Frequência | Manter, peso alto |
+| | P2 | Severidade (altura + tempo para baixar + extensão) | Manter, peso alto |
+| | P3 | Influência da maré | Manter |
+| | P4 | Proximidade de rio ou canal | Manter, peso menor |
+| | P5 | Impermeabilização | Manter, peso menor |
+| | P6 | Baixio (cota do terreno) | Condicional: só com curvas de nível |
+| Exposição | E1 | População (grade de 200 m) | Manter |
+| | E2 | Equipamentos sensíveis (CNEFE) | Manter |
+| | E3 | Atividade econômica (CNEFE) | Manter |
+| Vulnerabilidade | V2 | Grupos sensíveis (idade) | Manter |
+| | V3 | Favelas e comunidades urbanas 2022 | Manter; substitui o V1 |
+| | V4 | Tipo de moradia (% casas) | Manter |
+| | V1 | IVS (2010) | Plano B, se o V3 não existir |
+| Impacto | I1 | Mobilidade (classe da via + paradas + interdições) | Manter |
+| | I2 | Risco sanitário (esgotamento por setor) | Manter |
+
+Sugestões descartadas: chamados do 156 como subcritério (usar só para
+conferir o P1), % de não alfabetizados (repete V3/IVS), leptospirose (dado
+por bairro, grande demais para o círculo), rota até hospital (é resposta ao
+evento, do COP). Exposição não ganhou subcritérios novos.
+
+Próximo passo: faixas de nota de 1 a 5 de cada subcritério, começando pela
+Probabilidade (que vira a ficha da reunião com a EMLURB).

@@ -12,7 +12,10 @@
 | 6 | Escala da tratabilidade (5 = mais tratável) | Grupo | 14/10 | Confirmar a convenção adotada no script |
 | 7 | Papel da SEPLAN e nome do contato | Pedro | 05/10 | Definir antes de enviar o convite |
 | 8 | Probabilidade dos 21 pontos (sem ela não há risco) | Pedro | 08/10 | Ficha de 1 a 5 preenchida com Pedro Oliveira (EMLURB); confirmar com dados do COP |
-| 9 | Subcritérios de cada critério | Pedro | 05/10 | Proposta em `07-revisao-criterios.md` |
+| 9 | Subcritérios de cada critério | Pedro | 05/10 | Lista de 13 em `07-revisao-criterios.md`; confirmar dados no checklist `.xlsx` |
+| 10 | Confirmar com a EMLURB: os 21 são todos os pontos da RPA 6? Que critério definiu os 6 prioritários? | Pedro | 08/10 | Perguntar na reunião com Pedro Oliveira |
+| 11 | Pedir à URB a lista de obras de drenagem da RPA 6 | Pedro | 05/10 | Junto com os pedidos a COP e CTTU |
+| 12 | Faixas de nota (1 a 5) de cada subcritério | Pedro | 05/10 | Começar pela Probabilidade (ficha da EMLURB) |
 
 ## Dados não verificados
 Tudo o que estiver aqui **não** pode ir para a apresentação sem conferência.
@@ -21,3 +24,7 @@ Tudo o que estiver aqui **não** pode ir para a apresentação sem conferência.
 - Papéis de cada órgão na prevenção (tabela em `01-contexto.md`): leitura
   preliminar.
 - Ano-base do IVS/Ipea por UDH: a confirmar.
+- Produtos do IBGE 2022 (Grade Estatística, CNEFE, agregados por setor):
+  existência confirmada na busca, arquivos ainda não abertos.
+- Malha de favelas e comunidades 2022, tipo de domicílio por setor, curvas de
+  nível no ESIG e MapBiomas: não verificados.

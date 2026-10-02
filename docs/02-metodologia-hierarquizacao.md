@@ -111,6 +111,40 @@ baixadas:
 > ⚠️ As coordenadas dos pontos ainda são **aproximadas**. Conferir antes do
 > cálculo final.
 
+## Camada de obras (planejada)
+As obras **não entram no score de risco**, porque o risco mede a situação
+de hoje. Elas servem para responder à pergunta *onde o risco é alto e
+ninguém está atuando?*.
+
+- **Tratabilidade:** item *janela de oportunidade*.
+- **Painel:** cada ponto fica *com obra em execução*, *com obra prevista* ou
+  *sem obra*. Risco alto sem obra é a lacuna onde a prevenção faz mais
+  diferença.
+- **Obra conectada ao ponto:** mesma sub-bacia (hierarquia do PMDR: Bacia →
+  Sub-bacia → Ponto crítico → Obra) **e** confirmação da URB ou da EMLURB de
+  que a obra atua na drenagem do ponto. Distância sozinha não basta.
+- **Dados previstos:** `obras.csv` (id, nome, órgão, tipo, situação,
+  previsão de término, valor, sub-bacia) e `pontos_obras.csv` (ponto, obra,
+  relação *resolve / mitiga / indireta*, quem confirmou).
+- **Obra concluída recentemente:** sinalizar o ponto para revisar a nota de
+  Probabilidade com a EMLURB, porque o histórico pode exagerar o risco atual.
+- **Fontes:** URB (obras, prazos e custos; verificar o sistema Target),
+  ProMorar, EMLURB.
+
+## Pontos da RPA 6
+Arquivo: `dados/processados/pontos_rpa6.geojson` (e `.csv`), gerado a
+partir da aba *Pontos RPA 6*.
+
+- **Nenhuma coordenada verificada:** 11 marcadas como *Aproximado* e 10
+  como *Interseção* (localização automática pelo OpenStreetMap).
+- **12 dos 21 são trechos** (*Linha* ou *Vários*): desenhar a linha no
+  ArcGIS e aplicar o buffer à linha.
+- **Grupos com círculos sobrepostos:** G1 (5, 6, 7, 11, 12), G2 (8, 41), G3
+  (9, 36), G4 (33, 35, 54), G5 (34, 37). Manter os 21 pontos separados e
+  mostrar os grupos no painel.
+- **Prioridade da EMLURB:** 24, 33, 34, 35, 36 e 37, todos fora de Boa
+  Viagem. Comparar com o ranking final.
+
 ## Arquivos de entrada do script
 | Arquivo | Colunas |
 |---|---|
