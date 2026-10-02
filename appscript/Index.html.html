@@ -900,7 +900,7 @@ require([
     if(!cartao || !cartaoGeom || cartao.style.display === "none") return;
     var pt = view.toScreen(cartaoGeom);
     if(!pt) return;
-    var W = view.width, H = view.height, gap = 16, m = 8;
+    var W = view.width, H = view.height, gap = 36, m = 8;  // gap = distância entre o ponto e o cartão (px)
     cartao.querySelector(".rr-card-in").style.maxHeight = Math.floor(H * 0.85) + "px";
     var w = cartao.offsetWidth, h = cartao.offsetHeight;
     var direita = (pt.x + gap + w <= W - m) || (pt.x - gap - w < m);
