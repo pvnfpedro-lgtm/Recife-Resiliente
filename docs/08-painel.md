@@ -17,7 +17,8 @@ O painel em Google Apps Script já existente é a base. Muita coisa vai mudar.
 | Notas pelo Google Sheets | Ainda não |
 | Acesso ao painel | A definir |
 | Pontos críticos | Pedro vai subir um mapa novo no ArcGIS com os pontos |
-| Próximo passo | Ao clicar no ponto, abrir um popup com informações (lista em definição) |
+| Pontos críticos no painel | Teste: o painel lê a aba "Notas dos pontos" da planilha Google Sheets `1DN3abWIPk0dvOkh-28D2NGYBLgMI437Vx7Sk7TqpDc0` e mostra os pontos com popup |
+| Rede hidrográfica | Removida do código (`HidroData.html`); virá das camadas do ArcGIS |
 
 ## Como trabalhar no código
 1. Editar os arquivos em `appscript/`; cada mudança vira um commit.

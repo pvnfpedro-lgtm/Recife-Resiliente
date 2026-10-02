@@ -6,12 +6,6 @@ function doGet() {
     .addMetaTag('viewport', 'width=device-width, initial-scale=1');
 }
 
-/* Usado pelo Index.html para injetar HidroData.html no lugar certo
-   (scriptlet <?!= include('HidroData'); ?>). */
-function include(filename) {
-  return HtmlService.createHtmlOutputFromFile(filename).getContent();
-}
-
 /* =====================================================================
    PONTOS CRÍTICOS — leitura da planilha de notas (TESTE)
    A planilha precisa ser nativa do Google Sheets (não .xlsx no Drive).
