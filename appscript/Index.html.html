@@ -197,15 +197,13 @@
 
   .project-list{display:flex;flex-direction:column;gap:8px;min-height:0;overflow-y:auto;padding-right:2px;scroll-behavior:smooth;}
   .project-card{
-    border:1px solid rgba(255,255,255,.55);border-radius:var(--radius);padding:11px 12px;
-    background:rgba(255,255,255,.42);
-    backdrop-filter:blur(6px) saturate(160%);
-    -webkit-backdrop-filter:blur(6px) saturate(160%);
+    border:1px solid rgba(255,255,255,.50);border-radius:var(--radius);padding:11px 12px;
+    background:rgba(255,255,255,.12);
     cursor:pointer;transition:border-color .15s, box-shadow .15s, background .15s;
     display:flex;flex-direction:column;gap:6px;
   }
-  .project-card:hover{background:rgba(255,255,255,.58);border-color:rgba(255,255,255,.75);box-shadow:var(--shadow);}
-  .project-card.active{background:rgba(255,255,255,.58);border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);}
+  .project-card:hover{background:rgba(255,255,255,.28);border-color:rgba(255,255,255,.75);box-shadow:var(--shadow);}
+  .project-card.active{background:rgba(255,255,255,.32);border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);}
   .project-card-top{display:flex;align-items:center;justify-content:space-between;gap:8px;}
   .status-pill{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;padding:3px 8px;border-radius:999px;white-space:nowrap;}
   .status-pill.obra{background:var(--status-obra-bg);color:var(--status-obra-text);}
