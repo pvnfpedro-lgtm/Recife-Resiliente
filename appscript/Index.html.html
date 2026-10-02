@@ -12,15 +12,19 @@
 
 <style>
   :root{
-    --bg:#f4f5f7;
-    --panel:#ffffff;
+    --bg:#F2F2F2;
+    --panel:#FFFFFF;
     --border:#e2e8f0;
     --border-strong:#cbd5e1;
     --text:#1e2430;
     --text-dim:#64748b;
     --text-faint:#94a3b8;
-    --accent:#0f6e5e;
-    --accent-soft:#e3f3ef;
+    /* Paleta Recife Resiliente: #0869A6 · #2685BF · #5496BF · #FFFFFF · #F2F2F2 */
+    --azul-1:#0869A6;
+    --azul-2:#2685BF;
+    --azul-3:#5496BF;
+    --accent:var(--azul-1);
+    --accent-soft:#e6f0f7;
     --canal:#8b5cf6;
     --critico:#ef4444;
     --hidro:#7fb8e0;
@@ -251,8 +255,8 @@
   .esri-popup__action{font-size:12px !important;font-weight:600;color:var(--accent) !important;}
   /* Popup dos pontos críticos — ficha no estilo do Plano de Ações de SP */
   .esri-popup__main-container{width:min(390px, 92vw) !important;}
-  .rr-pop{--rr:#173DB7;--rr-claro:#e8edfa;--rr-cinza:#f3f4f6;font-size:12.5px;line-height:1.45;color:#1f2937;}
-  .rr-titulo{font-size:14px;font-weight:800;text-transform:uppercase;letter-spacing:.01em;color:var(--rr);line-height:1.25;}
+  .rr-pop{--rr:var(--azul-1);--rr-2:var(--azul-2);--rr-3:var(--azul-3);--rr-cinza:#F2F2F2;font-size:12.5px;line-height:1.45;color:#1f2937;}
+  .rr-titulo{border-left:4px solid var(--rr-3);padding-left:8px;font-size:14px;font-weight:800;text-transform:uppercase;letter-spacing:.01em;color:var(--rr);line-height:1.25;}
   .rr-sub{font-style:italic;color:#6b7280;margin-top:2px;}
   .rr-aviso{font-size:10.5px;color:#9ca3af;margin-top:6px;}
   .rr-fatos{margin:12px 0 12px;display:grid;grid-template-columns:auto 1fr;gap:3px 10px;}
@@ -264,9 +268,10 @@
   .rr-tab td{padding:4px 8px;font-size:11.5px;}
   .rr-tab td:last-child{text-align:center;}
   .rr-tab tr.rr-crit td{font-weight:700;color:#111827;padding-top:6px;}
-  .rr-tab tr.rr-g0 td{background:var(--rr-cinza);} .rr-tab tr.rr-g1 td{background:var(--rr-claro);}
+  .rr-tab tr.rr-crit td{background:var(--rr-cinza);}
+  .rr-tab tr.rr-subl td{background:#FFFFFF;border-bottom:1px solid var(--rr-cinza);}
   .rr-tab tr td:first-child{border-radius:4px 0 0 4px;} .rr-tab tr td:last-child{border-radius:0 4px 4px 0;}
-  .rr-ini{display:inline-block;width:18px;height:18px;line-height:18px;border-radius:50%;background:var(--rr);color:#fff;
+  .rr-ini{display:inline-block;width:18px;height:18px;line-height:18px;border-radius:50%;background:var(--rr-2);color:#fff;
           font-size:10px;font-weight:700;text-align:center;margin-right:6px;}
   .rr-tab tr.rr-subl td:first-child{padding-left:32px;color:#374151;}
   .rr-pe{margin-top:10px;font-size:10.5px;color:#9ca3af;}
