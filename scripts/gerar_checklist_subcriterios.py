@@ -125,6 +125,176 @@ SUBCRITERIOS = [
      "Esgotamento por setor confirmado na busca (não baixado)."),
 ]
 
+# (grupo, termo, o que significa, exemplo no projeto)
+GLOSSARIO = [
+    ("Modelo de risco", "Risco",
+     "Medida de quão prioritário é um ponto para a prevenção. Calculado como Probabilidade × Consequência, numa escala de 1 a 25.",
+     "Um ponto com Probabilidade 4 e Consequência 3 tem risco 12."),
+    ("Modelo de risco", "Critério",
+     "Um dos 4 grandes componentes do risco: Probabilidade, Exposição, Vulnerabilidade e Impacto.",
+     "Vulnerabilidade é um critério."),
+    ("Modelo de risco", "Subcritério",
+     "Um item medível dentro de um critério. Cada subcritério recebe uma nota de 1 a 5.",
+     "População (E1) é um subcritério da Exposição."),
+    ("Modelo de risco", "Probabilidade",
+     "Quanto e com que facilidade o ponto alaga: frequência, severidade, maré, proximidade de rio, impermeabilização.",
+     "Um ponto que alaga 7 vezes por ano tem Frequência (P1) = 5."),
+    ("Modelo de risco", "Exposição",
+     "Quem e o que está no caminho da água dentro do círculo de 300 m: moradores, escolas, unidades de saúde, comércio.",
+     "Um ponto com muitas escolas por perto tem Equipamentos sensíveis (E2) alto."),
+    ("Modelo de risco", "Vulnerabilidade",
+     "Quanto quem está ali tem dificuldade de lidar com o alagamento: idosos e crianças, favelas e comunidades, moradia térrea.",
+     "Área com muitas casas térreas tem Tipo de moradia (V4) alto."),
+    ("Modelo de risco", "Impacto",
+     "Consequência que vai além do local: mobilidade da cidade e saúde pública (esgoto).",
+     "Alagamento numa avenida arterial com ônibus tem Mobilidade (I1) alta."),
+    ("Modelo de risco", "Consequência",
+     "Média ponderada de Exposição, Vulnerabilidade e Impacto, de 1 a 5. É o que multiplica a Probabilidade.",
+     "Exposição 4, Vulnerabilidade 2 e Impacto 3 com pesos iguais dão Consequência 3."),
+    ("Modelo de risco", "Nota (1 a 5)",
+     "Valor dado a cada subcritério. 5 = mais crítico, 1 = menos crítico.",
+     "Nota 5 em Maré (P3) = o ponto alaga conforme a maré."),
+    ("Modelo de risco", "Peso",
+     "Importância relativa de um subcritério dentro do critério, ou de um critério dentro da Consequência. Definido pelo grupo. A Probabilidade não tem peso, porque multiplica.",
+     "Frequência e Severidade terão peso maior que Proximidade de rio."),
+    ("Modelo de risco", "Média ponderada",
+     "Média em que cada item conta conforme o seu peso.",
+     "Notas 5 (peso 2) e 2 (peso 1): (5×2 + 2×1) ÷ 3 = 4."),
+    ("Modelo de risco", "Cobertura",
+     "Quantos subcritérios têm nota para o ponto. Nota faltante não vira zero nem média: fica de fora e a cobertura mostra a falta.",
+     "Cobertura 11/13 = faltam 2 notas para aquele ponto."),
+    ("Modelo de risco", "Sem Probabilidade, sem risco",
+     "Como o risco é uma multiplicação, um ponto sem nota de Probabilidade não tem risco calculado nem posição no ranking.",
+     "Por isso a ficha com a EMLURB é prioritária."),
+    ("Modelo de risco", "Tratabilidade",
+     "Se é fácil agir no ponto (governança, natureza da causa, obra ou orçamento em andamento). Fica FORA do risco. 5 = mais fácil.",
+     "Ponto com dono definido e causa de manutenção tem tratabilidade alta."),
+    ("Modelo de risco", "Matriz risco × tratabilidade",
+     "Cruza o risco (corte em 9) com a tratabilidade (corte em 3) e coloca cada ponto num de 4 quadrantes.",
+     "Risco 12 e tratabilidade 4 = quadrante Agir já."),
+    ("Modelo de risco", "Agir já / Estruturar / Oportunidade / Monitorar",
+     "Quadrantes da matriz. Agir já: risco alto, fácil de agir. Estruturar: risco alto, difícil (exige articulação). Oportunidade: risco baixo, fácil. Monitorar: risco baixo, difícil.",
+     ""),
+    ("Modelo de risco", "Diagnóstico de causa",
+     "Por que o ponto alaga (drenagem obstruída, subdimensionada, maré, esgoto). Fica fora do risco e indica qual órgão age.",
+     "Galeria assoreada → EMLURB (manutenção)."),
+    ("Modelo de risco", "Análise de sensibilidade",
+     "Recalcular o ranking com outros pesos (ex.: pesos iguais) para ver se o resultado depende demais dos pesos escolhidos.",
+     "Se o top 5 muda muito, avisar a alta gestão."),
+
+    ("Tipo de nota", "Faixa fixa",
+     "O valor medido cai numa faixa definida antes da coleta. A nota não depende dos outros pontos.",
+     "P1: 5 alagamentos/ano cai em '5–6' = nota 4."),
+    ("Tipo de nota", "Classe",
+     "O ponto é encaixado numa categoria descritiva, não num número.",
+     "P3: 'agrava ocasionalmente' = nota 3."),
+    ("Tipo de nota", "Quintil",
+     "Nota relativa entre os 21 pontos: os valores são ordenados e divididos em 5 grupos de ~4 pontos. Os 20% menores recebem 1; os 20% maiores, 5.",
+     "E1: os ~4 pontos com mais moradores recebem nota 5."),
+    ("Tipo de nota", "Quintil invertido",
+     "Igual ao quintil, mas o MENOR valor recebe a nota mais alta.",
+     "P4: o ponto mais perto do rio recebe nota 5."),
+    ("Tipo de nota", "Faixa provisória",
+     "Faixa proposta antes de ver os dados reais. Deve ser calibrada quando os dados chegarem.",
+     "Se todos os pontos caírem na mesma faixa, ela precisa ser ajustada."),
+    ("Tipo de nota", "Origem da faixa",
+     "De onde veio a escala: planilha original da equipe, referência oficial (ex.: Ipea) ou proposta do Claude (a revisar pelo grupo).",
+     ""),
+
+    ("Território e SIG", "Ponto crítico",
+     "Local da lista da EMLURB onde há alagamento recorrente. Pode ser um ponto, um trecho de rua ou vários trechos.",
+     "Ponto 24 — Ipsep, Rua Blumenau (até a maré)."),
+    ("Território e SIG", "Trecho (Linha / Vários)",
+     "Ponto crítico que é uma extensão de rua, não um local único. 12 dos 21 pontos são trechos.",
+     "Ponto 11 — Rua Professor José Brandão (toda a extensão)."),
+    ("Território e SIG", "RPA 6",
+     "Região Político-Administrativa 6 do Recife (Boa Viagem, Pina, Imbiribeira, Ipsep, Ibura, Jordão, entre outros bairros). Escopo do piloto.",
+     ""),
+    ("Território e SIG", "SIG",
+     "Sistema de Informação Geográfica: programa para mapas e cálculos espaciais. Usamos o ArcGIS Pro.",
+     ""),
+    ("Território e SIG", "Círculo de 300 m (buffer)",
+     "Área de 300 m em volta do ponto (ou da linha do trecho) onde se medem os subcritérios do SIG. Usado no cálculo do risco.",
+     "Moradores dentro do círculo = População (E1)."),
+    ("Território e SIG", "Área de influência de 1 km",
+     "Círculo de 1 km mostrado no painel só como informação. Não entra no cálculo, porque com 1 km quase todos os pontos se sobrepõem.",
+     ""),
+    ("Território e SIG", "Grupo de sobreposição (G1–G5)",
+     "Pontos cujos círculos de 300 m se sobrepõem. Nesses grupos os subcritérios do SIG tendem a dar notas parecidas.",
+     "G1 = pontos 5, 6, 7, 11 e 12 (Conselheiro Aguiar)."),
+    ("Território e SIG", "Ponderação por área",
+     "Quando uma área de dados (setor, célula) corta o círculo, conta só a parte que fica dentro dele.",
+     "Setor com 40% da área no círculo contribui com 40% da população."),
+    ("Território e SIG", "EPSG:31985 (SIRGAS 2000 / UTM 25S)",
+     "Sistema de coordenadas usado no projeto. Todas as camadas precisam estar nele antes dos cálculos.",
+     ""),
+    ("Território e SIG", "Coordenada aproximada / verificada",
+     "Aproximada = localizada automaticamente e ainda não conferida. Verificada = conferida com a EMLURB ou por imagem de satélite.",
+     "Hoje nenhuma das 21 coordenadas está verificada."),
+    ("Território e SIG", "Bacia / sub-bacia",
+     "Área que drena para um mesmo rio ou canal. Hierarquia do Plano de Drenagem: Bacia → Sub-bacia → Ponto crítico → Obra.",
+     "Usada para ligar obras aos pontos."),
+    ("Território e SIG", "Shapefile / GeoJSON",
+     "Formatos de arquivo de mapa que o ArcGIS abre.",
+     "dados/processados/pontos_rpa6.geojson tem os 21 pontos."),
+
+    ("Fontes de dados", "Censo 2022 (IBGE)",
+     "Recenseamento de 2022. Fonte de população, idade, tipo de domicílio e esgotamento.", ""),
+    ("Fontes de dados", "Setor censitário",
+     "Menor área de divulgação do Censo (no Recife adensado, poucos quarteirões).", ""),
+    ("Fontes de dados", "Grade Estatística (IBGE)",
+     "Malha de quadrados de 200 × 200 m (área urbana) com a população do Censo 2022.", "Fonte do E1."),
+    ("Fontes de dados", "CNEFE (IBGE)",
+     "Cadastro de endereços do Censo 2022, com coordenada e tipo de uso (domicílio, ensino, saúde, outras finalidades).",
+     "Fonte do E2 e do E3."),
+    ("Fontes de dados", "Favelas e Comunidades Urbanas (IBGE)",
+     "Mapeamento do IBGE das favelas e comunidades urbanas no Censo 2022. Publicação da malha ainda não confirmada.",
+     "Fonte do V3."),
+    ("Fontes de dados", "IVS (Ipea)",
+     "Índice de Vulnerabilidade Social do Ipea, de 0 a 1 (quanto maior, mais vulnerável). Base do Censo 2010.",
+     "Plano B do V3."),
+    ("Fontes de dados", "UDH",
+     "Unidade de Desenvolvimento Humano: área usada pelo Ipea, maior que o setor censitário.", ""),
+    ("Fontes de dados", "MapBiomas",
+     "Mapa de cobertura do solo (vegetação, área construída etc.) com pixels de 30 m. Não verificado.", "Fonte do P5."),
+    ("Fontes de dados", "ESIG",
+     "Sistema de informações geográficas da Prefeitura do Recife (vias, lotes, edificações, recursos hídricos).", ""),
+    ("Fontes de dados", "CNES / DATASUS",
+     "Cadastro Nacional de Estabelecimentos de Saúde.", "Complementa o E2."),
+    ("Fontes de dados", "APAC / Cemaden",
+     "Agência Pernambucana de Águas e Clima / Centro Nacional de Monitoramento de Desastres: dados de chuva e marés.", ""),
+    ("Fontes de dados", "PMDR",
+     "Plano Municipal de Drenagem do Recife. Define bacias e sub-bacias.", ""),
+    ("Fontes de dados", "Ficha EMLURB",
+     "Formulário a ser preenchido com a EMLURB, com uma linha por ponto: localização, frequência, severidade, maré e obras ligadas.",
+     "Fonte provisória de P1, P2 e P3."),
+
+    ("Checklist", "Recomendação",
+     "Manter = entra no modelo. Condicional = só entra se o dado existir. Plano B = usado só se outro subcritério falhar. Peso alto / menor = sugestão para a definição dos pesos.",
+     ""),
+    ("Checklist", "Fonte confirmada?",
+     "A base de dados existe e a equipe consegue acessá-la (download ou pedido atendido).", ""),
+    ("Checklist", "Dado existe na fonte?",
+     "A variável necessária está na base, na escala do círculo de 300 m, e cobre os 21 pontos.",
+     "O IBGE existe (fonte confirmada), mas falta checar se o tipo de domicílio vem por setor."),
+    ("Checklist", "Sim / Parcial / Não / Pendente",
+     "Sim = confirmado. Parcial = existe, mas com limitação (escala, cobertura, data). Não = não existe ou não é acessível. Pendente = ainda não checado.",
+     ""),
+    ("Checklist", "Busca prévia (Claude)",
+     "O que foi encontrado em busca na internet. 'Confirmado na busca' = a base aparece como publicada, mas o arquivo não foi aberto.",
+     ""),
+
+    ("Órgãos", "COP", "Centro de Operações do Recife: monitoramento e resposta aos eventos.", ""),
+    ("Órgãos", "EMLURB", "Empresa de Manutenção e Limpeza Urbana: manutenção da drenagem e lista de pontos críticos.", ""),
+    ("Órgãos", "Defesa Civil (Sedec)", "Áreas de risco, alertas e vistorias.", ""),
+    ("Órgãos", "URB", "Autarquia de Urbanização do Recife: obras urbanas e de drenagem.", ""),
+    ("Órgãos", "CTTU", "Autarquia de Trânsito e Transporte Urbano: trânsito, vias e interdições.", ""),
+    ("Órgãos", "Compesa", "Companhia Pernambucana de Saneamento: água e esgoto.", ""),
+    ("Órgãos", "ProMorar", "Programa de urbanização de comunidades.", ""),
+    ("Órgãos", "SEPLAG / SEPLAN", "Planejamento e gestão. A SEPLAN não é a SEPLAG; o papel dela no projeto ainda será definido.", ""),
+    ("Órgãos", "Grande Recife Consórcio", "Consórcio de transporte metropolitano: linhas e paradas de ônibus.", ""),
+]
+
 CABECALHO = ["Critério", "Código", "Subcritério", "Como medir", "Tipo de nota",
              "Nota 1", "Nota 2", "Nota 3", "Nota 4", "Nota 5", "Origem da faixa",
              "Recomendação", "Fonte", "Fonte confirmada?", "Dado existe na fonte?",
@@ -134,6 +304,38 @@ COR_CRITERIO = {"Probabilidade": "DDEBF7", "Exposição": "E2EFDA",
                 "Vulnerabilidade": "FCE4D6", "Impacto": "EDE2F6"}
 COR_NOTA = ("E2EFDA", "F4F9EE", "FFF9E5", "FDE9D9", "F8CBAD")
 COLS_PREENCHER = (14, 15, 16)  # N, O, P
+
+
+def gerar_glossario(wb):
+    ws = wb.create_sheet("Glossário")
+    ws["A1"] = "Glossário — termos usados nesta planilha e no modelo de risco"
+    ws["A1"].font = Font(name=FONTE, bold=True, size=13)
+    ws["A2"] = ("Para quem não participou das discussões do modelo. Os papéis dos órgãos são uma leitura "
+                "preliminar, ainda não confirmada com cada órgão.")
+    ws["A2"].font = Font(name=FONTE, italic=True, size=9)
+    ws.merge_cells("A2:D2")
+    for c, titulo in enumerate(("Grupo", "Termo", "O que significa", "Exemplo no projeto"), 1):
+        cel = ws.cell(row=4, column=c, value=titulo)
+        cel.font = Font(name=FONTE, bold=True, color="FFFFFF")
+        cel.fill = PatternFill("solid", fgColor="1F4E78")
+        cel.alignment = Alignment(vertical="center", horizontal="center")
+    fino = Side(style="thin", color="BFBFBF")
+    borda = Border(left=fino, right=fino, top=fino, bottom=fino)
+    cores = ("DDEBF7", "E2EFDA", "FCE4D6", "EDE2F6", "FFF2CC", "EDEDED")
+    grupos = list(dict.fromkeys(g for g, *_ in GLOSSARIO))
+    for i, (grupo, termo, significado, exemplo) in enumerate(GLOSSARIO):
+        r = 5 + i
+        for c, v in enumerate((grupo, termo, significado, exemplo), 1):
+            cel = ws.cell(row=r, column=c, value=v)
+            cel.font = Font(name=FONTE, size=10, bold=(c == 2))
+            cel.alignment = Alignment(wrap_text=True, vertical="top")
+            cel.border = borda
+            if c == 1:
+                cel.fill = PatternFill("solid", fgColor=cores[grupos.index(grupo) % len(cores)])
+    for col, largura in zip("ABCD", (18, 30, 70, 45)):
+        ws.column_dimensions[col].width = largura
+    ws.freeze_panes = "C5"
+    ws.auto_filter.ref = f"A4:D{4 + len(GLOSSARIO)}"
 
 
 def gerar(saida=SAIDA):
@@ -148,7 +350,8 @@ def gerar(saida=SAIDA):
         "Faixa fixa = valor absoluto (provisória: calibrar com os dados reais). Quintil = nota relativa "
         "entre os 21 pontos (Quintil 1 = 20% com menor valor). Preencha as colunas amarelas (N, O e P): "
         "Sim / Não / Parcial / Pendente. 'Fonte confirmada' = a base existe e é acessível; 'Dado existe "
-        "na fonte' = a variável está lá, na escala do círculo de 300 m, e cobre os 21 pontos."
+        "na fonte' = a variável está lá, na escala do círculo de 300 m, e cobre os 21 pontos. "
+        "Termos explicados na aba Glossário."
     )
     ws["A2"].font = Font(name=FONTE, italic=True, size=9)
     ws["A2"].alignment = Alignment(wrap_text=True, vertical="top")
@@ -224,6 +427,7 @@ def gerar(saida=SAIDA):
     ws.sheet_properties.pageSetUpPr.fitToPage = True
     ws.page_setup.fitToWidth = 1
     ws.page_setup.fitToHeight = 0
+    gerar_glossario(wb)
     wb.calculation.fullCalcOnLoad = True
     wb.save(saida)
     return r0, ultima
