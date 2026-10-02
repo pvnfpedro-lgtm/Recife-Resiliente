@@ -1,39 +1,41 @@
 # 6. Plano de Pedro até a Etapa 2 (14/10/2026)
 
 Frentes de Pedro: dados, território, causas de infraestrutura e cronograma.
-Objetivo da semana: chegar a 14/10 com critérios, pesos e 21 pontos conferidos,
-e com os pedidos de dados de outros órgãos já feitos.
 
-> ⚠️ **12/10 (segunda) é feriado nacional.** Na prática, depois da semana de
-> 05 a 09/10 sobra só 13/10 para fechar a entrega.
+**Marcos definidos por Pedro**
+1. Fechar o modelo da análise multicritério (quais dados serão usados) até **seg 05/10**.
+2. Reunião com alguém da **SEPLAN**, que pode ajudar. A SEPLAN não é a SEPLAG
+   da lista de parceiros.
+3. Reunião com **Pedro Oliveira (EMLURB)**.
+4. Painel principal no **ArcGIS** fechado até **dom 11/10**.
+5. Conversa com **Antônio (CTTU)** na semana de 12/10.
 
-## Semana de 05 a 09/10
+> ⚠️ As datas dos marcos 1, 4 e 5 seguem a leitura "segunda = 05/10" e
+> "domingo = 11/10", que ainda não foi confirmada.
+> **12/10 (segunda) é feriado nacional.**
 
-| Dia | Tarefa | Entregável | Depende de |
-|---|---|---|---|
-| **Seg 05** | Enviar pedidos de dados a COP (histórico de ocorrências), Compesa (rede de esgoto e extravasamentos) e EMLURB (coordenadas exatas dos 21 trechos) | E-mails enviados, registrados em `03-fontes-de-dados.md` | — |
-| Seg 05 | Transcrever os 24 subcritérios da aba *Critérios* para `dados/modelos/criterios.csv` | CSV com código, dimensão e subcritério (pesos vazios) | Planilha .xlsx |
-| Seg 05 | Marcar a reunião do grupo para fechar os pesos (qui 08 ou sex 09) | Convite enviado | — |
-| **Ter 06** | Conferir as coordenadas dos 21 pontos (lista da EMLURB + imagem de satélite) | `pontos.csv` com `coordenada_verificada` preenchida | Resposta da EMLURB, se chegar |
-| Ter 06 | Baixar a malha de setores e os agregados do Censo 2022 (IBGE) e a malha do IVS por UDH (Ipea); confirmar o ano-base do IVS | Arquivos em `dados/brutos/`, com data e link | — |
-| **Qua 07** | No ArcGIS Pro: reprojetar tudo para EPSG:31985, gerar os buffers de 300 m e fazer o primeiro cruzamento com Censo e IVS | Tabela preliminar de população e IVS por ponto | Coordenadas conferidas |
-| Qua 07 | Achar a fonte de bacia e sub-bacia (ESIG / Plano de Drenagem) | Fonte identificada ou registrada como pendente | — |
-| **Qui 08** | Preparar a proposta de pesos e rodar a sensibilidade (pesos iguais × proposta) com as notas que já existirem | Uma página de apoio para a reunião | Critérios no CSV |
-| Qui 08 | Levar à equipe a proposta de quem faz as vistorias | Proposta escrita | — |
-| **Sex 09** | Reunião do grupo: fechar os pesos e a escala da tratabilidade | Pesos em `criterios.csv` | Reunião marcada |
-| Sex 09 | Cobrar os pedidos de dados sem resposta; atualizar o cronograma da equipe | `04-cronograma.md` e `05-pendencias.md` atualizados | — |
+## Semana
 
-## Fechamento
-
-| Dia | Tarefa |
-|---|---|
-| Seg 12 | Feriado |
-| **Ter 13** | Consolidar a entrega da Etapa 2: recorte, critérios e pesos, 21 pontos conferidos, fontes e pendências; revisar com a tutora, se possível |
-| **Qua 14** | **Entrega da Etapa 2** |
+| Dia | Tarefa | Entregável |
+|---|---|---|
+| **Sex 02 – Seg 05** | Fechar o modelo: para cada um dos 24 subcritérios, definir a fonte, se o dado está disponível e o método de cálculo no buffer de 300 m. Subcritério sem dado viável até 27/10 sai do score ou vira pendência | `criterios.csv` preenchido + tabela de fontes por subcritério |
+| **Seg 05** | Enviar os convites à SEPLAN e a Pedro Oliveira (EMLURB). Enviar à CTTU um pedido de dados de mobilidade. Se o modelo usar dados do COP ou da Compesa, pedir também | Convites e pedidos enviados |
+| **Ter 06 – Qua 07** | Reunião com a SEPLAN. Montar a base no ArcGIS Pro (EPSG:31985, buffers de 300 m, Censo 2022, IVS) | Base SIG preliminar |
+| **Qua 07 – Qui 08** | Reunião com Pedro Oliveira (EMLURB): conferir as coordenadas dos 21 trechos e as causas de cada ponto | `pontos.csv` com coordenadas verificadas |
+| **Qui 08 – Dom 11** | Montar o painel principal no ArcGIS: mapa dos 21 pontos, ranking e matriz criticidade × tratabilidade | Painel publicado |
+| Seg 12 | Feriado | — |
+| **Ter 13** | Conversa com Antônio (CTTU). Consolidar a Etapa 2 | Material da Etapa 2 |
+| **Qua 14** | **Entrega da Etapa 2** | — |
 
 ## Riscos
-- **Pedidos a COP e Compesa:** costumam demorar. Por isso saem na segunda. Se
-  não chegarem até 27/10, os subcritérios dependentes ficam com cobertura
-  incompleta no ranking (o script mostra isso) e entram como pendência.
-- **Pesos:** se não fecharem na sexta, a Etapa 2 vai com a proposta de pesos
-  e a análise de sensibilidade, e isso fica explícito.
+- **Coordenadas:** se a EMLURB corrigir as coordenadas depois de o painel
+  estar montado, os buffers precisam ser refeitos. Por isso a reunião com a
+  EMLURB vem antes do painel.
+- **Dados da CTTU:** a conversa com a CTTU só acontece depois de o painel
+  estar pronto. Sem o pedido antecipado, a dimensão *infraestrutura e
+  mobilidade* entra incompleta no painel.
+- **Pesos:** o painel precisa de pesos. Se o grupo não fechar até 11/10, o
+  painel sai com uma proposta de pesos identificada como provisória.
+
+## Em aberto
+- Papel da SEPLAN no projeto e nome do contato.
