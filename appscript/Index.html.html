@@ -23,8 +23,9 @@
     --azul-1:#0869A6;
     --azul-2:#2685BF;
     --azul-3:#5496BF;
-    --accent:var(--azul-1);
-    --accent-soft:#e6f0f7;
+    /* Cor de destaque neutra: a cor forte fica reservada ao risco dos pontos no mapa */
+    --accent:#334155;
+    --accent-soft:#e2e8f0;
     --canal:#8b5cf6;
     --critico:#ef4444;
     --hidro:#7fb8e0;
@@ -206,9 +207,8 @@
   .project-card.active{background:rgba(255,255,255,.32);border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);}
   .project-card-top{display:flex;align-items:center;justify-content:space-between;gap:8px;}
   .status-pill{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;padding:3px 8px;border-radius:999px;white-space:nowrap;}
-  .status-pill.obra{background:var(--status-obra-bg);color:var(--status-obra-text);}
-  .status-pill.licitacao{background:var(--status-licit-bg);color:var(--status-licit-text);}
-  .status-pill.concluido{background:var(--status-concl-bg);color:var(--status-concl-text);}
+  /* Status das obras em tom neutro (sem cor), para não competir com o risco */
+  .status-pill.obra,.status-pill.licitacao,.status-pill.concluido{background:rgba(51,65,85,.10);color:#334155;}
   .status-pill.saudavel{background:var(--saudavel-bg);color:var(--saudavel-text);}
   .status-pill.atencao{background:var(--atencao-bg);color:var(--atencao-text);}
   .status-pill.critico{background:var(--critico-bg);color:var(--critico-text);}
@@ -261,13 +261,13 @@
   .rr-card-x{border:none;background:none;font-size:20px;line-height:1;color:#64748b;cursor:pointer;padding:0 2px;}
   .rr-card-corpo{padding:10px 14px;overflow:auto;}
   .rr-card-acoes{display:flex;gap:8px;padding:8px 14px;border-top:1px solid var(--border);}
-  .rr-card-acoes button{border:1px solid rgba(255,255,255,.70);background:rgba(255,255,255,.55);color:var(--azul-1);font-weight:600;font-size:12px;
+  .rr-card-acoes button{border:1px solid rgba(255,255,255,.70);background:rgba(255,255,255,.55);color:#334155;font-weight:600;font-size:12px;
                         border-radius:6px;padding:5px 10px;cursor:pointer;}
   .rr-card-acoes button:hover{background:rgba(255,255,255,.85);}
   .rr-card-seta{position:absolute;z-index:0;left:-7px;width:14px;height:14px;background:rgba(255,255,255,.72);border-left:1px solid rgba(255,255,255,.60);
                 border-bottom:1px solid var(--border);transform:translateY(-50%) rotate(45deg);}
   .rr-card.lado-esq .rr-card-seta{left:auto;right:-7px;border:none;border-right:1px solid var(--border);border-top:1px solid var(--border);}
-  .rr-pop{--rr:var(--azul-1);--rr-2:var(--azul-2);--rr-3:var(--azul-3);--rr-cinza:rgba(242,242,242,.70);font-size:12.5px;line-height:1.45;color:#1f2937;}
+  .rr-pop{--rr:#334155;--rr-2:#64748b;--rr-3:#94a3b8;--rr-cinza:rgba(242,242,242,.70);font-size:12.5px;line-height:1.45;color:#1f2937;}
   .rr-titulo{border-left:4px solid var(--rr-3);padding-left:8px;font-size:14px;font-weight:800;text-transform:uppercase;letter-spacing:.01em;color:var(--rr);line-height:1.25;}
   .rr-sub{font-style:italic;color:#6b7280;margin-top:2px;}
   .rr-fatos{margin:12px 0;display:grid;grid-template-columns:1fr 1fr;gap:8px;}
@@ -789,8 +789,8 @@ require([
   // Camada de exemplo (PROJECTS) mantida em memória para alimentar KPIs, lista, filtros e Street View,
   // mas NÃO adicionada ao mapa — o WebMap real da Prefeitura já traz os pontos/obras verdadeiros.
   var graphicsLayer = new GraphicsLayer({ title: "Intervenções (exemplo)" });
-  var canalSymbol = { type:"simple-line", color:[139,92,246,1], width:6, cap:"round", join:"round" };
-  var pontoSymbol = { type:"simple-marker", style:"triangle", color:[239,68,68,1], size:16, outline:{ color:[255,255,255,1], width:1.6 } };
+  var canalSymbol = { type:"simple-line", color:[71,85,105,0.85], width:5, cap:"round", join:"round" };
+  var pontoSymbol = { type:"simple-marker", style:"triangle", color:[71,85,105,1], size:14, outline:{ color:[255,255,255,1], width:1.6 } };
 
   /* =====================================================================
      PONTOS CRÍTICOS — lidos da planilha de notas pelo Apps Script (TESTE)
