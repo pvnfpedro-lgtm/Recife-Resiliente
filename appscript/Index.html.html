@@ -254,7 +254,20 @@
   .esri-popup__footer{border-top:1px solid var(--border);}
   .esri-popup__action{font-size:12px !important;font-weight:600;color:var(--accent) !important;}
   /* Popup dos pontos críticos — ficha no estilo do Plano de Ações de SP */
-  .esri-popup__main-container{width:min(460px, 92vw) !important;max-height:75vh !important;}
+  .rr-card{position:absolute;z-index:30;display:none;width:min(460px, calc(100% - 16px));}
+  .rr-card-in{position:relative;z-index:1;display:flex;flex-direction:column;overflow:hidden;background:#fff;border-radius:12px;
+              border:1px solid var(--border);box-shadow:0 12px 32px rgba(15,23,42,.22);font-family:'Inter',system-ui,sans-serif;}
+  .rr-card-cab{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--border);
+               font-size:13px;font-weight:700;color:#0f172a;}
+  .rr-card-x{border:none;background:none;font-size:20px;line-height:1;color:#64748b;cursor:pointer;padding:0 2px;}
+  .rr-card-corpo{padding:10px 14px;overflow:auto;}
+  .rr-card-acoes{display:flex;gap:8px;padding:8px 14px;border-top:1px solid var(--border);}
+  .rr-card-acoes button{border:1px solid var(--border);background:#fff;color:var(--azul-1);font-weight:600;font-size:12px;
+                        border-radius:6px;padding:5px 10px;cursor:pointer;}
+  .rr-card-acoes button:hover{background:#F2F2F2;}
+  .rr-card-seta{position:absolute;z-index:0;left:-7px;width:14px;height:14px;background:#fff;border-left:1px solid var(--border);
+                border-bottom:1px solid var(--border);transform:translateY(-50%) rotate(45deg);}
+  .rr-card.lado-esq .rr-card-seta{left:auto;right:-7px;border:none;border-right:1px solid var(--border);border-top:1px solid var(--border);}
   .rr-pop{--rr:var(--azul-1);--rr-2:var(--azul-2);--rr-3:var(--azul-3);--rr-cinza:#F2F2F2;font-size:12.5px;line-height:1.45;color:#1f2937;}
   .rr-titulo{border-left:4px solid var(--rr-3);padding-left:8px;font-size:14px;font-weight:800;text-transform:uppercase;letter-spacing:.01em;color:var(--rr);line-height:1.25;}
   .rr-sub{font-style:italic;color:#6b7280;margin-top:2px;}
@@ -753,18 +766,12 @@ require([
   });
   view.ui.components = ["attribution"];
   // Popup criado explicitamente (na 4.29 o popup padrão só existe depois de abrir a 1ª vez).
-  // Abre à direita do ponto: desce se o ponto está na metade de cima do mapa, sobe se está na de baixo.
+  // Usado pelas camadas do WebMap; os pontos críticos usam o cartão próprio (abrirCartao).
   view.popup = new Popup({
     autoOpenEnabled: true,
     dockEnabled: false,
     dockOptions: { buttonEnabled:false, breakpoint:false },
-    visibleElements: { collapseButton:false },
-    alignment: function(){
-      var loc = view.popup && view.popup.location;
-      if(!loc) return "top-right";
-      var tela = view.toScreen(loc);
-      return (tela && tela.y < view.height / 2) ? "bottom-right" : "top-right";
-    }
+    visibleElements: { collapseButton:false }
   });
 
   view.when(function(){
@@ -857,13 +864,71 @@ require([
         ' (' + escHtml(p.precisao).toLowerCase() + ')<br><a href="' + gmaps + '" target="_blank" rel="noopener">Abrir no Google Maps ↗</a></div>' +
       '</div>';
   }
-  var ACAO_STREETVIEW = { id: "rr-street-view", title: "Street View", className: "esri-icon-environment-settings" };
-  // Na 4.29 o popup é criado só quando abre pela 1ª vez: reactiveUtils.on espera ele existir.
-  reactiveUtils.on(function(){ return view.popup; }, "trigger-action", function(evt){
-    if(evt.action.id !== ACAO_STREETVIEW.id) return;
-    var g = view.popup.selectedFeature;
-    if(g && g.geometry){ openStreetView(g.geometry.latitude, g.geometry.longitude); }
-  });
+  /* ---------------------------------------------------------------------
+     CARTÃO DO PONTO CRÍTICO: abre à direita do ponto, centralizado na altura
+     dele (o popup do ArcGIS só abre nos cantos). Vai para a esquerda se não
+     couber, acompanha o mapa e fecha no ×, com Esc ou clicando fora.
+     --------------------------------------------------------------------- */
+  var PONTOS_POR_ID = {};
+  var cartao = null, cartaoPonto = null, cartaoGeom = null;
+  function criarCartao(){
+    if(getComputedStyle(view.container).position === "static") view.container.style.position = "relative";
+    cartao = document.createElement("div");
+    cartao.className = "rr-card";
+    cartao.innerHTML =
+      '<div class="rr-card-seta"></div>' +
+      '<div class="rr-card-in">' +
+        '<div class="rr-card-cab"><span>Ponto crítico de alagamento · RPA 6</span>' +
+          '<button type="button" class="rr-card-x" title="Fechar">×</button></div>' +
+        '<div class="rr-card-corpo"></div>' +
+        '<div class="rr-card-acoes"><button type="button" data-a="zoom">Aproximar</button>' +
+          '<button type="button" data-a="sv">Street View</button></div>' +
+      '</div>';
+    view.container.appendChild(cartao);
+    ["click", "dblclick", "pointerdown", "pointerup", "mousedown", "wheel"].forEach(function(t){
+      cartao.addEventListener(t, function(e){ e.stopPropagation(); });
+    });
+    cartao.querySelector(".rr-card-x").addEventListener("click", fecharCartao);
+    cartao.querySelector('[data-a="zoom"]').addEventListener("click", function(){
+      if(cartaoGeom) view.goTo({ target: cartaoGeom, zoom: Math.max(view.zoom, 17) }, { duration: 400 });
+    });
+    cartao.querySelector('[data-a="sv"]').addEventListener("click", function(){
+      if(cartaoPonto) openStreetView(cartaoPonto.lat, cartaoPonto.lon);
+    });
+  }
+  function posicionarCartao(){
+    if(!cartao || !cartaoGeom || cartao.style.display === "none") return;
+    var pt = view.toScreen(cartaoGeom);
+    if(!pt) return;
+    var W = view.width, H = view.height, gap = 16, m = 8;
+    cartao.querySelector(".rr-card-in").style.maxHeight = Math.floor(H * 0.85) + "px";
+    var w = cartao.offsetWidth, h = cartao.offsetHeight;
+    var direita = (pt.x + gap + w <= W - m) || (pt.x - gap - w < m);
+    var left = direita ? pt.x + gap : pt.x - gap - w;
+    left = Math.max(m, Math.min(left, W - w - m));
+    var top = Math.max(m, Math.min(pt.y - h / 2, H - h - m));
+    cartao.style.left = left + "px";
+    cartao.style.top = top + "px";
+    cartao.classList.toggle("lado-esq", !direita);
+    cartao.querySelector(".rr-card-seta").style.top = Math.max(18, Math.min(pt.y - top, h - 18)) + "px";
+    cartao.style.visibility = (pt.x < 0 || pt.y < 0 || pt.x > W || pt.y > H) ? "hidden" : "visible";
+  }
+  function abrirCartao(p, geom){
+    if(!cartao) criarCartao();
+    cartaoPonto = p; cartaoGeom = geom;
+    var corpo = cartao.querySelector(".rr-card-corpo");
+    corpo.innerHTML = popupPonto(p);
+    corpo.scrollTop = 0;
+    cartao.style.display = "block";
+    posicionarCartao();
+  }
+  function fecharCartao(){
+    if(cartao) cartao.style.display = "none";
+    cartaoPonto = null; cartaoGeom = null;
+  }
+  reactiveUtils.watch(function(){ return view.extent; }, posicionarCartao);
+  window.addEventListener("resize", posicionarCartao);
+  document.addEventListener("keydown", function(e){ if(e.key === "Escape") fecharCartao(); });
 
   function desenharPontos(res){
     if(!res || res.erro){
@@ -873,16 +938,17 @@ require([
       return;
     }
     pontosLayer.removeAll();
+    fecharCartao();
+    PONTOS_POR_ID = {};
     res.pontos.forEach(function(p){
       if(p.lat == null || p.lon == null) return;
       pontosLayer.add(new Graphic({
         geometry: { type:"point", longitude:p.lon, latitude:p.lat },
         symbol: { type:"simple-marker", style:"circle", color: corIndice(p.indice), size: 14,
                   outline:{ color:[255,255,255,1], width:1.6 } },
-        attributes: { id: p.id },
-        popupTemplate: new PopupTemplate({ title: "Ponto crítico de alagamento · RPA 6", content: popupPonto(p),
-                                           actions: [ACAO_STREETVIEW], overwriteActions: true })
+        attributes: { id: p.id }
       }));
+      PONTOS_POR_ID[p.id] = p;
     });
     console.log("Pontos críticos carregados da planilha: " + res.pontos.length + " (" + res.lidoEm + ")");
     buildLayerToggle();
@@ -1021,6 +1087,12 @@ require([
 
   view.on("click", function(evt){
     view.hitTest(evt).then(function(res){
+      var hitPonto = res.results.find(function(r){ return r.graphic && r.graphic.layer === pontosLayer; });
+      if(hitPonto){
+        var pc = PONTOS_POR_ID[hitPonto.graphic.attributes.id];
+        if(pc){ abrirCartao(pc, hitPonto.graphic.geometry); return; }
+      }
+      fecharCartao();
       var hitProject = res.results.find(function(r){ return r.graphic && r.graphic.layer === graphicsLayer; });
       if(hitProject){
         var p = PROJECTS.find(function(pr){ return pr.id === hitProject.graphic.attributes.id; });
