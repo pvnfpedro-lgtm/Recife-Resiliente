@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """Hierarquização de pontos críticos de alagamento — Recife Resiliente.
 
-Calcula o score de criticidade (1 a 5) de cada ponto a partir das notas dos
-subcritérios e dos pesos, e classifica o ponto na matriz
-criticidade x tratabilidade. Metodologia em docs/02-metodologia-hierarquizacao.md.
+Calcula o risco de cada ponto como Probabilidade x Consequência (1 a 25), em
+que a Consequência é a média ponderada de Exposição, Vulnerabilidade e
+Impacto, e classifica o ponto na matriz risco x tratabilidade.
+Metodologia em docs/02-metodologia-hierarquizacao.md.
 
 Nota ausente não é imputada: o subcritério sai do cálculo daquele ponto e a
 cobertura (notas presentes / subcritérios) é informada na saída.
@@ -15,6 +16,7 @@ import sys
 from collections import defaultdict
 
 NOTA_MIN, NOTA_MAX = 1, 5
+PROBABILIDADE = "Probabilidade"
 
 QUADRANTES = {
     (True, True): "Agir já",
@@ -56,7 +58,10 @@ def carregar_criterios(linhas):
         if codigo in criterios:
             raise ErroDeDados(f"criterios.csv linha {i}: código duplicado {codigo!r}")
         peso_sub = _numero(linha["peso_subcriterio"], f"criterios.csv linha {i}")
-        peso_dim = _numero(linha["peso_dimensao"], f"criterios.csv linha {i}")
+        # A Probabilidade multiplica a Consequência e não tem peso próprio.
+        bruto = str(linha["peso_dimensao"]).strip()
+        peso_dim = 0.0 if not bruto and dimensao == PROBABILIDADE else \
+            _numero(bruto, f"criterios.csv linha {i}")
         if peso_sub < 0 or peso_dim < 0:
             raise ErroDeDados(f"criterios.csv linha {i}: peso negativo")
         if dimensao in pesos_dim and pesos_dim[dimensao] != peso_dim:
@@ -107,7 +112,11 @@ def _media_ponderada(pares):
 
 
 def score_ponto(notas_ponto, criterios, pesos_dim):
-    """Retorna (score, {dimensao: nota_dimensao})."""
+    """Retorna (risco, probabilidade, consequencia, {dimensao: nota}).
+
+    Sem nota de Probabilidade o risco fica indefinido (None): não há como
+    estimar risco só pela consequência.
+    """
     por_dim = defaultdict(list)
     for codigo, nota in notas_ponto.items():
         dimensao, peso_sub = criterios[codigo]
@@ -119,17 +128,23 @@ def score_ponto(notas_ponto, criterios, pesos_dim):
         if media is not None:
             notas_dim[dimensao] = media
 
-    score = _media_ponderada([(n, pesos_dim[d]) for d, n in notas_dim.items()])
-    return score, notas_dim
+    probabilidade = notas_dim.get(PROBABILIDADE)
+    consequencia = _media_ponderada(
+        [(n, pesos_dim[d]) for d, n in notas_dim.items() if d != PROBABILIDADE]
+    )
+    if probabilidade is None or consequencia is None:
+        return None, probabilidade, consequencia, notas_dim
+    return probabilidade * consequencia, probabilidade, consequencia, notas_dim
 
 
-def quadrante(criticidade, tratabilidade, corte):
-    if criticidade is None or tratabilidade is None:
+def quadrante(risco, tratabilidade, corte_risco, corte_trat):
+    if risco is None or tratabilidade is None:
         return ""
-    return QUADRANTES[(criticidade >= corte, tratabilidade >= corte)]
+    return QUADRANTES[(risco >= corte_risco, tratabilidade >= corte_trat)]
 
 
-def hierarquizar(criterios_linhas, notas_linhas, trat_linhas=None, corte=3.0):
+def hierarquizar(criterios_linhas, notas_linhas, trat_linhas=None,
+                 corte_risco=9.0, corte_trat=3.0):
     criterios, pesos_dim = carregar_criterios(criterios_linhas)
     notas = carregar_notas(notas_linhas, criterios)
     tratabilidade = carregar_tratabilidade(trat_linhas or [])
@@ -137,22 +152,25 @@ def hierarquizar(criterios_linhas, notas_linhas, trat_linhas=None, corte=3.0):
 
     resultado = []
     for ponto in sorted(set(notas) | set(tratabilidade)):
-        score, notas_dim = score_ponto(notas.get(ponto, {}), criterios, pesos_dim)
+        risco, prob, cons, notas_dim = score_ponto(
+            notas.get(ponto, {}), criterios, pesos_dim)
         trat = tratabilidade.get(ponto)
         resultado.append({
             "ponto_id": ponto,
-            "score": score,
+            "risco": risco,
+            "probabilidade": prob,
+            "consequencia": cons,
             "cobertura": f"{len(notas.get(ponto, {}))}/{len(criterios)}",
             "tratabilidade": trat,
-            "quadrante": quadrante(score, trat, corte),
+            "quadrante": quadrante(risco, trat, corte_risco, corte_trat),
             **{f"dim_{d}": notas_dim.get(d) for d in dimensoes},
         })
 
-    # Ranking: maior score primeiro; pontos sem score vão para o fim.
-    resultado.sort(key=lambda r: (r["score"] is None, -(r["score"] or 0), r["ponto_id"]))
+    # Ranking: maior risco primeiro; pontos sem risco vão para o fim.
+    resultado.sort(key=lambda r: (r["risco"] is None, -(r["risco"] or 0), r["ponto_id"]))
     posicao = 0
     for r in resultado:
-        if r["score"] is not None:
+        if r["risco"] is not None:
             posicao += 1
             r["posicao"] = posicao
         else:
@@ -171,7 +189,8 @@ def _formatar(valor):
 def escrever(resultado, destino):
     if not resultado:
         return
-    campos = ["posicao", "ponto_id", "score", "cobertura", "tratabilidade", "quadrante"]
+    campos = ["posicao", "ponto_id", "risco", "probabilidade", "consequencia",
+              "cobertura", "tratabilidade", "quadrante"]
     campos += [k for k in resultado[0] if k.startswith("dim_")]
     escritor = csv.DictWriter(destino, fieldnames=campos)
     escritor.writeheader()
@@ -184,8 +203,10 @@ def main(argv=None):
     p.add_argument("--criterios", required=True)
     p.add_argument("--notas", required=True)
     p.add_argument("--tratabilidade")
-    p.add_argument("--corte", type=float, default=3.0,
-                   help="corte da matriz nos dois eixos (padrão: 3,0)")
+    p.add_argument("--corte-risco", type=float, default=9.0,
+                   help="corte do risco na matriz (padrão: 9 = 3 x 3)")
+    p.add_argument("--corte-tratabilidade", type=float, default=3.0,
+                   help="corte da tratabilidade na matriz (padrão: 3)")
     p.add_argument("--saida", help="CSV de saída (padrão: tela)")
     args = p.parse_args(argv)
 
@@ -194,7 +215,8 @@ def main(argv=None):
             ler_csv(args.criterios),
             ler_csv(args.notas),
             ler_csv(args.tratabilidade) if args.tratabilidade else None,
-            args.corte,
+            args.corte_risco,
+            args.corte_tratabilidade,
         )
     except (ErroDeDados, KeyError) as e:
         sys.exit(f"Erro nos dados: {e}")

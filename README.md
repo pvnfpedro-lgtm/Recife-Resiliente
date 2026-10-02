@@ -21,7 +21,7 @@ docs/            contexto, metodologia, fontes, cronograma e pendências
 dados/modelos/   modelos de CSV (critérios, pontos, notas, tratabilidade)
 dados/brutos/    dados de origem (IBGE, IVS, EMLURB, COP…), sem edição
 dados/processados/ saídas do SIG e do script de hierarquização
-scripts/         hierarquizar.py: score de criticidade + matriz
+scripts/         hierarquizar.py: risco (Probabilidade × Consequência) + matriz
 tests/           testes do script, com dados fictícios
 entregas/        slides, resumo executivo, plano de 90 dias
 ```

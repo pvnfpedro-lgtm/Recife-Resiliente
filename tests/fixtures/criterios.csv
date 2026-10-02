@@ -1,4 +1,6 @@
 codigo,dimensao,subcriterio,peso_subcriterio,peso_dimensao
-H1,HID,Fictício hidrológico 1,2,3
-H2,HID,Fictício hidrológico 2,1,3
-S1,SOC,Fictício social 1,1,1
+P1,Probabilidade,Fictício probabilidade 1,2,
+P2,Probabilidade,Fictício probabilidade 2,1,
+E1,Exposição,Fictício exposição 1,1,2
+V1,Vulnerabilidade,Fictício vulnerabilidade 1,1,1
+I1,Impacto,Fictício impacto 1,1,1

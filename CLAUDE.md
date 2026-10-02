@@ -14,7 +14,10 @@ obra, é prevenção priorizada por risco. A resposta ao evento é do COP.
 
 Etapa atual: hierarquização de pontos críticos na RPA 6 (21 trechos da
 EMLURB), adaptando os critérios do Plano Diretor de Drenagem de São Paulo
-(FCTH/SIURB). Detalhes em `docs/02-metodologia-hierarquizacao.md`.
+(FCTH/SIURB). Decidido: 4 critérios (Probabilidade, Exposição,
+Vulnerabilidade, Impacto), risco = Probabilidade × Consequência (1–25),
+buffer de 300 m no score e 1 km no painel. Detalhes em
+`docs/02-metodologia-hierarquizacao.md`.
 
 Arquivo de trabalho da equipe:
 `dados/Recife_Resiliente_RPA6_Criterios_Pontos_Criticos.xlsx`, com as abas Leia-me,

@@ -1,5 +1,11 @@
 # 7. Revisão dos critérios (rascunho de 01/10/2026)
 
+> **Atualização 02/10/2026:** Pedro decidiu os **4 critérios principais**
+> (Probabilidade, Exposição, Vulnerabilidade e Impacto), o cálculo
+> **Probabilidade × Consequência** e o raio de **300 m** no score, com 1 km no
+> painel. Ver `02-metodologia-hierarquizacao.md`. **Os subcritérios abaixo
+> ainda são proposta.**
+
 Revisão da aba *Critérios* de `dados/Recife_Resiliente_RPA6_Criterios_Pontos_Criticos.xlsx`
 (24 subcritérios no score e 7 itens de tratabilidade). Esta é uma
 **recomendação** para o grupo decidir, não uma decisão tomada.
@@ -73,8 +79,9 @@ qual intervenção cada ponto exige, esses itens não têm como ser medidos agor
 | **Impacto** | Mobilidade afetada | 13 | Hierarquia viária e linhas de ônibus: **CTTU (Antônio)** |
 | | Risco sanitário | 19 | Compesa + vistoria |
 
-Pesos sugeridos para a discussão do grupo: **Probabilidade ≥ 35%**. Os outros
-três componentes dividem o restante.
+Pesos: como o risco é Probabilidade × Consequência, a Probabilidade não tem
+peso. O grupo define só os pesos de Exposição, Vulnerabilidade e Impacto
+dentro da Consequência.
 
 ### O que sai do score e para onde vai
 
