@@ -30,7 +30,7 @@ prototipar e testar uma solução e apresentar a decisão à alta gestão.
    | Compesa | Esgotamento sanitário (ligações cruzadas, extravasamentos) |
    | ProMorar | Urbanização de comunidades |
    | SEPLAG | Planejamento e orçamento |
-| SEPLAN | Apoio ao projeto (papel a definir; não é a SEPLAG) |
+   | SEPLAN | Apoio ao projeto (papel a definir; não é a SEPLAG) |
 
    > ⚠️ Os papéis acima são uma leitura preliminar e ainda não foram
    > confirmados com os órgãos.
