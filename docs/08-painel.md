@@ -29,6 +29,20 @@ O painel em Google Apps Script já existente é a base. Muita coisa vai mudar.
 - 02/10/2026: primeiro `clasp push` (pontos críticos lidos da planilha,
   sem HidroData).
 
+## Estado em 02/10/2026 (aprovado por Pedro)
+- Paleta: #0869A6 · #2685BF · #5496BF · #FFFFFF · #F2F2F2 (painel inteiro).
+- Pontos críticos lidos da planilha Google Sheets, cor pelo índice de risco.
+- Cartão do ponto (no lugar do popup do ArcGIS): abre à direita do ponto,
+  centralizado na altura dele, a 36 px; estilo da ficha do Plano de Ações
+  de SP; sem número do ponto; nível de risco em palavras; tabela critério/
+  subcritério × avaliação; botões Aproximar e Street View.
+
+## Em aberto
+- Cores do nível de risco: manter verde/amarelo/laranja/vermelho ou usar
+  tons de azul.
+- Liberar `*.arcgis.com` e `esigportal2.recife.pe.gov.br` na rede do
+  ambiente para testar o painel antes de cada envio.
+
 ## Como trabalhar no código
 1. Editar os arquivos em `appscript/`; cada mudança vira um commit.
 2. Enviar ao Apps Script com `clasp push` **só depois da aprovação de Pedro**.
