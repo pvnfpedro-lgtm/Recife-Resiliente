@@ -254,7 +254,7 @@
   .esri-popup__footer{border-top:1px solid var(--border);}
   .esri-popup__action{font-size:12px !important;font-weight:600;color:var(--accent) !important;}
   /* Popup dos pontos críticos — ficha no estilo do Plano de Ações de SP */
-  .esri-popup__main-container{width:min(390px, 92vw) !important;}
+  .esri-popup__main-container{width:min(460px, 92vw) !important;max-height:75vh !important;}
   .rr-pop{--rr:var(--azul-1);--rr-2:var(--azul-2);--rr-3:var(--azul-3);--rr-cinza:#F2F2F2;font-size:12.5px;line-height:1.45;color:#1f2937;}
   .rr-titulo{border-left:4px solid var(--rr-3);padding-left:8px;font-size:14px;font-weight:800;text-transform:uppercase;letter-spacing:.01em;color:var(--rr);line-height:1.25;}
   .rr-sub{font-style:italic;color:#6b7280;margin-top:2px;}
@@ -587,8 +587,9 @@ require([
   "esri/Graphic",
   "esri/PopupTemplate",
   "esri/Map",
-  "esri/core/reactiveUtils"
-], function(WebMap, MapView, GraphicsLayer, Graphic, PopupTemplate, EsriMap, reactiveUtils){
+  "esri/core/reactiveUtils",
+  "esri/widgets/Popup"
+], function(WebMap, MapView, GraphicsLayer, Graphic, PopupTemplate, EsriMap, reactiveUtils, Popup){
   "use strict";
 
   /* =====================================================================
@@ -751,10 +752,20 @@ require([
     constraints: { snapToZoom: false }
   });
   view.ui.components = ["attribution"];
-  view.popup.autoOpenEnabled = true;
-  view.popup.dockEnabled = false;
-  view.popup.dockOptions = { buttonEnabled:false, breakpoint:false };
-  view.popup.visibleElements = { collapseButton:false };
+  // Popup criado explicitamente (na 4.29 o popup padrão só existe depois de abrir a 1ª vez).
+  // Abre à direita do ponto: desce se o ponto está na metade de cima do mapa, sobe se está na de baixo.
+  view.popup = new Popup({
+    autoOpenEnabled: true,
+    dockEnabled: false,
+    dockOptions: { buttonEnabled:false, breakpoint:false },
+    visibleElements: { collapseButton:false },
+    alignment: function(){
+      var loc = view.popup && view.popup.location;
+      if(!loc) return "top-right";
+      var tela = view.toScreen(loc);
+      return (tela && tela.y < view.height / 2) ? "bottom-right" : "top-right";
+    }
+  });
 
   view.when(function(){
     console.log("Mapa carregado com sucesso.");
