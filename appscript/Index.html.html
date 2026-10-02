@@ -586,8 +586,9 @@ require([
   "esri/layers/GraphicsLayer",
   "esri/Graphic",
   "esri/PopupTemplate",
-  "esri/Map"
-], function(WebMap, MapView, GraphicsLayer, Graphic, PopupTemplate, EsriMap){
+  "esri/Map",
+  "esri/core/reactiveUtils"
+], function(WebMap, MapView, GraphicsLayer, Graphic, PopupTemplate, EsriMap, reactiveUtils){
   "use strict";
 
   /* =====================================================================
@@ -846,7 +847,8 @@ require([
       '</div>';
   }
   var ACAO_STREETVIEW = { id: "rr-street-view", title: "Street View", className: "esri-icon-environment-settings" };
-  view.popup.on("trigger-action", function(evt){
+  // Na 4.29 o popup é criado só quando abre pela 1ª vez: reactiveUtils.on espera ele existir.
+  reactiveUtils.on(function(){ return view.popup; }, "trigger-action", function(evt){
     if(evt.action.id !== ACAO_STREETVIEW.id) return;
     var g = view.popup.selectedFeature;
     if(g && g.geometry){ openStreetView(g.geometry.latitude, g.geometry.longitude); }
