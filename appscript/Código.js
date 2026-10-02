@@ -18,7 +18,7 @@ function include(filename) {
    O web app roda com a conta de quem implantou (executeAs USER_DEPLOYING),
    então quem só visualiza o painel não precisa de acesso à planilha.
    ===================================================================== */
-var PLANILHA_NOTAS_ID = 'COLE_AQUI_O_ID_DA_PLANILHA';
+var PLANILHA_NOTAS_ID = '1DN3abWIPk0dvOkh-28D2NGYBLgMI437Vx7Sk7TqpDc0';
 var ABA_NOTAS = 'Notas dos pontos';
 var LINHA_CABECALHO = 6;
 
