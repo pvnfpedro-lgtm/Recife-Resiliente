@@ -36,8 +36,8 @@ Critérios, Fontes de dados e Pontos RPA 6.
   `1Om9PIGQQrIXZ9cTFqbv_iLv9DIvyGW3AbJEDejtEU2SC9PbKDbUVuIFr`), enviado com
   `clasp push` só após aprovação de Pedro. URL de teste e decisões em
   `docs/08-painel.md`. O painel lê a planilha e mostra os 21 pontos com um
-  cartão próprio (à direita do ponto). Paleta: #0869A6 · #2685BF · #5496BF · #96BFD9 ·
-  #F2F2F2 (cards translúcidos sobre o mapa). Obras fictícias mantidas por enquanto.
+  cartão próprio (à direita do ponto). Paleta: #0869A6 · #2685BF · #5496BF ·
+  #FFFFFF · #F2F2F2. Obras fictícias mantidas por enquanto.
 - **clasp:** a credencial fica só na sessão em que foi feito o login. Numa
   sessão nova é preciso `npm i -g @google/clasp` e `clasp login --no-localhost`
   (Pedro autoriza e cola a URL `http://localhost:8888/?...`).
