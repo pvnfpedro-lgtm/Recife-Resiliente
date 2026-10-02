@@ -23,8 +23,40 @@ Arquivo de trabalho da equipe:
 `dados/Recife_Resiliente_RPA6_Criterios_Pontos_Criticos.xlsx`, com as abas Leia-me,
 Critérios, Fontes de dados e Pontos RPA 6.
 
+## Estado atual (02/10/2026)
+- **Modelo:** 13 subcritérios + P6 (condicional) e V1 (plano B), escalas de
+  nota, pesos de teste e cálculo em
+  `dados/Recife_Resiliente_Checklist_Subcriterios.xlsx` (gerado por
+  `scripts/gerar_checklist_subcriterios.py`). Índice de risco 0–1 =
+  (Risco − 1) ÷ 24.
+- **Planilha oficial das notas (Google Sheets nativa):**
+  `1DN3abWIPk0dvOkh-28D2NGYBLgMI437Vx7Sk7TqpDc0`, aba "Notas dos pontos".
+  As notas atuais são de TESTE (`=RANDBETWEEN(1,5)`); mudam a cada recálculo.
+- **Painel:** Google Apps Script em `appscript/` (projeto
+  `1Om9PIGQQrIXZ9cTFqbv_iLv9DIvyGW3AbJEDejtEU2SC9PbKDbUVuIFr`), enviado com
+  `clasp push` só após aprovação de Pedro. URL de teste e decisões em
+  `docs/08-painel.md`. O painel lê a planilha e mostra os 21 pontos com um
+  cartão próprio (à direita do ponto). Paleta: #0869A6 · #2685BF · #5496BF ·
+  #FFFFFF · #F2F2F2. Obras fictícias mantidas por enquanto.
+- **clasp:** a credencial fica só na sessão em que foi feito o login. Numa
+  sessão nova é preciso `npm i -g @google/clasp` e `clasp login --no-localhost`
+  (Pedro autoriza e cola a URL `http://localhost:8888/?...`).
+- **Rede do ambiente:** `docs.google.com` e `*.googleusercontent.com`
+  liberados (leitura da planilha por export). O ArcGIS (`*.arcgis.com`,
+  `esigportal2.recife.pe.gov.br`) ainda está bloqueado: não dá para testar o
+  mapa aqui.
+- **PR aberto:** pvnfpedro-lgtm/Recife-Resiliente#1 (branch
+  `claude/dreamy-pasteur-j7phpz`).
+
+## Próximos passos (escolha de Pedro)
+1. Indicadores e ranking dos pontos críticos na aba 01 do painel.
+2. Lista de conferência das coordenadas (11 "Aproximado").
+3. Ficha da reunião com a EMLURB (P1, P2, P3 dos 21 pontos).
+4. Pendências gerais em `docs/05-pendencias.md`.
+
 ## Como trabalhar
-- Seja direto, recomende em vez de listar opções.
+- Seja direto, recomende em vez de listar opções. Vá com calma: uma etapa
+  por vez, confirmando com Pedro antes de avançar.
 - Avise sempre que um dado não estiver verificado. Registre-o em
   `docs/05-pendencias.md`.
 - Não invente critérios, pesos, coordenadas nem números. Se faltar o dado,
