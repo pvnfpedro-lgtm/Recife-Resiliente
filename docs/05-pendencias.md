@@ -39,6 +39,11 @@ Tudo o que estiver aqui **não** pode ir para a apresentação sem conferência.
   referência e coerência com a malha IBGE 2022 ainda não conferidos.
 - ZEC (zoneamento do Plano Diretor): significado da sigla, geometria e data
   ainda não conferidos; uso no modelo a definir.
+- Bases localizadas na busca em 03/10/2026 (escolas municipais, UBS,
+  hospitais, rede de saúde, ZEIS, bacias e sub-bacias, drenagem da EMLURB,
+  curvas da Condepe/Fidem): formatos, datas e coberturas vêm só dos resumos
+  da busca; nenhum arquivo foi aberto. A data de 2020 das escolas municipais
+  precisa ser conferida.
 - Produtos do IBGE 2022 (Grade Estatística, CNEFE, agregados por setor):
   existência confirmada na busca, arquivos ainda não abertos.
 - Malha de favelas e comunidades 2022, tipo de domicílio por setor, curvas de
