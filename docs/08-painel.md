@@ -39,6 +39,9 @@ O painel em Google Apps Script já existente é a base. Muita coisa vai mudar.
   como está no cabeçalho da planilha. Para renomear, basta mudar o texto
   depois do código (ex.: `V5` + quebra de linha + novo nome); **não mudar o
   código**. A função `atualizarSubcriterios0310` foi removida.
+- 03/10/2026: `clasp push` com o branch do painel (gota com onda, círculo
+  de 300 m) juntado ao dos subcritérios. O push anterior do mesmo dia tinha
+  ido sem esses commits.
 
 ## Estado em 02/10/2026 (aprovado por Pedro)
 - Paleta: #0869A6 · #2685BF · #5496BF · #FFFFFF · #F2F2F2 (painel inteiro).
