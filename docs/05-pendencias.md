@@ -20,9 +20,12 @@
 | 14 | Score: matriz GUT (comentário no documento de Hellis) ou Probabilidade × Consequência (decidido em 02/10) | Grupo | 14/10 | Manter P × C |
 | 15 | Variáveis novas do documento de Hellis: isolamento, dificuldade de evacuação, infraestrutura precária | Pedro e Hellis | 08/10 | Pedir a definição de cada uma a Hellis antes de procurar dado |
 | 16 | Recorrência histórica × frequência: são diferentes? | Pedro e Hellis | 08/10 | Se forem a mesma coisa, ficam no P1 |
-| 17 | I1: qual base classifica os corredores (metropolitano, urbano principal, urbano secundário)? | Pedro | 13/10 | Conferir a base de corredores do portal; senão, pedir à CTTU (Antônio) ou ao Grande Recife |
+| 17 | I1: classe de corredor de cada via (metropolitano, urbano principal, urbano secundário) | Pedro | 13/10 | A classificação está no **Anexo 7 da LUOS (Lei 16.176/1996)**, segundo busca na web (anexo não aberto: site bloqueado no ambiente). Pedro envia a LUOS ou o anexo. Rascunho das notas em `dados/processados/notas_I1_tipo_de_via.csv` |
 
 ## Dados não verificados
+- I1 (Tipo de via): Av. Mascarenhas de Moraes e Av. Recife como corredores
+  metropolitanos (nota 5) vêm de resumo de busca na web sobre o Anexo 7 da LUOS;
+  o anexo não foi aberto. As outras 18 notas do I1 estão pendentes.
 Tudo o que estiver aqui **não** pode ir para a apresentação sem conferência.
 
 - Coordenadas dos 21 trechos da RPA 6: aproximadas.
