@@ -280,20 +280,20 @@
   .rr-tab th:first-child{border-radius:6px 0 0 6px;} .rr-tab th:last-child{border-radius:0 6px 6px 0;text-align:center;width:78px;line-height:1.2;}
   .rr-tab td{padding:4px 8px;font-size:12px;}
   .rr-tab td:last-child{text-align:center;}
-  .rr-tab tr.rr-crit td{font-weight:700;color:#111827;padding-top:6px;}
-  .rr-tab tr.rr-crit td{background:var(--rr-cinza);}
+  .rr-tab tr.rr-dim td{font-weight:700;color:#111827;padding-top:6px;}
+  .rr-tab tr.rr-dim td{background:var(--rr-cinza);}
   .rr-tab tr.rr-subl td{background:rgba(255,255,255,.18);border-bottom:1px solid rgba(255,255,255,.55);}
   .rr-tab tr td:first-child{border-radius:4px 0 0 4px;} .rr-tab tr td:last-child{border-radius:0 4px 4px 0;}
   .rr-ini{display:inline-block;width:18px;height:18px;line-height:18px;border-radius:50%;background:var(--rr-2);color:#fff;
           font-size:10px;font-weight:700;text-align:center;margin-right:6px;}
   .rr-tab tr.rr-subl td:first-child{padding-left:46px;color:#374151;}
-  /* Subcritérios recolhidos por padrão; clicar no critério expande */
+  /* Variáveis recolhidos por padrão; clicar na dimensão expande */
   .rr-tab tr.rr-subl{display:none;}
   .rr-tab tr.rr-subl.aberto{display:table-row;}
-  .rr-tab tr.rr-crit{cursor:pointer;}
-  .rr-tab tr.rr-crit:hover td{background:rgba(226,232,240,.85);}
+  .rr-tab tr.rr-dim{cursor:pointer;}
+  .rr-tab tr.rr-dim:hover td{background:rgba(226,232,240,.85);}
   .rr-seta{display:inline-block;width:12px;margin-right:2px;color:#64748b;font-size:10px;transition:transform .15s;}
-  .rr-tab tr.rr-crit.aberto .rr-seta{transform:rotate(90deg);}
+  .rr-tab tr.rr-dim.aberto .rr-seta{transform:rotate(90deg);}
   .rr-th-n{font-weight:400;font-size:9.5px;opacity:.85;}
   .rr-pe{margin-top:10px;font-size:10.5px;color:#9ca3af;}
   .rr-pe a{color:var(--rr);font-weight:600;}
@@ -850,7 +850,7 @@ require([
   function fmtN(v, casas){ return v == null ? "—" : v.toFixed(casas).replace(".", ","); }
   function escHtml(t){ return String(t == null ? "" : t).replace(/[&<>"]/g, function(ch){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[ch]; }); }
 
-  // Nomes dos subcritérios: vêm do cabeçalho da planilha (NOMES_PLANILHA).
+  // Nomes das variáveis: vêm do cabeçalho da planilha (NOMES_PLANILHA).
   // NOMES_SUB é só a reserva, se a planilha não mandar o nome.
   var NOMES_PLANILHA = {};
   var NOMES_SUB = { P1:"Frequência", P2:"Severidade", P3:"Maré", P4:"Rio/canal", P5:"Impermeabilização", P6:"Relevo",
@@ -869,7 +869,7 @@ require([
     GRUPOS_SUB.forEach(function(g, gi){
       var notaCrit = { Probabilidade:p.P, "Exposição":p.E, Vulnerabilidade:p.V, Impacto:p.I }[g.nome];
       var cls = "rr-g" + (gi % 2);
-      linhas += '<tr class="rr-crit ' + cls + '" data-g="' + gi + '" title="Mostrar ou esconder os subcritérios"><td><span class="rr-seta">▸</span><span class="rr-ini">' + g.nome.charAt(0) + '</span>' + g.nome +
+      linhas += '<tr class="rr-dim ' + cls + '" data-g="' + gi + '" title="Mostrar ou esconder as variáveis"><td><span class="rr-seta">▸</span><span class="rr-ini">' + g.nome.charAt(0) + '</span>' + g.nome +
                 '</td><td>' + fmtN(notaCrit, 1) + '</td></tr>';
       g.cods.forEach(function(c){
         if(p.notas[c] == null) return;
@@ -885,7 +885,7 @@ require([
         '<div class="rr-kpi"><div class="rr-kpi-v">' + (p.posicao != null ? p.posicao + 'º' : '—') + '</div>' +
           '<div class="rr-kpi-r">Posição no ranking</div><div class="rr-kpi-n">de 21 pontos</div></div>' +
       '</div>' +
-      '<table class="rr-tab"><tr><th>Critério / subcritério</th><th>Avaliação<br><span class="rr-th-n">(nota 1–5)</span></th></tr>' + linhas + '</table>' +
+      '<table class="rr-tab"><tr><th>Dimensão / variável</th><th>Avaliação<br><span class="rr-th-n">(nota 1–5)</span></th></tr>' + linhas + '</table>' +
       '<div class="rr-pe">Avaliação de 1 a 5 (5 = mais crítico) · Lat ' + fmtN(p.lat, 6) + ' · Lon ' + fmtN(p.lon, 6) +
         ' (' + escHtml(p.precisao).toLowerCase() + ')</div>' +
       '</div>';
@@ -916,7 +916,7 @@ require([
     });
     cartao.querySelector(".rr-card-x").addEventListener("click", fecharCartao);
     cartao.querySelector(".rr-card-corpo").addEventListener("click", function(e){
-      var tr = e.target.closest("tr.rr-crit");
+      var tr = e.target.closest("tr.rr-dim");
       if(!tr) return;
       var abrir = !tr.classList.contains("aberto");
       tr.classList.toggle("aberto", abrir);

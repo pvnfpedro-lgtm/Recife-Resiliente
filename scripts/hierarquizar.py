@@ -6,8 +6,8 @@ que a Consequência é a média ponderada de Exposição, Vulnerabilidade e
 Impacto, e classifica o ponto na matriz risco x tratabilidade.
 Metodologia em docs/02-metodologia-hierarquizacao.md.
 
-Nota ausente não é imputada: o subcritério sai do cálculo daquele ponto e a
-cobertura (notas presentes / subcritérios) é informada na saída.
+Nota ausente não é imputada: a variável sai do cálculo daquele ponto e a
+cobertura (notas presentes / variáveis) é informada na saída.
 """
 
 import argparse
@@ -49,40 +49,40 @@ def ler_csv(caminho):
         return list(csv.DictReader(f))
 
 
-def carregar_criterios(linhas):
+def carregar_variaveis(linhas):
     """Retorna ({codigo: (dimensao, peso_sub)}, {dimensao: peso_dim})."""
-    criterios, pesos_dim = {}, {}
+    variaveis, pesos_dim = {}, {}
     for i, linha in enumerate(linhas, start=2):
         codigo = linha["codigo"].strip()
         dimensao = linha["dimensao"].strip()
-        if codigo in criterios:
-            raise ErroDeDados(f"criterios.csv linha {i}: código duplicado {codigo!r}")
-        peso_sub = _numero(linha["peso_subcriterio"], f"criterios.csv linha {i}")
+        if codigo in variaveis:
+            raise ErroDeDados(f"variaveis.csv linha {i}: código duplicado {codigo!r}")
+        peso_sub = _numero(linha["peso_variavel"], f"variaveis.csv linha {i}")
         # A Probabilidade multiplica a Consequência e não tem peso próprio.
         bruto = str(linha["peso_dimensao"]).strip()
         peso_dim = 0.0 if not bruto and dimensao == PROBABILIDADE else \
-            _numero(bruto, f"criterios.csv linha {i}")
+            _numero(bruto, f"variaveis.csv linha {i}")
         if peso_sub < 0 or peso_dim < 0:
-            raise ErroDeDados(f"criterios.csv linha {i}: peso negativo")
+            raise ErroDeDados(f"variaveis.csv linha {i}: peso negativo")
         if dimensao in pesos_dim and pesos_dim[dimensao] != peso_dim:
             raise ErroDeDados(
-                f"criterios.csv linha {i}: peso_dimensao de {dimensao!r} diverge "
+                f"variaveis.csv linha {i}: peso_dimensao de {dimensao!r} diverge "
                 f"({pesos_dim[dimensao]} x {peso_dim})"
             )
         pesos_dim[dimensao] = peso_dim
-        criterios[codigo] = (dimensao, peso_sub)
-    if not criterios:
-        raise ErroDeDados("criterios.csv está vazio")
-    return criterios, pesos_dim
+        variaveis[codigo] = (dimensao, peso_sub)
+    if not variaveis:
+        raise ErroDeDados("variaveis.csv está vazio")
+    return variaveis, pesos_dim
 
 
-def carregar_notas(linhas, criterios):
+def carregar_notas(linhas, variaveis):
     """Retorna {ponto_id: {codigo: nota}}."""
     notas = defaultdict(dict)
     for i, linha in enumerate(linhas, start=2):
         ponto = linha["ponto_id"].strip()
         codigo = linha["codigo"].strip()
-        if codigo not in criterios:
+        if codigo not in variaveis:
             raise ErroDeDados(f"notas.csv linha {i}: código desconhecido {codigo!r}")
         if not str(linha["nota"]).strip():
             continue  # nota ausente: não entra no cálculo
@@ -111,7 +111,7 @@ def _media_ponderada(pares):
     return sum(valor * peso for valor, peso in pares) / total_peso
 
 
-def score_ponto(notas_ponto, criterios, pesos_dim):
+def score_ponto(notas_ponto, variaveis, pesos_dim):
     """Retorna (risco, probabilidade, consequencia, {dimensao: nota}).
 
     Sem nota de Probabilidade o risco fica indefinido (None): não há como
@@ -119,7 +119,7 @@ def score_ponto(notas_ponto, criterios, pesos_dim):
     """
     por_dim = defaultdict(list)
     for codigo, nota in notas_ponto.items():
-        dimensao, peso_sub = criterios[codigo]
+        dimensao, peso_sub = variaveis[codigo]
         por_dim[dimensao].append((nota, peso_sub))
 
     notas_dim = {}
@@ -143,17 +143,17 @@ def quadrante(risco, tratabilidade, corte_risco, corte_trat):
     return QUADRANTES[(risco >= corte_risco, tratabilidade >= corte_trat)]
 
 
-def hierarquizar(criterios_linhas, notas_linhas, trat_linhas=None,
+def hierarquizar(variaveis_linhas, notas_linhas, trat_linhas=None,
                  corte_risco=9.0, corte_trat=3.0):
-    criterios, pesos_dim = carregar_criterios(criterios_linhas)
-    notas = carregar_notas(notas_linhas, criterios)
+    variaveis, pesos_dim = carregar_variaveis(variaveis_linhas)
+    notas = carregar_notas(notas_linhas, variaveis)
     tratabilidade = carregar_tratabilidade(trat_linhas or [])
-    dimensoes = list(dict.fromkeys(d for d, _ in criterios.values()))
+    dimensoes = list(dict.fromkeys(d for d, _ in variaveis.values()))
 
     resultado = []
     for ponto in sorted(set(notas) | set(tratabilidade)):
         risco, prob, cons, notas_dim = score_ponto(
-            notas.get(ponto, {}), criterios, pesos_dim)
+            notas.get(ponto, {}), variaveis, pesos_dim)
         trat = tratabilidade.get(ponto)
         resultado.append({
             "ponto_id": ponto,
@@ -161,7 +161,7 @@ def hierarquizar(criterios_linhas, notas_linhas, trat_linhas=None,
             "indice": None if risco is None else (risco - 1) / 24,
             "probabilidade": prob,
             "consequencia": cons,
-            "cobertura": f"{len(notas.get(ponto, {}))}/{len(criterios)}",
+            "cobertura": f"{len(notas.get(ponto, {}))}/{len(variaveis)}",
             "tratabilidade": trat,
             "quadrante": quadrante(risco, trat, corte_risco, corte_trat),
             **{f"dim_{d}": notas_dim.get(d) for d in dimensoes},
@@ -201,7 +201,7 @@ def escrever(resultado, destino):
 
 def main(argv=None):
     p = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    p.add_argument("--criterios", required=True)
+    p.add_argument("--variaveis", required=True)
     p.add_argument("--notas", required=True)
     p.add_argument("--tratabilidade")
     p.add_argument("--corte-risco", type=float, default=9.0,
@@ -213,7 +213,7 @@ def main(argv=None):
 
     try:
         resultado = hierarquizar(
-            ler_csv(args.criterios),
+            ler_csv(args.variaveis),
             ler_csv(args.notas),
             ler_csv(args.tratabilidade) if args.tratabilidade else None,
             args.corte_risco,

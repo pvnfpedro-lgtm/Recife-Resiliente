@@ -7,7 +7,7 @@ from xml.sax.saxutils import escape as e
 W, H, SY = 1720, 1000, 500
 COR = {"d": ("#0869A6", "#0869A6", "#FFFFFF"), "p": ("#5496BF", "#5496BF", "#FFFFFF"), "f": ("#F2F2F2", "#5496BF", "#1F2A33")}
 ESP = [
- ("Método (modelo)", True, 550, [("Critérios (4)", "d"), ("Fórmula P × C e índice 0–1", "d"), ("Subcritérios (13 + P6 e V1)", "p"), ("Escalas de nota 1–5", "p"), ("Pesos (de teste)", "p")]),
+ ("Método (modelo)", True, 550, [("Dimensões (4)", "d"), ("Fórmula P × C e índice 0–1", "d"), ("Variáveis (13 + P6 e V1)", "p"), ("Escalas de nota 1–5", "p"), ("Pesos (de teste)", "p")]),
  ("Dados (fontes)", True, 960, [("Bases nacionais: IBGE, Ipea, MapBiomas", "f"), ("Bases municipais: portal e ESIG", "f"), ("7 links do portal localizados", "p"), ("Pedidos aos órgãos", "f")]),
  ("Território (base SIG)", True, 1370, [("EPSG:31985", "d"), ("Buffers de 300 m e 1 km", "p"), ("Coordenadas dos 21 pontos", "p"), ("Linha dos 12 trechos", "f")]),
  ("Pessoas e órgãos", False, 550, [("Equipe (6) e tutora", "d"), ("EMLURB: Pedro Oliveira", "f"), ("CTTU: Antônio", "f"), ("SEPLAN: contato em aberto", "f"), ("COP e Defesa Civil", "f")]),

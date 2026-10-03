@@ -28,28 +28,39 @@ O painel em Google Apps Script já existente é a base. Muita coisa vai mudar.
   que deu certo". O `clasp push` não altera nenhuma delas.
 - 02/10/2026: primeiro `clasp push` (pontos críticos lidos da planilha,
   sem HidroData).
-- 03/10/2026: `clasp push` com os subcritérios de 03/10 (nomes novos; I3, V5
+- 03/10/2026: `clasp push` com as variáveis de 03/10 (nomes novos; I3, V5
   e V6) e a função única `atualizarSubcriterios0310`, executada por Pedro no
   editor. Aba "Notas dos pontos" conferida: 7 cabeçalhos renomeados, V5 e V6
   antes do V1, I3 antes do I2 (ordem I1, I3, I2), colunas novas sem nota e
   sem peso, "Notas preenchidas" = 15 nos 21 pontos, risco calculado nos 21.
   Fórmulas escritas por script não usam separador de argumentos (planilha em
   pt-BR usa `;`).
-- 03/10/2026: o cartão do ponto passa a mostrar o nome de cada subcritério
+- 03/10/2026: o cartão do ponto passa a mostrar o nome de cada variável
   como está no cabeçalho da planilha. Para renomear, basta mudar o texto
   depois do código (ex.: `V5` + quebra de linha + novo nome); **não mudar o
   código**. A função `atualizarSubcriterios0310` foi removida.
 - 03/10/2026: `clasp push` com o branch do painel (gota com onda, círculo
-  de 300 m) juntado ao dos subcritérios. O push anterior do mesmo dia tinha
+  de 300 m) juntado ao das variáveis. O push anterior do mesmo dia tinha
   ido sem esses commits.
+- 03/10/2026: painel conferido por Pedro (gota, círculo de 300 m, nomes no
+  cartão). Novo `clasp push` com os termos novos: o cartão mostra
+  "Dimensão / variável". Na planilha, a aba "Checklist subcritérios" passou
+  a se chamar "Checklist variáveis" (o painel não lê essa aba).
+- 03/10/2026: planilha renomeada para "Recife_Resiliente_Checklist_Variaveis"
+  (o link não muda). Abas "Checklist variáveis" e "Glossário" reescritas com o
+  conteúdo do `.xlsx` atual (18 variáveis, termos novos); as fórmulas do
+  resumo foram mantidas e se ajustaram às linhas novas (N5:N22).
+- 03/10/2026: coluna "Fonte de medição" (E) criada na aba "Checklist
+  variáveis", ao lado de "Como medir", vazia (a preencher). As colunas a
+  preencher passaram a ser O, P e Q; fórmulas e listas se ajustaram.
 
 ## Estado em 02/10/2026 (aprovado por Pedro)
 - Paleta: #0869A6 · #2685BF · #5496BF · #FFFFFF · #F2F2F2 (painel inteiro).
 - Pontos críticos lidos da planilha Google Sheets, cor pelo índice de risco.
 - Cartão do ponto (no lugar do popup do ArcGIS): abre à direita do ponto,
   centralizado na altura dele, a 36 px; estilo da ficha do Plano de Ações
-  de SP; sem número do ponto; nível de risco em palavras; tabela critério/
-  subcritério × avaliação; botões Aproximar e Street View.
+  de SP; sem número do ponto; nível de risco em palavras; tabela dimensão/
+  variável × avaliação; botões Aproximar e Street View.
 
 ## Em aberto
 - Cores do nível de risco: manter verde/amarelo/laranja/vermelho ou usar

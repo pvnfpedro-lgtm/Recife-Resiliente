@@ -7,13 +7,13 @@
 <text x="360" y="154" font-size="18" font-weight="700" fill="#0869A6" text-anchor="middle">Método (modelo)</text>
 <line x1="369.030303030303" y1="210.0" x2="383.030303030303" y2="210.0" stroke="#1F2A33" stroke-width="1.5"/>
 <rect x="69.030303030303" y="193.0" width="300" height="34" rx="6" fill="#0869A6" stroke="#0869A6" stroke-width="1.5"/>
-<text x="219.030303030303" y="215.0" font-size="14" fill="#FFFFFF" text-anchor="middle">Critérios (4)</text>
+<text x="219.030303030303" y="215.0" font-size="14" fill="#FFFFFF" text-anchor="middle">Dimensões (4)</text>
 <line x1="406.4545454545455" y1="275.0" x2="420.4545454545455" y2="275.0" stroke="#1F2A33" stroke-width="1.5"/>
 <rect x="106.4545454545455" y="258.0" width="300" height="34" rx="6" fill="#0869A6" stroke="#0869A6" stroke-width="1.5"/>
 <text x="256.4545454545455" y="280.0" font-size="14" fill="#FFFFFF" text-anchor="middle">Fórmula P × C e índice 0–1</text>
 <line x1="443.8787878787879" y1="340.0" x2="457.8787878787879" y2="340.0" stroke="#1F2A33" stroke-width="1.5"/>
 <rect x="143.87878787878788" y="323.0" width="300" height="34" rx="6" fill="#5496BF" stroke="#5496BF" stroke-width="1.5"/>
-<text x="293.8787878787879" y="345.0" font-size="14" fill="#FFFFFF" text-anchor="middle">Subcritérios (13 + P6 e V1)</text>
+<text x="293.8787878787879" y="345.0" font-size="14" fill="#FFFFFF" text-anchor="middle">Variáveis (13 + P6 e V1)</text>
 <line x1="481.3030303030303" y1="405.0" x2="495.3030303030303" y2="405.0" stroke="#1F2A33" stroke-width="1.5"/>
 <rect x="181.3030303030303" y="388.0" width="300" height="34" rx="6" fill="#5496BF" stroke="#5496BF" stroke-width="1.5"/>
 <text x="331.3030303030303" y="410.0" font-size="14" fill="#FFFFFF" text-anchor="middle">Escalas de nota 1–5</text>

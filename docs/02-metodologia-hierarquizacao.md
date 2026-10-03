@@ -8,13 +8,13 @@ críticos** em vez de obras.
 ## Escopo do piloto
 RPA 6, com os **21 trechos** da planilha da EMLURB.
 
-## Critérios principais (decidido por Pedro em 02/10/2026)
+## Dimensões principais (decidido por Pedro em 02/10/2026)
 
-As 7 dimensões de São Paulo foram reduzidas a **4 critérios**, que
-correspondem aos componentes do risco do recorte. A regra é que **todo
-critério precisa ser medível nos 21 pontos com dado obtenível**.
+As 7 dimensões de São Paulo foram reduzidas a **4 dimensões**, que
+correspondem aos componentes do risco do recorte. A regra é que **toda
+dimensão precisa ser medível nos 21 pontos com dado obtenível**.
 
-| Critério | Pergunta | Papel no cálculo |
+| Dimensão | Pergunta | Papel no cálculo |
 |---|---|---|
 | **Probabilidade** | Quanto e com que facilidade o ponto alaga? | Multiplica a Consequência |
 | **Exposição** | Quem e o que está no caminho da água? | Parte da Consequência |
@@ -40,15 +40,15 @@ critério precisa ser medível nos 21 pontos com dado obtenível**.
 - **Repercussão e pressão política:** aparecem como informação no painel,
   sem entrar no cálculo.
 
-Os subcritérios de cada critério ainda serão definidos. A proposta inicial
-está em [07-revisao-criterios.md](07-revisao-criterios.md).
+As variáveis de cada dimensão ainda serão definidas. A proposta inicial
+está em [07-revisao-variaveis.md](07-revisao-variaveis.md).
 
 ## Cálculo (decidido: Probabilidade × Consequência)
 
-Notas de 1 a 5 em cada subcritério; 5 é o mais crítico.
+Notas de 1 a 5 em cada variável; 5 é o mais crítico.
 
-1. **Nota de cada critério** = média ponderada das notas dos subcritérios,
-   com `peso_subcriterio`.
+1. **Nota de cada dimensão** = média ponderada das notas das variáveis,
+   com `peso_variavel`.
 2. **Consequência** = média ponderada de Exposição, Vulnerabilidade e
    Impacto, com `peso_dimensao`. Os pesos são definidos pelo grupo.
 3. **Risco = Probabilidade × Consequência**, numa escala de **1 a 25**.
@@ -77,7 +77,7 @@ fica sem posição no ranking até receber essa nota. Por isso a Probabilidade
 dos 21 pontos é o dado prioritário: ficha da EMLURB agora e dados do COP
 quando chegarem.
 
-**Nota ausente não vira zero nem média.** O subcritério sai do cálculo
+**Nota ausente não vira zero nem média.** A variável sai do cálculo
 daquele ponto e a cobertura aparece na saída (por exemplo, `10/12`).
 
 **Sensibilidade:** mostrar também o ranking com pesos iguais na Consequência.
@@ -155,7 +155,7 @@ partir da aba *Pontos RPA 6*.
 ## Arquivos de entrada do script
 | Arquivo | Colunas |
 |---|---|
-| `criterios.csv` | `codigo, dimensao, subcriterio, peso_subcriterio, peso_dimensao` (`dimensao` ∈ Probabilidade, Exposição, Vulnerabilidade, Impacto; `peso_dimensao` vazio na Probabilidade) |
-| `notas.csv` | `ponto_id, codigo, nota` (uma linha por ponto e subcritério) |
+| `variaveis.csv` | `codigo, dimensao, variavel, peso_variavel, peso_dimensao` (`dimensao` ∈ Probabilidade, Exposição, Vulnerabilidade, Impacto; `peso_dimensao` vazio na Probabilidade) |
+| `notas.csv` | `ponto_id, codigo, nota` (uma linha por ponto e variável) |
 | `tratabilidade.csv` | `ponto_id, item, nota` |
 | `pontos.csv` | `ponto_id, trecho, bairro, x, y, coordenada_verificada` |

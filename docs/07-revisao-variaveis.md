@@ -1,32 +1,36 @@
-# 7. Revisão dos critérios (rascunho de 01/10/2026)
+# 7. Revisão das dimensões (rascunho de 01/10/2026)
 
-> **Atualização 02/10/2026:** Pedro decidiu os **4 critérios principais**
+> **Termos (03/10/2026):** "critério" passou a se chamar **dimensão** e
+> "subcritério" passou a se chamar **variável**. O texto abaixo já usa os
+> termos novos; a aba *Critérios* da planilha da equipe mantém o nome original.
+
+> **Atualização 02/10/2026:** Pedro decidiu as **4 dimensões principais**
 > (Probabilidade, Exposição, Vulnerabilidade e Impacto), o cálculo
 > **Probabilidade × Consequência** e o raio de **300 m** no score, com 1 km no
 > painel. Ver `02-metodologia-hierarquizacao.md`.
 >
-> **Lista atual de subcritérios:** ver a seção *Lista proposta de 02/10*
+> **Lista atual de variáveis:** ver a seção *Lista proposta de 02/10*
 > no fim deste documento e a planilha
-> `dados/Recife_Resiliente_Checklist_Subcriterios.xlsx`. A tabela de 12
-> subcritérios logo abaixo é a versão de 01/10, mantida como histórico.
+> `dados/Recife_Resiliente_Checklist_Variaveis.xlsx`. A tabela de 12
+> variáveis logo abaixo é a versão de 01/10, mantida como histórico.
 
 Revisão da aba *Critérios* de `dados/Recife_Resiliente_RPA6_Criterios_Pontos_Criticos.xlsx`
-(24 subcritérios no score e 7 itens de tratabilidade). Esta é uma
+(24 variáveis no score e 7 itens de tratabilidade). Esta é uma
 **recomendação** para o grupo decidir, não uma decisão tomada.
 
-Filtros usados em cada subcritério:
+Filtros usados em cada variável:
 1. Mede risco (probabilidade, exposição, vulnerabilidade ou impacto)?
 2. Diferencia os 21 pontos?
 3. Tem dado viável até 27/10?
-4. Conta o mesmo fenômeno que outro subcritério?
+4. Conta o mesmo fenômeno que outra variável?
 5. Mede a gravidade do ponto ou a facilidade de agir nele?
 
 ## Diagnóstico
 
 **1. O núcleo do risco depende de dado que ainda não temos.**
-Os seis subcritérios hidrológicos (1 a 6) medem a *probabilidade* e a
+As seis variáveis hidrológicas (1 a 6) medem a *probabilidade* e a
 *magnitude* do alagamento. Todos dependem de registros do COP e da Defesa
-Civil ou de escuta de campo. Os subcritérios que dá para calcular agora com
+Civil ou de escuta de campo. As variáveis que dá para calcular agora com
 dado público são quase todos de **exposição e vulnerabilidade**. Se os dados
 do COP não chegarem, o score vira um índice de quem mora perto, não de risco.
 Por isso o pedido ao COP é o item mais importante do cronograma.
@@ -39,7 +43,7 @@ Cálculo feito com as coordenadas atuais, que ainda são aproximadas:
 - **Dois Rios, no Ibura (33, 35 e 54):** os círculos de 33 e 54 têm 60% de
   área em comum.
 - Nesses grupos, população, IVS, usos e vias darão notas quase iguais. A
-  diferença entre os pontos vai vir dos critérios de ponto (hidrológico e
+  diferença entre os pontos vai vir das dimensões de ponto (hidrológico e
   sanitário).
 
 Daí sai mais uma recomendação: para os 12 trechos do tipo *Linha* ou *Vários*,
@@ -53,7 +57,7 @@ desenhar a linha do trecho e aplicar um buffer de 300 m em volta dela.
   (15) contam as unidades de saúde duas vezes.
 - *Custo recorrente* (12) acompanha a frequência dos eventos.
 
-**4. Alguns subcritérios medem causa ou resposta, não risco.**
+**4. Algumas variáveis medem causa ou resposta, não risco.**
 - *Fragilidade da drenagem* (20) e *Dependência de equipamento* (21) explicam
   **por que** o ponto alaga. Se a frequência já está no score, eles contam o
   mesmo efeito outra vez. O lugar deles é o **diagnóstico de causa**, que diz
@@ -66,9 +70,9 @@ Prazo de 0 a 60 meses, desapropriação, licenciamento e custo de intervenção
 são critérios de obra, e a solução do projeto não é obra. Além disso, sem saber
 qual intervenção cada ponto exige, esses itens não têm como ser medidos agora.
 
-## Recomendação: de 24 para 12 subcritérios, organizados pelos 4 componentes do risco
+## Recomendação: de 24 para 12 variáveis, organizados pelos 4 componentes do risco
 
-| Componente | Subcritério | Origem | Dado |
+| Componente | Variável | Origem | Dado |
 |---|---|---|---|
 | **Probabilidade** | Frequência de eventos | 1 | COP / Defesa Civil: **crítico** |
 | | Gatilho de chuva | 2 | Depende do 1 + Cemaden/APAC |
@@ -89,7 +93,7 @@ dentro da Consequência.
 
 ### O que sai do score e para onde vai
 
-| Subcritério | Destino | Motivo |
+| Variável | Destino | Motivo |
 |---|---|---|
 | 23 Repercussão pública, 24 Pressão institucional | Coluna de contexto no painel | Contagem dupla e risco de viés; difícil de defender na alta gestão |
 | 20 Fragilidade da drenagem, 21 Dependência de equipamento | **Diagnóstico de causa** (frente de Pedro) | Explicam a causa, não a gravidade; definem quem age |
@@ -105,7 +109,7 @@ dentro da Consequência.
 | Janela de oportunidade (item 31 atual) | Obra ou orçamento em andamento | Nada previsto |
 
 ## A confirmar
-- Se o agregado do Censo 2022 por setor traz faixa etária (para o subcritério
+- Se o agregado do Censo 2022 por setor traz faixa etária (para a variável
   9).
 - Se existe camada de uso do solo ou de equipamentos georreferenciada no portal
   da Prefeitura.
@@ -113,14 +117,14 @@ dentro da Consequência.
   o que deve bastar, mas é preciso conferir.
 - O resultado da sobreposição muda depois da conferência das coordenadas.
 
-## Lista proposta de 02/10/2026 (13 subcritérios)
+## Lista proposta de 02/10/2026 (13 variáveis)
 
-Pedro aprovou os subcritérios recomendados, incluiu favelas e comunidades
+Pedro aprovou as variáveis recomendadas, incluiu favelas e comunidades
 (V3) e pediu sugestões. A lista abaixo junta as duas coisas. **Ainda depende
 da confirmação dos dados.** O checklist de cada fonte está em
-`dados/Recife_Resiliente_Checklist_Subcriterios.xlsx`.
+`dados/Recife_Resiliente_Checklist_Variaveis.xlsx`.
 
-| Critério | Código | Subcritério | Situação |
+| Dimensão | Código | Variável | Situação |
 |---|---|---|---|
 | Probabilidade | P1 | Frequência | Manter, peso alto |
 | | P2 | Severidade (altura + tempo para baixar + extensão) | Manter, peso alto |
@@ -138,12 +142,12 @@ da confirmação dos dados.** O checklist de cada fonte está em
 | Impacto | I1 | Mobilidade (classe da via + paradas + interdições) | Manter |
 | | I2 | Risco sanitário (esgotamento por setor) | Manter |
 
-Sugestões descartadas: chamados do 156 como subcritério (usar só para
+Sugestões descartadas: chamados do 156 como variável (usar só para
 conferir o P1), % de não alfabetizados (repete V3/IVS), leptospirose (dado
 por bairro, grande demais para o círculo), rota até hospital (é resposta ao
-evento, do COP). Exposição não ganhou subcritérios novos.
+evento, do COP). Exposição não ganhou variáveis novas.
 
-Próximo passo: faixas de nota de 1 a 5 de cada subcritério, começando pela
+Próximo passo: faixas de nota de 1 a 5 de cada variável, começando pela
 Probabilidade (que vira a ficha da reunião com a EMLURB).
 
 ## Documento da equipe (Hellis, 03/10/2026)
@@ -157,9 +161,9 @@ variáveis", score, mapa de pontos prioritários, catálogo de controles
 **Leitura (recomendação, não decisão do grupo):** as dimensões são as mesmas
 4 do modelo. A tabela do documento é a moldura conceitual; a lista acima é a
 versão operacional (fonte, medida no círculo de 300 m, nota de 1 a 5). Não
-trocar os subcritérios; mostrar ao grupo a correspondência abaixo.
+trocar as variáveis; mostrar ao grupo a correspondência abaixo.
 
-| Dimensão | Exemplo do documento | Subcritério correspondente | Observação |
+| Dimensão | Exemplo do documento | Variável correspondente | Observação |
 |---|---|---|---|
 | Probabilidade | Recorrência histórica | P1 | Perguntar se é diferente de frequência |
 | | Frequência | P1 | — |
@@ -179,7 +183,7 @@ trocar os subcritérios; mostrar ao grupo a correspondência abaixo.
 | | Dificuldade de evacuação | Nenhum | Nova; definição a pedir a Hellis |
 | | Infraestrutura precária | V4 / I2 | Nova; definição a pedir a Hellis |
 
-Os subcritérios P2 (severidade), P3 (maré), P5 (impermeabilização) e I2
+As variáveis P2 (severidade), P3 (maré), P5 (impermeabilização) e I2
 (risco sanitário) não aparecem nos exemplos do documento; a recomendação é
 mantê-los.
 
@@ -194,7 +198,7 @@ de 02/10. Os códigos antigos foram mantidos (o painel lê as colunas pelo
 código); as variáveis novas ganharam códigos novos. Escalas de nota, pesos e
 validação pelo grupo continuam em aberto.
 
-| Critério | Código | Subcritério | Situação |
+| Dimensão | Código | Variável | Situação |
 |---|---|---|---|
 | Probabilidade | P1 | Frequência e recorrência histórica | Manter (pendência 16) |
 | | P2 | Severidade | Manter |

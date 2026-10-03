@@ -1,13 +1,13 @@
-# 10. Critérios e subcritérios de risco de alagamento
+# 10. Dimensões e variáveis de risco de alagamento
 
-> **Documento-chave** dos critérios e subcritérios (decisão de Pedro,
+> **Documento-chave** das dimensões e variáveis (decisão de Pedro,
 > 03/10/2026). O que for decidido é registrado aqui. O
 > [Google Docs da equipe](https://docs.google.com/document/d/12zj_bPx0u5ejNpUsbFNEPsy7WGpTRwuH6k23O0k8f2I/edit)
 > é uma cópia para leitura e comentários, atualizada a partir deste arquivo.
 > Lista adotada em 03/10/2026, ainda não validada pelo grupo.
 
-O risco de cada um dos 21 pontos críticos da RPA 6 é medido por 4 critérios
-e 18 subcritérios. Este documento explica o que cada um significa e por que
+O risco de cada um dos 21 pontos críticos da RPA 6 é medido por 4 dimensões
+e 19 variáveis. Este documento explica o que cada uma significa e por que
 importa.
 
 ## Como o risco é calculado
@@ -16,11 +16,11 @@ importa.
 
 A Probabilidade multiplica a Consequência. Por isso um ponto que quase não
 alaga fica com risco baixo, mesmo com muita gente por perto. Os pesos de cada
-critério e subcritério ainda serão definidos pelo grupo (pendência 1).
+dimensão e variável ainda serão definidos pelo grupo (pendência 1).
 
 ## Probabilidade
 
-**Pergunta:** quanto e com que facilidade o ponto alaga? É o critério que
+**Pergunta:** quanto e com que facilidade o ponto alaga? É a dimensão que
 multiplica a Consequência. Sem nota de Probabilidade, o ponto não entra no
 ranking.
 
@@ -74,8 +74,8 @@ ranking.
 ## Exposição
 
 **Pergunta:** quem e o que está no caminho da água? Conta o que existe dentro
-do círculo de 300 m em volta do ponto. O que é contado aqui não é contado de
-novo no Impacto.
+do círculo de 300 m em volta do ponto (exceção: E3 usa 1 km). O que é
+contado aqui não é contado de novo no Impacto.
 
 ### E1 — População
 - **O que é:** quantas pessoas moram perto do ponto.
@@ -96,12 +96,25 @@ novo no Impacto.
   hospitais); IBGE (CNEFE 2022); CNES/DATASUS.
 
 ### E3 — Comércio e serviços
-- **O que é:** lojas e serviços perto do ponto.
+- **O que é:** o peso da atividade econômica em volta do ponto. É a variável
+  que leva o aspecto econômico para o modelo (decisão de Pedro, 03/10/2026).
 - **Por que importa:** alagamento fecha negócios, estraga mercadoria e afeta
-  quem trabalha ali.
-- **Como medimos:** número de comércios e serviços no círculo; os pontos com
-  mais recebem nota 5.
-- **De onde vem o dado:** IBGE (CNEFE 2022) e cadastro do IPTU.
+  quem trabalha ali. Um centro comercial pesa mais que uma banca.
+- **Como medimos** (decisão de Pedro, 03/10/2026):
+  1. Somar o IPTU dos imóveis **não residenciais** no **círculo de 1 km** em
+     volta do ponto (exceção ao círculo de 300 m: Pedro considerou 300 m
+     pequeno demais para a atividade econômica). Usar o valor lançado, se a
+     planilha tiver; se só houver o valor pago, usar o pago e registrar.
+  2. Ordenar os 21 pontos pela soma e dividir em 5 grupos (quintis): o grupo
+     de menor soma recebe nota 1; o de maior, nota 5. Empates ficam no mesmo
+     grupo. Ponto sem imóvel não residencial no círculo recebe nota 1.
+  - Limitações: imóveis isentos (templos, imóveis públicos) entram com valor
+    zero; a nota é relativa aos 21 pontos e precisa ser recalculada se o
+    modelo for para outras RPAs; com 1 km, os círculos de pontos próximos se
+    sobrepõem e as notas desses pontos tendem a ficar parecidas.
+- **De onde vem o dado:** IPTU 2026, portal de dados abertos da Prefeitura.
+  Segundo Pedro, traz as coordenadas dos imóveis e o valor pago; colunas de
+  tipo de uso e de valor lançado **não conferidas** (pendência 20).
 
 ## Vulnerabilidade
 
@@ -162,17 +175,34 @@ funcionar na cidade quando o ponto alaga, mesmo para quem não mora perto.
 ### I1 — Tipo de via
 - **O que é:** a importância da via que fica interrompida.
 - **Por que importa:** alagar um corredor de ônibus para milhares de pessoas;
-  alagar uma rua local afeta poucas.
-- **Como medimos:** classe da via mais importante afetada (nos trechos, a
-  própria via). Escala decidida por Pedro em 03/10/2026:
+  alagar uma via local afeta poucas.
+- **Como medimos** (decisão de Pedro, 03/10/2026: seguir estritamente a
+  hierarquia viária da CTTU):
+  1. **Identificar a via afetada.** Trecho (Linha ou Vários): a própria via
+     do trecho. Ponto num cruzamento: todas as vias que se cruzam ali; vale a
+     mais importante. Ponto isolado numa via: a própria via.
+  2. **Classificar a via pela hierarquia viária da CTTU**
+     ([sistema viário](https://cttu.recife.pe.gov.br/sistema-viario) e
+     [classificação hierárquica](https://cttu.recife.pe.gov.br/classificacao-hierarquica)):
+     corredor de transporte metropolitano, corredor de transporte urbano
+     principal, corredor de transporte urbano secundário ou via fora dos
+     corredores. O nome da via (avenida ou rua) não conta.
+  3. **Converter a classe em nota** pela escala abaixo.
+  - Se a classe muda ao longo da via, vale a classe no trecho do ponto. Se o
+    ponto pega mais de uma via, vale a de nota mais alta. Interdição
+    registrada pela CTTU só confere a nota, não soma.
+- **Escala** (decidida por Pedro em 03/10/2026):
   1. Ruas
   2. Demais avenidas
   3. Corredor de transporte urbano secundário
   4. Corredor de transporte urbano principal
   5. Corredor de transporte metropolitano
-- **De onde vem o dado:** corredores de ônibus do portal de dados abertos;
-  CTTU e Grande Recife. A interdição registrada pela CTTU só confere a nota.
-  Falta confirmar qual base classifica os corredores (pendência 17).
+
+  Decidido por Pedro em 03/10/2026: manter esta escala. A classificação
+  hierárquica da LPUOS 2025 (Lei 19.426/2025, art. 171: arterial, coletora,
+  local, trânsito rápido) não substitui as classes acima.
+- **De onde vem o dado:** hierarquia viária da CTTU (o site está bloqueado no
+  ambiente; lista ainda não obtida). Pendência 17.
 
 ### I2 — Risco sanitário
 - **O que é:** a chance de a água do alagamento se misturar com esgoto.
@@ -187,6 +217,38 @@ funcionar na cidade quando o ponto alaga, mesmo para quem não mora perto.
   quando o ponto alaga.
 - **Pergunta em aberto:** confirmar o sentido com a equipe. Enquanto não for
   definido, não entra no cálculo (pendência 15).
+
+### I4 — Proximidade a infraestrutura crítica (proposta, 03/10/2026)
+- **O que é:** a distância do ponto até a infraestrutura crítica mais
+  próxima.
+- **Infraestrutura crítica** (definição do projeto): estrutura cuja
+  interrupção por alagamento deixa sem um serviço essencial uma área maior que
+  o entorno do ponto. Lista definida por Pedro: estação de metrô, delegacia,
+  Corpo de Bombeiros, base do SAMU, aeroporto, subestação da Neoenergia.
+  Hospital e UPA ficam no E2, para não contar duas vezes. Em aberto: terminais
+  integrados de ônibus, estruturas da Compesa, Defesa Civil e abrigos.
+- **Por que importa:** quando uma dessas estruturas é atingida, ou fica
+  difícil de alcançar, a região inteira perde o serviço.
+- **Como medimos:** distância em linha reta (EPSG:31985) do ponto, ou da
+  linha do trecho, até a estrutura mais próxima. Escala decidida por Pedro:
+  1. acima de 2.000 m
+  2. de 1.500 m a 2.000 m
+  3. de 1.000 m a 1.500 m
+  4. de 500 m a 1.000 m
+  5. até 500 m
+- **De onde vem o dado:** CBTU, Polícia Civil, Corpo de Bombeiros, SAMU,
+  aeroporto e Neoenergia. Camada ainda não montada.
+- **Cuidado:** se quase todos os pontos ficarem acima de 2 km, a variável não
+  diferencia os pontos e vira contexto no painel.
+
+### Proposta em discussão (03/10/2026, Pedro + Claude; levar ao grupo e à Hellis)
+- **I2 Risco sanitário sai do Impacto e vira a definição do V6** (infraestrutura
+  precária = % de domicílios sem ligação à rede de esgoto). Motivo: mede a
+  condição de quem mora ali, não um efeito além do local, e sobrepõe o V3.
+- **I3 Isolamento sai do cálculo** e vira observação qualitativa na ficha da
+  EMLURB e da Defesa Civil ("o ponto isola alguma comunidade?"), mostrada no
+  cartão do painel. Motivo: sem definição nem dado, e sobrepõe o I1 e o I4.
+- Com isso, o Impacto fica com I1 e I4.
 
 ## O que fica fora da nota
 

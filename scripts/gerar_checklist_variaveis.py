@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Gera dados/Recife_Resiliente_Checklist_Subcriterios.xlsx.
+"""Gera dados/Recife_Resiliente_Checklist_Variaveis.xlsx.
 
-Uma linha por subcritério: como medir, escala de notas de 1 a 5, origem da
+Uma linha por variável: como medir, escala de notas de 1 a 5, origem da
 faixa, recomendação, fonte e checklist de confirmação dos dados. Editar a
-lista SUBCRITERIOS abaixo e rodar de novo para atualizar a planilha.
+lista VARIAVEIS abaixo e rodar de novo para atualizar a planilha.
 """
 
 import csv
@@ -14,14 +14,14 @@ from openpyxl.formatting.rule import CellIsRule, ColorScaleRule
 from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 from openpyxl.worksheet.datavalidation import DataValidation
 
-SAIDA = Path(__file__).resolve().parent.parent / "dados" / "Recife_Resiliente_Checklist_Subcriterios.xlsx"
+SAIDA = Path(__file__).resolve().parent.parent / "dados" / "Recife_Resiliente_Checklist_Variaveis.xlsx"
 FONTE = "Arial"
 PONTOS = SAIDA.parent / "processados" / "pontos_rpa6.csv"
 Q = ("Quintil 1 (20% menores)", "Quintil 2", "Quintil 3", "Quintil 4", "Quintil 5 (20% maiores)")
 
-# (critério, código, subcritério, como medir, tipo de nota, (nota 1..5), origem da faixa,
+# (dimensão, código, variável, como medir, tipo de nota, (nota 1..5), origem da faixa,
 #  recomendação, fonte, observação, busca prévia)
-SUBCRITERIOS = [
+VARIAVEIS = [
     ("Probabilidade", "P1", "Frequência e recorrência histórica",
      "Média de eventos por ano nas 3 últimas estações chuvosas", "Faixa fixa",
      ("< 1", "1–2", "3–4", "5–6", "≥ 7"), "Planilha original (provisória)",
@@ -83,11 +83,14 @@ SUBCRITERIOS = [
      "Perguntar se 'equipamentos públicos' inclui outros (CRAS, abrigos). Calibrar com as contagens reais.",
      "CNEFE confirmado na busca (não baixado). Bases do portal localizadas em 03/10 (não abertas)."),
     ("Exposição", "E3", "Comércio e serviços",
-     "Nº de comércios e serviços no círculo", "Quintil", Q, "Planilha original", "Manter",
-     "IBGE — CNEFE 2022 (outras finalidades); IPTU (tipo de empreendimento)",
-     "'Outras finalidades' pode incluir templos e órgãos públicos. Inclui 'perdas econômicas' do "
-     "documento da equipe, que não tem fonte própria.",
-     "CNEFE confirmado na busca (não baixado)."),
+     "Soma do IPTU dos imóveis não residenciais no círculo de 1 km (valor lançado; se não houver, "
+     "o pago). Pontos ordenados e divididos em 5 grupos; empates no mesmo grupo; sem imóvel não "
+     "residencial = nota 1",
+     "Quintil", Q, "Decisão de Pedro (03/10/2026)", "Manter",
+     "Prefeitura do Recife — IPTU 2026 (dados abertos)",
+     "Aspecto econômico do modelo. Círculo de 1 km (exceção aos 300 m). Isentos entram com valor "
+     "zero. Nota relativa aos 21 pontos.",
+     "Segundo Pedro, tem coordenadas e valor pago. Tipo de uso e valor lançado não conferidos."),
     ("Vulnerabilidade", "V2", "População vulnerável",
      "% de moradores com 60+ anos ou 0–4 anos nos setores do círculo (ponderado pela área)",
      "Quintil", Q, "Planilha original", "Manter",
@@ -125,7 +128,7 @@ SUBCRITERIOS = [
      "Ipea — Atlas da Vulnerabilidade Social (UDH)", "Base do Censo 2010.",
      "Site confirmado na busca; faixas e ano-base a confirmar."),
     ("Impacto", "I1", "Tipo de via",
-     "Classe da via mais importante afetada pelo alagamento (no trecho: a própria via)", "Classe",
+     "Passo 1 — Identificar a via afetada. Trecho (Linha ou Vários): a própria via do trecho. Ponto num cruzamento: todas as vias que se cruzam ali; vale a mais importante. Ponto isolado numa via: a própria via.\nPasso 2 — Classificar a via estritamente pela hierarquia viária da CTTU (cttu.recife.pe.gov.br/sistema-viario e Classificação Hierárquica): corredor de transporte metropolitano, corredor de transporte urbano principal, corredor de transporte urbano secundário ou via fora dos corredores. O nome da via (avenida ou rua) não conta.\nPasso 3 — Converter a classe em nota pela escala das colunas G a K.\nRegras: se a classe muda ao longo da via, vale a classe no trecho do ponto; se o ponto pega mais de uma via, vale a de nota mais alta; interdição registrada pela CTTU só confere a nota, não soma.", "Classe",
      ("Ruas", "Demais avenidas", "Corredor de transporte urbano secundário",
       "Corredor de transporte urbano principal", "Corredor de transporte metropolitano"),
      "Pedro (03/10/2026)", "Manter",
@@ -147,6 +150,17 @@ SUBCRITERIOS = [
      "Nova — só entra com definição e fonte", "",
      "Leitura possível: comunidade sem rota alternativa quando o ponto alaga (malha viária). Confirmar com Hellis.",
      "Não pesquisado."),
+    ("Impacto", "I4", "Proximidade a infraestrutura crítica",
+     "Distância em linha reta (EPSG:31985) do ponto, ou da linha do trecho, até a infraestrutura crítica mais "
+     "próxima. Infraestrutura crítica = estrutura cuja interrupção por alagamento deixa sem serviço essencial uma "
+     "área maior que o entorno do ponto: estação de metrô, delegacia, Corpo de Bombeiros, base do SAMU, aeroporto, "
+     "subestação da Neoenergia.", "Faixa fixa",
+     ("> 2.000 m", "1.500–2.000 m", "1.000–1.500 m", "500–1.000 m", "≤ 500 m"),
+     "Pedro (03/10/2026)", "Proposta — conferir se diferencia os 21 pontos",
+     "CBTU (metrô); Polícia Civil / SDS-PE (delegacias); CBMPE (bombeiros); SAMU; Aeroporto do Recife; Neoenergia (subestações)",
+     "Lista definida por Pedro. Em aberto: terminais integrados, estruturas da Compesa, Defesa Civil e abrigos. "
+     "Hospital e UPA ficam no E2. Se quase todos os pontos ficarem acima de 2 km, vira contexto no painel (pendência 18).",
+     "Não pesquisado."),
 ]
 
 # (grupo, termo, o que significa, exemplo no projeto)
@@ -154,12 +168,12 @@ GLOSSARIO = [
     ("Modelo de risco", "Risco",
      "Medida de quão prioritário é um ponto para a prevenção. Calculado como Probabilidade × Consequência, numa escala de 1 a 25.",
      "Um ponto com Probabilidade 4 e Consequência 3 tem risco 12."),
-    ("Modelo de risco", "Critério",
+    ("Modelo de risco", "Dimensão",
      "Um dos 4 grandes componentes do risco: Probabilidade, Exposição, Vulnerabilidade e Impacto.",
-     "Vulnerabilidade é um critério."),
-    ("Modelo de risco", "Subcritério",
-     "Um item medível dentro de um critério. Cada subcritério recebe uma nota de 1 a 5.",
-     "População (E1) é um subcritério da Exposição."),
+     "Vulnerabilidade é uma dimensão."),
+    ("Modelo de risco", "Variável",
+     "Um item medível dentro de uma dimensão. Cada variável recebe uma nota de 1 a 5.",
+     "População (E1) é uma variável da Exposição."),
     ("Modelo de risco", "Probabilidade",
      "Quanto e com que facilidade o ponto alaga: frequência, severidade, maré, proximidade de rio, impermeabilização.",
      "Um ponto que alaga 7 vezes por ano tem Frequência (P1) = 5."),
@@ -176,16 +190,16 @@ GLOSSARIO = [
      "Média ponderada de Exposição, Vulnerabilidade e Impacto, de 1 a 5. É o que multiplica a Probabilidade.",
      "Exposição 4, Vulnerabilidade 2 e Impacto 3 com pesos iguais dão Consequência 3."),
     ("Modelo de risco", "Nota (1 a 5)",
-     "Valor dado a cada subcritério. 5 = mais crítico, 1 = menos crítico.",
+     "Valor dado a cada variável. 5 = mais crítico, 1 = menos crítico.",
      "Nota 5 em Maré (P3) = o ponto alaga conforme a maré."),
     ("Modelo de risco", "Peso",
-     "Importância relativa de um subcritério dentro do critério, ou de um critério dentro da Consequência. Definido pelo grupo. A Probabilidade não tem peso, porque multiplica.",
+     "Importância relativa de uma variável dentro da dimensão, ou de uma dimensão dentro da Consequência. Definido pelo grupo. A Probabilidade não tem peso, porque multiplica.",
      "Frequência e Severidade terão peso maior que Proximidade de rio."),
     ("Modelo de risco", "Média ponderada",
      "Média em que cada item conta conforme o seu peso.",
      "Notas 5 (peso 2) e 2 (peso 1): (5×2 + 2×1) ÷ 3 = 4."),
     ("Modelo de risco", "Cobertura",
-     "Quantos subcritérios têm nota para o ponto. Nota faltante não vira zero nem média: fica de fora e a cobertura mostra a falta.",
+     "Quantas variáveis têm nota para o ponto. Nota faltante não vira zero nem média: fica de fora e a cobertura mostra a falta.",
      "Cobertura 11/13 = faltam 2 notas para aquele ponto."),
     ("Modelo de risco", "Sem Probabilidade, sem risco",
      "Como o risco é uma multiplicação, um ponto sem nota de Probabilidade não tem risco calculado nem posição no ranking.",
@@ -241,13 +255,13 @@ GLOSSARIO = [
      "Sistema de Informação Geográfica: programa para mapas e cálculos espaciais. Usamos o ArcGIS Pro.",
      ""),
     ("Território e SIG", "Círculo de 300 m (buffer)",
-     "Área de 300 m em volta do ponto (ou da linha do trecho) onde se medem os subcritérios do SIG. Usado no cálculo do risco.",
+     "Área de 300 m em volta do ponto (ou da linha do trecho) onde se medem as variáveis do SIG. Usado no cálculo do risco.",
      "Moradores dentro do círculo = População (E1)."),
     ("Território e SIG", "Área de influência de 1 km",
      "Círculo de 1 km mostrado no painel só como informação. Não entra no cálculo, porque com 1 km quase todos os pontos se sobrepõem.",
      ""),
     ("Território e SIG", "Grupo de sobreposição (G1–G5)",
-     "Pontos cujos círculos de 300 m se sobrepõem. Nesses grupos os subcritérios do SIG tendem a dar notas parecidas.",
+     "Pontos cujos círculos de 300 m se sobrepõem. Nesses grupos as variáveis do SIG tendem a dar notas parecidas.",
      "G1 = pontos 5, 6, 7, 11 e 12 (Conselheiro Aguiar)."),
     ("Território e SIG", "Ponderação por área",
      "Quando uma área de dados (setor, célula) corta o círculo, conta só a parte que fica dentro dele.",
@@ -297,7 +311,7 @@ GLOSSARIO = [
      "Fonte provisória de P1, P2 e P3."),
 
     ("Checklist", "Recomendação",
-     "Manter = entra no modelo. Condicional = só entra se o dado existir. Plano B = usado só se outro subcritério falhar. Peso alto / menor = sugestão para a definição dos pesos.",
+     "Manter = entra no modelo. Condicional = só entra se o dado existir. Plano B = usado só se outra variável falhar. Peso alto / menor = sugestão para a definição dos pesos.",
      ""),
     ("Checklist", "Fonte confirmada?",
      "A base de dados existe e a equipe consegue acessá-la (download ou pedido atendido).", ""),
@@ -322,15 +336,18 @@ GLOSSARIO = [
     ("Órgãos", "Grande Recife Consórcio", "Consórcio de transporte metropolitano: linhas e paradas de ônibus.", ""),
 ]
 
-CABECALHO = ["Critério", "Código", "Subcritério", "Como medir", "Tipo de nota",
+CABECALHO = ["Dimensão", "Código", "Variável", "Como medir", "Fonte de medição", "Tipo de nota",
              "Nota 1", "Nota 2", "Nota 3", "Nota 4", "Nota 5", "Origem da faixa",
              "Recomendação", "Fonte", "Fonte confirmada?", "Dado existe na fonte?",
              "Observação", "Busca prévia (Claude)"]
-LARGURAS = (14, 7, 22, 34, 12, 15, 15, 15, 15, 17, 22, 24, 34, 12, 12, 34, 30)
-COR_CRITERIO = {"Probabilidade": "DDEBF7", "Exposição": "E2EFDA",
+LARGURAS = (14, 7, 22, 34, 24, 12, 15, 15, 15, 15, 17, 22, 24, 34, 12, 12, 34, 30)
+COR_DIMENSAO = {"Probabilidade": "DDEBF7", "Exposição": "E2EFDA",
                 "Vulnerabilidade": "FCE4D6", "Impacto": "EDE2F6"}
 COR_NOTA = ("E2EFDA", "F4F9EE", "FFF9E5", "FDE9D9", "F8CBAD")
-COLS_PREENCHER = (14, 15, 16)  # N, O, P
+COLS_PREENCHER = (15, 16, 17)  # O, P, Q
+# Preenchido pela equipe na planilha Google (copiar aqui para a planilha gerada não divergir).
+FONTE_MEDICAO = {"I1": "Sistema viário | CTTU", "E3": "IPTU 2026 | Prefeitura do Recife (dados abertos)"}
+CONFIRMACAO = {"I1": ("Sim", "Sim"), "E3": ("Sim", "Sim")}  # (Fonte confirmada?, Dado existe na fonte?)
 
 
 def gerar_glossario(wb):
@@ -365,7 +382,7 @@ def gerar_glossario(wb):
     ws.auto_filter.ref = f"A4:D{4 + len(GLOSSARIO)}"
 
 
-# Blocos da aba de notas: (critério, [códigos dos subcritérios], tem peso de critério?)
+# Blocos da aba de notas: (dimensão, [códigos das variáveis], tem peso de dimensão?)
 BLOCOS = [
     ("Probabilidade", ["P1", "P2", "P3", "P4", "P5", "P6"], False),
     ("Exposição", ["E1", "E2", "E3"], True),
@@ -379,7 +396,7 @@ def gerar_notas(wb):
     from openpyxl.utils import get_column_letter as L
 
     ws = wb.create_sheet("Notas dos pontos")
-    nomes = {cod: sub for _, cod, sub, *_ in SUBCRITERIOS}
+    nomes = {cod: sub for _, cod, sub, *_ in VARIAVEIS}
     with open(PONTOS, encoding="utf-8") as f:
         pontos = list(csv.DictReader(f))
 
@@ -387,7 +404,7 @@ def gerar_notas(wb):
     ws["A1"].font = Font(name=FONTE, bold=True, size=13)
     ws["A2"] = (
         "Preencha as notas (1 a 5, 5 = mais crítico) nas células amarelas, conforme as escalas da aba "
-        "'Checklist subcritérios'. Linha 'Peso': vazia = todos os pesos iguais. Nota em branco fica fora "
+        "'Checklist variáveis'. Linha 'Peso': vazia = todos os pesos iguais. Nota em branco fica fora "
         "da média (não vira zero). Sem nota de Probabilidade não há risco. P6 e V1 são condicionais e I3, V5 e "
         "V6 ainda não têm definição: deixe em branco se não forem usados. Colunas cinza são calculadas: não edite. 'Grupo de "
         "sobreposição' (G1–G5) = pontos cujos círculos de 300 m se sobrepõem; vazio = ponto isolado. "
@@ -425,10 +442,10 @@ def gerar_notas(wb):
     ws.cell(row=LP, column=len(ident)).alignment = Alignment(horizontal="right")
 
     col = len(ident) + 1
-    nota_criterio = {}   # critério -> coluna da nota do critério
-    notas_cols = []      # colunas de notas de subcritério
+    nota_dimensao = {}   # dimensão -> coluna da nota da dimensão
+    notas_cols = []      # colunas de notas de variável
     for crit, codigos, tem_peso in BLOCOS:
-        cor = PatternFill("solid", fgColor=COR_CRITERIO[crit])
+        cor = PatternFill("solid", fgColor=COR_DIMENSAO[crit])
         ini = col
         for cod in codigos:
             cab(col, f"{cod}\n{nomes[cod]}", fill=cor, font=Font(name=FONTE, bold=True, size=9))
@@ -459,7 +476,7 @@ def gerar_notas(wb):
                 f'=IF(COUNT({a}:{b})=0,"",IFERROR(SUMPRODUCT({a}:{b},{peso})'
                 f'/SUMPRODUCT(({a}:{b}<>"")*{peso}),""))'
             )
-        nota_criterio[crit] = col
+        nota_dimensao[crit] = col
         col += 1
 
     # Resultado
@@ -473,8 +490,8 @@ def gerar_notas(wb):
     g.font, g.fill, g.alignment = Font(name=FONTE, bold=True, color="FFFFFF"), PatternFill("solid", fgColor="C00000"), centro
     ws.merge_cells(start_row=LG, start_column=cC, end_row=LG, end_column=cCob)
 
-    cons = [nota_criterio[c] for c in ("Exposição", "Vulnerabilidade", "Impacto")]
-    cp = L(nota_criterio["Probabilidade"])
+    cons = [nota_dimensao[c] for c in ("Exposição", "Vulnerabilidade", "Impacto")]
+    cp = L(nota_dimensao["Probabilidade"])
     for r in range(r0, r1 + 1):
         w = {c: f"({L(c)}${LP}+({L(c)}${LP}=\"\"))" for c in cons}
         num = "+".join(f"N({L(c)}{r})*{w[c]}" for c in cons)
@@ -505,7 +522,7 @@ def gerar_notas(wb):
             cel = ws.cell(row=r, column=c)
             cel.fill, cel.border, cel.alignment = amarelo, borda, centro
             cel.font = Font(name=FONTE, size=10, color="0000FF")
-        for c in list(nota_criterio.values()) + [cC, cR, cI, cPos, cCob]:
+        for c in list(nota_dimensao.values()) + [cC, cR, cI, cPos, cCob]:
             cel = ws.cell(row=r, column=c)
             cel.fill, cel.border, cel.alignment = cinza, borda, centro
             cel.font = Font(name=FONTE, size=10, bold=c in (cR, cI, cPos))
@@ -532,7 +549,7 @@ def gerar_notas(wb):
     nota = r1 + 2
     textos = [
         "Como o cálculo funciona:",
-        "• Nota do critério = média ponderada das notas dos subcritérios preenchidos (pesos da linha 5; vazio = 1).",
+        "• Nota da dimensão = média ponderada das notas das variáveis preenchidas (pesos da linha 5; vazio = 1).",
         "• Consequência = média ponderada das notas de Exposição, Vulnerabilidade e Impacto (pesos da linha 5 nas colunas cinza 'Nota').",
         "• Risco = nota da Probabilidade × Consequência (1 a 25).",
         "• Índice de risco (0–1) = (Risco − 1) ÷ 24. 0 = risco mínimo (P = 1 e C = 1); 1 = risco máximo (P = 5 e C = 5). "
@@ -555,22 +572,22 @@ def gerar_notas(wb):
 def gerar(saida=SAIDA):
     wb = Workbook()
     ws = wb.active
-    ws.title = "Checklist subcritérios"
+    ws.title = "Checklist variáveis"
 
-    ws["A1"] = "Recife Resiliente — Subcritérios, notas, fontes e checklist dos dados (RPA 6)"
+    ws["A1"] = "Recife Resiliente — Variáveis, notas, fontes e checklist dos dados (RPA 6)"
     ws["A1"].font = Font(name=FONTE, bold=True, size=13)
     ws["A2"] = (
         "Proposta de 02/10/2026 (Pedro + Claude), atualizada em 03/10/2026 com o documento da equipe "
         "(Hellis); não validada pelo grupo. I3, V5 e V6 são novas e ainda sem definição nem escala. Nota 5 = mais crítico. "
         "Faixa fixa = valor absoluto (provisória: calibrar com os dados reais). Quintil = nota relativa "
-        "entre os 21 pontos (Quintil 1 = 20% com menor valor). Preencha as colunas amarelas (N, O e P): "
+        "entre os 21 pontos (Quintil 1 = 20% com menor valor). Preencha as colunas amarelas (O, P e Q): "
         "Sim / Não / Parcial / Pendente. 'Fonte confirmada' = a base existe e é acessível; 'Dado existe "
         "na fonte' = a variável está lá, na escala do círculo de 300 m, e cobre os 21 pontos. "
         "Termos explicados na aba Glossário."
     )
     ws["A2"].font = Font(name=FONTE, italic=True, size=9)
     ws["A2"].alignment = Alignment(wrap_text=True, vertical="top")
-    ws.merge_cells("A2:Q2")
+    ws.merge_cells("A2:R2")
     ws.row_dimensions[2].height = 44
 
     h = 4
@@ -584,60 +601,60 @@ def gerar(saida=SAIDA):
     borda = Border(left=fino, right=fino, top=fino, bottom=fino)
     amarelo = PatternFill("solid", fgColor="FFF2CC")
     r0 = h + 1
-    for i, (crit, cod, sub, medir, tipo, notas, origem, rec, fonte, obs, busca) in enumerate(SUBCRITERIOS):
+    for i, (crit, cod, sub, medir, tipo, notas, origem, rec, fonte, obs, busca) in enumerate(VARIAVEIS):
         r = r0 + i
-        valores = [crit, cod, sub, medir, tipo, *notas, origem, rec, fonte,
-                   "Pendente", "Pendente", obs, busca]
+        valores = [crit, cod, sub, medir, FONTE_MEDICAO.get(cod, ""), tipo, *notas, origem, rec, fonte,
+                   *CONFIRMACAO.get(cod, ("Pendente", "Pendente")), obs, busca]
         for c, v in enumerate(valores, 1):
             cel = ws.cell(row=r, column=c, value=v)
             cel.border = borda
             cel.font = Font(name=FONTE, size=10, color="0000FF" if c in COLS_PREENCHER else "000000")
-            centro = c in (2, 5, 14, 15) or 6 <= c <= 10
+            centro = c in (2, 6, 15, 16) or 7 <= c <= 11
             cel.alignment = Alignment(wrap_text=True, vertical="top",
                                       horizontal="center" if centro else "left")
             if c in COLS_PREENCHER:
                 cel.fill = amarelo
             elif c in (1, 2):
-                cel.fill = PatternFill("solid", fgColor=COR_CRITERIO[crit])
-            elif 6 <= c <= 10:
-                cel.fill = PatternFill("solid", fgColor=COR_NOTA[c - 6])
-    ultima = r0 + len(SUBCRITERIOS) - 1
+                cel.fill = PatternFill("solid", fgColor=COR_DIMENSAO[crit])
+            elif 7 <= c <= 11:
+                cel.fill = PatternFill("solid", fgColor=COR_NOTA[c - 7])
+    ultima = r0 + len(VARIAVEIS) - 1
 
     dv = DataValidation(type="list", formula1='"Sim,Não,Parcial,Pendente"', allow_blank=True)
     ws.add_data_validation(dv)
-    dv.add(f"N{r0}:O{ultima}")
+    dv.add(f"O{r0}:P{ultima}")
     for valor, cor in (("Sim", "C6EFCE"), ("Não", "FFC7CE"), ("Parcial", "FFEB9C")):
         ws.conditional_formatting.add(
-            f"N{r0}:O{ultima}",
+            f"O{r0}:P{ultima}",
             CellIsRule(operator="equal", formula=[f'"{valor}"'],
                        fill=PatternFill("solid", fgColor=cor)))
 
     s = ultima + 2
     ws.cell(row=s, column=1, value="Resumo").font = Font(name=FONTE, bold=True)
-    ws.cell(row=s, column=14, value="Fonte confirmada").font = Font(name=FONTE, bold=True, size=9)
-    ws.cell(row=s, column=15, value="Dado existe").font = Font(name=FONTE, bold=True, size=9)
+    ws.cell(row=s, column=15, value="Fonte confirmada").font = Font(name=FONTE, bold=True, size=9)
+    ws.cell(row=s, column=16, value="Dado existe").font = Font(name=FONTE, bold=True, size=9)
     for k, rotulo in enumerate(("Sim", "Parcial", "Não", "Pendente")):
         rr = s + 1 + k
-        cel = ws.cell(row=rr, column=13, value=rotulo)
+        cel = ws.cell(row=rr, column=14, value=rotulo)
         cel.font = Font(name=FONTE, size=10)
         cel.alignment = Alignment(horizontal="right")
-        for col in ("N", "O"):
-            ws[f"{col}{rr}"] = f"=COUNTIF({col}${r0}:{col}${ultima},$M{rr})"
+        for col in ("O", "P"):
+            ws[f"{col}{rr}"] = f"=COUNTIF({col}${r0}:{col}${ultima},$N{rr})"
             ws[f"{col}{rr}"].font = Font(name=FONTE, size=10)
             ws[f"{col}{rr}"].alignment = Alignment(horizontal="center")
     rr = s + 5
-    cel = ws.cell(row=rr, column=13, value="Subcritérios com fonte e dado confirmados")
+    cel = ws.cell(row=rr, column=14, value="Variáveis com fonte e dado confirmados")
     cel.font = Font(name=FONTE, bold=True, size=10)
     cel.alignment = Alignment(horizontal="right", wrap_text=True)
-    ws[f"O{rr}"] = (f'=COUNTIFS(N{r0}:N{ultima},"Sim",O{r0}:O{ultima},"Sim")'
-                    f'&" de "&ROWS(N{r0}:N{ultima})')
-    ws[f"O{rr}"].font = Font(name=FONTE, bold=True, size=10)
-    ws[f"O{rr}"].alignment = Alignment(horizontal="center")
+    ws[f"P{rr}"] = (f'=COUNTIFS(O{r0}:O{ultima},"Sim",P{r0}:P{ultima},"Sim")'
+                    f'&" de "&ROWS(O{r0}:O{ultima})')
+    ws[f"P{rr}"].font = Font(name=FONTE, bold=True, size=10)
+    ws[f"P{rr}"].alignment = Alignment(horizontal="center")
 
     for i, largura in enumerate(LARGURAS):
         ws.column_dimensions[chr(ord("A") + i)].width = largura
     ws.freeze_panes = f"D{r0}"
-    ws.auto_filter.ref = f"A{h}:Q{ultima}"
+    ws.auto_filter.ref = f"A{h}:R{ultima}"
     ws.page_setup.orientation = "landscape"
     ws.sheet_properties.pageSetUpPr.fitToPage = True
     ws.page_setup.fitToWidth = 1
