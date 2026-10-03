@@ -816,6 +816,14 @@ require([
     { max: 0.5,      cor: "#fc8d59", rotulo: "0,333 – 0,500" },
     { max: Infinity, cor: "#d73027", rotulo: "≥ 0,500" }
   ];
+  /* Símbolo do ponto crítico (mapa/icones/ponto_critico.svg): gota com onda, cor única.
+     O risco aparece pelo tamanho: 14 pt (índice 0) a 26 pt (índice 1). */
+  var ICONE_PONTO = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PGNpcmNsZSBjeD0iMTYiIGN5PSIxNiIgcj0iMTQiIGZpbGw9IiNlMzFhMWMiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSIyIi8+PGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoNy41LDcuNSkgc2NhbGUoMS4xMzMzMzMzMzMzMzMzMzMzKSIgZmlsbD0iI2ZmZiI+CiAgPHBhdGggZD0iTTcuNSAxNEM5LjU3Njg4IDE0IDEyIDEyLjcxMTcgMTIgOS40MzI0MUMxMiA3LjIwNzI0IDguNTM4NDQgMi4yODgzIDcuNSAxQzYuNTc2OTEgMi4yODgzIDMgNy4wOTAwNyAzIDkuNDMyNDFDMyAxMi43MTE3IDUuNDIzMTIgMTQgNy41IDE0WiIvPgo8cGF0aCBkPSJNNC42IDEwLjJjLjk1LS44IDEuOS0uOCAyLjkgMHMxLjk1LjggMi45IDAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2UzMWExYyIgc3Ryb2tlLXdpZHRoPSIxLjQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjwvZz48L3N2Zz4=";
+  function tamanhoPonto(i){ return i == null ? 12 : 14 + 12 * Math.max(0, Math.min(1, i)); }
+  function simboloPonto(i){
+    var t = tamanhoPonto(i);
+    return { type:"picture-marker", url: ICONE_PONTO, width: t, height: t };
+  }
   function corIndice(i){
     if(i == null) return "#9ca3af";
     for(var k=0;k<CLASSES_INDICE.length;k++){ if(i < CLASSES_INDICE[k].max) return CLASSES_INDICE[k].cor; }
@@ -949,8 +957,7 @@ require([
       if(p.lat == null || p.lon == null) return;
       pontosLayer.add(new Graphic({
         geometry: { type:"point", longitude:p.lon, latitude:p.lat },
-        symbol: { type:"simple-marker", style:"circle", color: corIndice(p.indice), size: 14,
-                  outline:{ color:[255,255,255,1], width:1.6 } },
+        symbol: simboloPonto(p.indice),
         attributes: { id: p.id }
       }));
       PONTOS_POR_ID[p.id] = p;
@@ -1121,8 +1128,8 @@ require([
      ===================================================================== */
   function layerSwatchSvg(title){
     if(title && title.indexOf("Pontos críticos") === 0){
-      return '<svg width="44" height="12" viewBox="0 0 44 12">' + CLASSES_INDICE.map(function(c, i){
-        return '<circle cx="' + (6 + i*11) + '" cy="6" r="5" fill="' + c.cor + '" stroke="#fff"/>'; }).join("") + '</svg>';
+      return '<img src="' + ICONE_PONTO + '" width="11" height="11" alt="" style="vertical-align:middle">' +
+             '<img src="' + ICONE_PONTO + '" width="17" height="17" alt="" style="vertical-align:middle;margin-left:3px">';
     }
     return '<svg width="12" height="12" viewBox="0 0 12 12"><rect width="12" height="12" rx="2" fill="#94a3b8"/></svg>';
   }
