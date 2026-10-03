@@ -145,3 +145,45 @@ evento, do COP). Exposição não ganhou subcritérios novos.
 
 Próximo passo: faixas de nota de 1 a 5 de cada subcritério, começando pela
 Probabilidade (que vira a ficha da reunião com a EMLURB).
+
+## Documento da equipe (Hellis, 03/10/2026)
+Documento no Google Docs feito por Hellis, do grupo:
+<https://docs.google.com/document/d/1fs88X9gkLE-rsSib_2g1YIOCM1FZn7Ul-PZSB3PMOos/edit>.
+Seções: mapa institucional (órgão × competência × indicador ×
+responsabilidade), modelo de risco com 4 dimensões e "exemplos de
+variáveis", score, mapa de pontos prioritários, catálogo de controles
+(preventivos, concomitantes, posteriores) e painel.
+
+**Leitura (recomendação, não decisão do grupo):** as dimensões são as mesmas
+4 do modelo. A tabela do documento é a moldura conceitual; a lista acima é a
+versão operacional (fonte, medida no círculo de 300 m, nota de 1 a 5). Não
+trocar os subcritérios; mostrar ao grupo a correspondência abaixo.
+
+| Dimensão | Exemplo do documento | Subcritério correspondente | Observação |
+|---|---|---|---|
+| Probabilidade | Recorrência histórica | P1 | Perguntar se é diferente de frequência |
+| | Frequência | P1 | — |
+| | Intensidade das chuvas | Nenhum | Diferencia pouco 21 pontos na mesma RPA; sugestão: contexto no painel |
+| | Relevo | P6 | Curvas da Condepe/Fidem podem tirar o P6 da condição |
+| | Proximidade de canais | P4 | — |
+| Exposição | População | E1 | — |
+| | Equipamentos públicos | E2 | — |
+| | Comércio | E3 | — |
+| | Vias principais | I1 | Contar só no Impacto, para não repetir |
+| Impacto | Interrupção do trânsito | I1 | — |
+| | Hospitais/escolas atingidos | E2 | Contagem dupla se ficar também no Impacto. "Rota até hospital" já tinha sido descartada (resposta ao evento, do COP) |
+| | Perdas econômicas | E3 | Sem fonte para perda; contagem dupla com o comércio |
+| | Isolamento | Nenhum | Nova: comunidade sem rota alternativa. Medida possível pela malha viária |
+| Vulnerabilidade | ZEIS | V3 (apoio) | Fonte localizada: ZEIS do Plano Diretor |
+| | População vulnerável | V2 / V1 | — |
+| | Dificuldade de evacuação | Nenhum | Nova; definição a pedir a Hellis |
+| | Infraestrutura precária | V4 / I2 | Nova; definição a pedir a Hellis |
+
+Os subcritérios P2 (severidade), P3 (maré), P5 (impermeabilização) e I2
+(risco sanitário) não aparecem nos exemplos do documento; a recomendação é
+mantê-los.
+
+O comentário do documento sugere uma **matriz GUT** para o score. O cálculo
+decidido em 02/10 é **Probabilidade × Consequência**; a recomendação é
+mantê-lo, porque usa as próprias 4 dimensões do documento. Fica para o grupo
+confirmar (pendência 14).
