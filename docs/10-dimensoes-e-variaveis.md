@@ -185,8 +185,9 @@ funcionar na cidade quando o ponto alaga, mesmo para quem não mora perto.
   4. Corredor de transporte urbano principal
   5. Corredor de transporte metropolitano
 
-  Em discussão: trocar as notas 1 e 2 por "vias locais" e "demais vias
-  arteriais e coletoras", para seguir a hierarquia também fora dos corredores.
+  Decidido por Pedro em 03/10/2026: manter esta escala. A classificação
+  hierárquica da LPUOS 2025 (Lei 19.426/2025, art. 171: arterial, coletora,
+  local, trânsito rápido) não substitui as classes acima.
 - **De onde vem o dado:** hierarquia viária da CTTU (o site está bloqueado no
   ambiente; lista ainda não obtida). Pendência 17.
 
