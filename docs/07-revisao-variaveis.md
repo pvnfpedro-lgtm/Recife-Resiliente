@@ -57,7 +57,7 @@ desenhar a linha do trecho e aplicar um buffer de 300 m em volta dela.
   (15) contam as unidades de saúde duas vezes.
 - *Custo recorrente* (12) acompanha a frequência dos eventos.
 
-**4. Alguns variáveis medem causa ou resposta, não risco.**
+**4. Algumas variáveis medem causa ou resposta, não risco.**
 - *Fragilidade da drenagem* (20) e *Dependência de equipamento* (21) explicam
   **por que** o ponto alaga. Se a frequência já está no score, eles contam o
   mesmo efeito outra vez. O lugar deles é o **diagnóstico de causa**, que diz
