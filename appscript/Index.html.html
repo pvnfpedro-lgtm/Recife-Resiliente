@@ -808,7 +808,25 @@ require([
   var PONTOS_TITULO = "Pontos críticos — RPA 6 (teste)";
   var CORTE_RISCO = 9;
   var pontosLayer = new GraphicsLayer({ title: PONTOS_TITULO });
+  /* Área de influência: círculo de 1 km em volta de cada ponto crítico (só informação; o score usa 300 m) */
+  var RAIO_TITULO = "Área de influência — 1 km";
+  var RAIO_M = 1000;
+  var raioLayer = new GraphicsLayer({ title: RAIO_TITULO });
+  map.add(raioLayer);
   map.add(pontosLayer);
+  // Polígono do círculo (64 vértices) calculado na esfera a partir de lon/lat.
+  function circuloGeo(lon, lat, raioM){
+    var R = 6371008.8, d = raioM / R, la1 = lat * Math.PI / 180, lo1 = lon * Math.PI / 180, anel = [];
+    for(var k = 0; k <= 64; k++){
+      var b = 2 * Math.PI * k / 64;
+      var la2 = Math.asin(Math.sin(la1) * Math.cos(d) + Math.cos(la1) * Math.sin(d) * Math.cos(b));
+      var lo2 = lo1 + Math.atan2(Math.sin(b) * Math.sin(d) * Math.cos(la1), Math.cos(d) - Math.sin(la1) * Math.sin(la2));
+      anel.push([lo2 * 180 / Math.PI, la2 * 180 / Math.PI]);
+    }
+    return { type:"polygon", rings:[anel], spatialReference:{ wkid:4326 } };  // sentido horário (anel externo)
+  }
+  var SIMBOLO_RAIO = { type:"simple-fill", color:[227,26,28,0.05],
+                       outline:{ color:[227,26,28,0.55], width:1.2, style:"short-dash" } };
 
   var CLASSES_INDICE = [
     { max: 0.2,      cor: "#1a9850", rotulo: "< 0,200" },
@@ -951,10 +969,12 @@ require([
       return;
     }
     pontosLayer.removeAll();
+    raioLayer.removeAll();
     fecharCartao();
     PONTOS_POR_ID = {};
     res.pontos.forEach(function(p){
       if(p.lat == null || p.lon == null) return;
+      raioLayer.add(new Graphic({ geometry: circuloGeo(p.lon, p.lat, RAIO_M), symbol: SIMBOLO_RAIO, attributes: { id: p.id } }));
       pontosLayer.add(new Graphic({
         geometry: { type:"point", longitude:p.lon, latitude:p.lat },
         symbol: simboloPonto(p.indice),
@@ -1130,6 +1150,9 @@ require([
     if(title && title.indexOf("Pontos críticos") === 0){
       return '<img src="' + ICONE_PONTO + '" width="11" height="11" alt="" style="vertical-align:middle">' +
              '<img src="' + ICONE_PONTO + '" width="17" height="17" alt="" style="vertical-align:middle;margin-left:3px">';
+    }
+    if(title === RAIO_TITULO){
+      return '<svg width="14" height="14" viewBox="0 0 14 14"><circle cx="7" cy="7" r="6" fill="rgba(227,26,28,.08)" stroke="rgba(227,26,28,.7)" stroke-width="1.2" stroke-dasharray="2.5 2"/></svg>';
     }
     return '<svg width="12" height="12" viewBox="0 0 12 12"><rect width="12" height="12" rx="2" fill="#94a3b8"/></svg>';
   }
