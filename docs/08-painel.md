@@ -28,6 +28,13 @@ O painel em Google Apps Script já existente é a base. Muita coisa vai mudar.
   que deu certo". O `clasp push` não altera nenhuma delas.
 - 02/10/2026: primeiro `clasp push` (pontos críticos lidos da planilha,
   sem HidroData).
+- 03/10/2026: `clasp push` com os subcritérios de 03/10 (nomes novos; I3, V5
+  e V6) e a função única `atualizarSubcriterios0310`, executada por Pedro no
+  editor. Aba "Notas dos pontos" conferida: 7 cabeçalhos renomeados, V5 e V6
+  antes do V1, I3 antes do I2 (ordem I1, I3, I2), colunas novas sem nota e
+  sem peso, "Notas preenchidas" = 15 nos 21 pontos, risco calculado nos 21.
+  Fórmulas escritas por script não usam separador de argumentos (planilha em
+  pt-BR usa `;`).
 
 ## Estado em 02/10/2026 (aprovado por Pedro)
 - Paleta: #0869A6 · #2685BF · #5496BF · #FFFFFF · #F2F2F2 (painel inteiro).
