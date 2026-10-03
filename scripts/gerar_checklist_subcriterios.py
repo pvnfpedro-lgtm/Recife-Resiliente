@@ -22,12 +22,13 @@ Q = ("Quintil 1 (20% menores)", "Quintil 2", "Quintil 3", "Quintil 4", "Quintil 
 # (critério, código, subcritério, como medir, tipo de nota, (nota 1..5), origem da faixa,
 #  recomendação, fonte, observação, busca prévia)
 SUBCRITERIOS = [
-    ("Probabilidade", "P1", "Frequência de alagamento",
+    ("Probabilidade", "P1", "Frequência e recorrência histórica",
      "Média de eventos por ano nas 3 últimas estações chuvosas", "Faixa fixa",
      ("< 1", "1–2", "3–4", "5–6", "≥ 7"), "Planilha original (provisória)",
      "Manter — peso alto",
      "Ficha preenchida com a EMLURB (agora); ocorrências do COP e da Defesa Civil (confirmação)",
-     "Pedido ao COP via tutora/CGM. 156 só para conferir. Calibrar faixas com a distribuição real.",
+     "Pedido ao COP via tutora/CGM. 156 só para conferir. Calibrar faixas com a distribuição real. "
+     "'Recorrência histórica' (documento da equipe) fica aqui se for o mesmo que frequência (pendência 16).",
      "Não verificado: depende de pedido aos órgãos."),
     ("Probabilidade", "P2", "Severidade",
      "Altura máxima da água e tempo para baixar; nota = média das duas notas, arredondada para cima",
@@ -60,48 +61,62 @@ SUBCRITERIOS = [
      "Planilha original (provisória)", "Manter — peso menor (suscetibilidade)",
      "MapBiomas (30 m); alternativa: edificações do ESIG",
      "Se quase todos os pontos ficarem em < 10%, trocar por quintis.", "Não verificado."),
-    ("Probabilidade", "P6", "Baixio",
+    ("Probabilidade", "P6", "Relevo (baixio)",
      "Cota do ponto menos a cota média do círculo (m); quanto mais baixo, maior a nota",
      "Quintil (invertido)",
      ("Quintil mais alto", "Quintil 2", "Quintil 3", "Quintil 4", "Quintil mais baixo"),
      "Proposta Claude (quintis)", "Condicional — só com curvas de nível ou modelo de terreno",
-     "ESIG (curvas de nível, a verificar); topografia da Prefeitura",
-     "Medida mais objetiva de acúmulo de água.",
-     "Não encontrado modelo de terreno público na busca."),
+     "Condepe/Fidem — Acervo Cartográfico (curvas de nível); ESIG (a verificar)",
+     "Medida mais objetiva de acúmulo de água. 'Relevo' do documento da equipe.",
+     "Condepe/Fidem localizado na busca: curvas de 1 m na área urbana (não aberto)."),
     ("Exposição", "E1", "População",
      "Moradores no círculo de 300 m (soma de população × fração da célula dentro do círculo)",
      "Quintil", Q, "Planilha original", "Manter",
      "IBGE — Grade Estatística 2022 (células de 200 × 200 m)",
      "No painel, mostrar também o valor em 1 km.", "Confirmado na busca (não baixado)."),
-    ("Exposição", "E2", "Equipamentos sensíveis",
+    ("Exposição", "E2", "Equipamentos públicos",
      "Nº de escolas, creches e unidades de saúde no círculo", "Faixa fixa",
      ("Nenhum", "1", "2", "3–4", "≥ 5 ou hospital/UPA no círculo"),
      "Proposta Claude (provisória)", "Manter",
-     "IBGE — CNEFE 2022 (ensino e saúde); CNES/DATASUS",
-     "Calibrar com as contagens reais. Conferir se creches aparecem como 'ensino'.",
-     "CNEFE confirmado na busca (não baixado)."),
-    ("Exposição", "E3", "Atividade econômica",
+     "Portal de dados abertos (escolas municipais, UBS, hospitais, rede de saúde); IBGE — CNEFE 2022 (ensino e saúde); CNES/DATASUS",
+     "Inclui 'hospitais/escolas atingidos' do documento da equipe (sem contar duas vezes no Impacto). "
+     "Perguntar se 'equipamentos públicos' inclui outros (CRAS, abrigos). Calibrar com as contagens reais.",
+     "CNEFE confirmado na busca (não baixado). Bases do portal localizadas em 03/10 (não abertas)."),
+    ("Exposição", "E3", "Comércio e serviços",
      "Nº de comércios e serviços no círculo", "Quintil", Q, "Planilha original", "Manter",
-     "IBGE — CNEFE 2022 (outras finalidades)",
-     "'Outras finalidades' pode incluir templos e órgãos públicos.",
+     "IBGE — CNEFE 2022 (outras finalidades); IPTU (tipo de empreendimento)",
+     "'Outras finalidades' pode incluir templos e órgãos públicos. Inclui 'perdas econômicas' do "
+     "documento da equipe, que não tem fonte própria.",
      "CNEFE confirmado na busca (não baixado)."),
-    ("Vulnerabilidade", "V2", "Grupos sensíveis",
+    ("Vulnerabilidade", "V2", "População vulnerável",
      "% de moradores com 60+ anos ou 0–4 anos nos setores do círculo (ponderado pela área)",
      "Quintil", Q, "Planilha original", "Manter",
      "IBGE — Agregados por setor 2022 (idade)", "",
      "Idade por setor confirmada na busca (não baixado)."),
-    ("Vulnerabilidade", "V3", "Favelas e comunidades urbanas",
-     "% da área do círculo em favelas e comunidades urbanas", "Faixa fixa",
+    ("Vulnerabilidade", "V3", "ZEIS, favelas e comunidades",
+     "% da área do círculo em favelas e comunidades urbanas (IBGE 2022) ou em ZEIS 1", "Faixa fixa",
      ("0%", "< 10%", "10–25%", "25–50%", "> 50%"), "Proposta Claude (provisória)",
      "Manter — substitui o V1 se a malha 2022 existir",
-     "IBGE — Favelas e Comunidades Urbanas 2022 (malha)", "Mais atual que o IVS (2010).",
-     "Não verificado."),
+     "IBGE — Favelas e Comunidades Urbanas 2022 (malha); ZEIS do Plano Diretor e relação de favelas (portal)",
+     "Mais atual que o IVS (2010). ZEIS 2 (terrenos vazios) não conta.",
+     "ZEIS e relação de favelas localizadas no portal (não abertas); malha IBGE não verificada."),
     ("Vulnerabilidade", "V4", "Tipo de moradia",
      "% de domicílios do tipo casa nos setores do círculo", "Quintil", Q,
      "Proposta Claude (quintis)", "Manter",
      "IBGE — Agregados por setor 2022 (tipo de domicílio)",
      "Casa térrea é mais atingida que apartamento.",
      "Não verificado se a variável está no arquivo por setor."),
+    ("Vulnerabilidade", "V5", "Dificuldade de evacuação",
+     "Definição pendente (pendência 15)", "", ("", "", "", "", ""),
+     "Documento da equipe (Hellis, 03/10/2026)",
+     "Nova — só entra com definição e fonte", "", "Pedir a definição a Hellis antes de procurar dado.",
+     "Não pesquisado."),
+    ("Vulnerabilidade", "V6", "Infraestrutura precária",
+     "Definição pendente (pendência 15)", "", ("", "", "", "", ""),
+     "Documento da equipe (Hellis, 03/10/2026)",
+     "Nova — só entra com definição e fonte", "",
+     "Pode absorver o V4 (tipo de moradia) e o I2 (esgoto). Pedir a definição a Hellis.",
+     "Não pesquisado."),
     ("Vulnerabilidade", "V1", "Vulnerabilidade social (IVS)",
      "Maior IVS entre as UDHs que tocam o círculo", "Faixa fixa",
      ("Muito baixa (0–0,200)", "Baixa (0,201–0,300)", "Média (0,301–0,400)",
@@ -109,22 +124,29 @@ SUBCRITERIOS = [
      "Faixas do Ipea (conferir no Atlas)", "Plano B — só se o V3 não estiver disponível",
      "Ipea — Atlas da Vulnerabilidade Social (UDH)", "Base do Censo 2010.",
      "Site confirmado na busca; faixas e ano-base a confirmar."),
-    ("Impacto", "I1", "Mobilidade",
-     "Classe da via mais importante afetada pelo alagamento; +1 se houver interdição registrada pela CTTU (máximo 5)",
-     "Classe",
-     ("Via local ou de pedestres", "Coletora", "Arterial secundária", "Arterial principal",
-      "Trânsito rápido ou corredor de ônibus"),
-     "Proposta Claude, a partir da classificação viária usada na planilha original",
-     "Manter",
-     "Hierarquia viária (ESIG / CTTU); OSM; paradas (Grande Recife); interdições (CTTU)",
-     "Pedir a Antônio (CTTU): hierarquia viária, linhas e registro de interdições.",
-     "Vias no ESIG confirmadas na busca; ônibus e interdições não verificados."),
+    ("Impacto", "I1", "Tipo de via",
+     "Classe da via mais importante afetada pelo alagamento (no trecho: a própria via)", "Classe",
+     ("Ruas", "Demais avenidas", "Corredor de transporte urbano secundário",
+      "Corredor de transporte urbano principal", "Corredor de transporte metropolitano"),
+     "Pedro (03/10/2026)", "Manter",
+     "Corredores de ônibus (portal de dados abertos); hierarquia viária e corredores (CTTU / Grande Recife)",
+     "Interdição registrada pela CTTU serve só para conferir a nota (não soma). Junta 'vias principais' e "
+     "'interrupção do trânsito' do documento da equipe. Confirmar qual base classifica os corredores em "
+     "metropolitano / urbano principal / urbano secundário (pendência 17).",
+     "Corredores de ônibus localizados no portal (não abertos); classificação dos corredores não verificada."),
     ("Impacto", "I2", "Risco sanitário",
      "% de domicílios sem ligação à rede de esgoto nos setores do círculo", "Quintil", Q,
      "Proposta Claude (quintis)", "Manter",
      "IBGE — Agregados por setor 2022 (esgotamento); Compesa",
-     "Quintis porque a cobertura de esgoto no Recife é baixa e faixas fixas podem saturar.",
+     "Quintis porque a cobertura de esgoto no Recife é baixa e faixas fixas podem saturar. "
+     "Pode passar para o V6 (infraestrutura precária).",
      "Esgotamento por setor confirmado na busca (não baixado)."),
+    ("Impacto", "I3", "Isolamento",
+     "Definição pendente (pendência 15)", "", ("", "", "", "", ""),
+     "Documento da equipe (Hellis, 03/10/2026)",
+     "Nova — só entra com definição e fonte", "",
+     "Leitura possível: comunidade sem rota alternativa quando o ponto alaga (malha viária). Confirmar com Hellis.",
+     "Não pesquisado."),
 ]
 
 # (grupo, termo, o que significa, exemplo no projeto)
@@ -142,14 +164,14 @@ GLOSSARIO = [
      "Quanto e com que facilidade o ponto alaga: frequência, severidade, maré, proximidade de rio, impermeabilização.",
      "Um ponto que alaga 7 vezes por ano tem Frequência (P1) = 5."),
     ("Modelo de risco", "Exposição",
-     "Quem e o que está no caminho da água dentro do círculo de 300 m: moradores, escolas, unidades de saúde, comércio.",
-     "Um ponto com muitas escolas por perto tem Equipamentos sensíveis (E2) alto."),
+     "Quem e o que está no caminho da água dentro do círculo de 300 m: moradores, equipamentos públicos, comércio. O que está no círculo conta só aqui, não no Impacto.",
+     "Um ponto com muitas escolas por perto tem Equipamentos públicos (E2) alto."),
     ("Modelo de risco", "Vulnerabilidade",
-     "Quanto quem está ali tem dificuldade de lidar com o alagamento: idosos e crianças, favelas e comunidades, moradia térrea.",
+     "Quanto quem está ali tem dificuldade de lidar com o alagamento: idosos e crianças, ZEIS, favelas e comunidades, moradia térrea.",
      "Área com muitas casas térreas tem Tipo de moradia (V4) alto."),
     ("Modelo de risco", "Impacto",
-     "Consequência que vai além do local: mobilidade da cidade e saúde pública (esgoto).",
-     "Alagamento numa avenida arterial com ônibus tem Mobilidade (I1) alta."),
+     "Consequência que vai além do local: trânsito nas vias principais, saúde pública (esgoto) e isolamento.",
+     "Alagamento num corredor de transporte metropolitano tem Tipo de via (I1) = 5."),
     ("Modelo de risco", "Consequência",
      "Média ponderada de Exposição, Vulnerabilidade e Impacto, de 1 a 5. É o que multiplica a Probabilidade.",
      "Exposição 4, Vulnerabilidade 2 e Impacto 3 com pesos iguais dão Consequência 3."),
@@ -168,6 +190,9 @@ GLOSSARIO = [
     ("Modelo de risco", "Sem Probabilidade, sem risco",
      "Como o risco é uma multiplicação, um ponto sem nota de Probabilidade não tem risco calculado nem posição no ranking.",
      "Por isso a ficha com a EMLURB é prioritária."),
+    ("Modelo de risco", "Contexto no painel",
+     "Informação mostrada no painel sem entrar na nota, porque varia pouco entre os 21 pontos ou não tem dado por ponto.",
+     "Intensidade das chuvas (documento da equipe)."),
     ("Modelo de risco", "Tratabilidade",
      "Se é fácil agir no ponto (governança, natureza da causa, obra ou orçamento em andamento). Fica FORA do risco. 5 = mais fácil.",
      "Ponto com dono definido e causa de manutenção tem tratabilidade alta."),
@@ -344,8 +369,8 @@ def gerar_glossario(wb):
 BLOCOS = [
     ("Probabilidade", ["P1", "P2", "P3", "P4", "P5", "P6"], False),
     ("Exposição", ["E1", "E2", "E3"], True),
-    ("Vulnerabilidade", ["V2", "V3", "V4", "V1"], True),
-    ("Impacto", ["I1", "I2"], True),
+    ("Vulnerabilidade", ["V2", "V3", "V4", "V5", "V6", "V1"], True),
+    ("Impacto", ["I1", "I2", "I3"], True),
 ]
 
 
@@ -363,8 +388,8 @@ def gerar_notas(wb):
     ws["A2"] = (
         "Preencha as notas (1 a 5, 5 = mais crítico) nas células amarelas, conforme as escalas da aba "
         "'Checklist subcritérios'. Linha 'Peso': vazia = todos os pesos iguais. Nota em branco fica fora "
-        "da média (não vira zero). Sem nota de Probabilidade não há risco. P6 e V1 são condicionais: "
-        "deixe em branco se não forem usados. Colunas cinza são calculadas: não edite. 'Grupo de "
+        "da média (não vira zero). Sem nota de Probabilidade não há risco. P6 e V1 são condicionais e I3, V5 e "
+        "V6 ainda não têm definição: deixe em branco se não forem usados. Colunas cinza são calculadas: não edite. 'Grupo de "
         "sobreposição' (G1–G5) = pontos cujos círculos de 300 m se sobrepõem; vazio = ponto isolado. "
         "Coordenadas em graus decimais (WGS 84), ainda NÃO verificadas: 'Aproximado' e 'Interseção' "
         "foram localizadas automaticamente pelo OpenStreetMap."
@@ -535,7 +560,8 @@ def gerar(saida=SAIDA):
     ws["A1"] = "Recife Resiliente — Subcritérios, notas, fontes e checklist dos dados (RPA 6)"
     ws["A1"].font = Font(name=FONTE, bold=True, size=13)
     ws["A2"] = (
-        "Proposta de 02/10/2026 (Pedro + Claude), não validada pelo grupo. Nota 5 = mais crítico. "
+        "Proposta de 02/10/2026 (Pedro + Claude), atualizada em 03/10/2026 com o documento da equipe "
+        "(Hellis); não validada pelo grupo. I3, V5 e V6 são novas e ainda sem definição nem escala. Nota 5 = mais crítico. "
         "Faixa fixa = valor absoluto (provisória: calibrar com os dados reais). Quintil = nota relativa "
         "entre os 21 pontos (Quintil 1 = 20% com menor valor). Preencha as colunas amarelas (N, O e P): "
         "Sim / Não / Parcial / Pendente. 'Fonte confirmada' = a base existe e é acessível; 'Dado existe "

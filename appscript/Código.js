@@ -18,7 +18,7 @@ var LINHA_CABECALHO = 6;
 
 /* Códigos dos subcritérios, na ordem das colunas da aba. */
 var SUBCRITERIOS = ['P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'E1', 'E2', 'E3',
-                    'V2', 'V3', 'V4', 'V1', 'I1', 'I2'];
+                    'V2', 'V3', 'V4', 'V5', 'V6', 'V1', 'I1', 'I2', 'I3'];
 
 function getPontosCriticos() {
   try {
@@ -46,6 +46,12 @@ function getPontosCriticos() {
     if (faltando.length) return { erro: 'Colunas não encontradas: ' + faltando.join(', ') };
 
     function num(v) { return (typeof v === 'number' && !isNaN(v)) ? v : null; }
+    // Nome de cada subcritério = texto do cabeçalho depois do código ("P1 Frequência..." → "Frequência...").
+    var nomes = {};
+    SUBCRITERIOS.forEach(function (cod) {
+      var k = col(cod + ' ');
+      if (k >= 0) nomes[cod] = cab[k].slice(cod.length).trim();
+    });
     var pontos = [];
     for (var r = LINHA_CABECALHO; r < valores.length; r++) {
       var linha = valores[r];
@@ -61,7 +67,7 @@ function getPontosCriticos() {
         posicao: num(linha[c.posicao]), preenchidas: num(linha[c.preenchidas]), notas: subs
       });
     }
-    return { pontos: pontos, lidoEm: new Date().toISOString() };
+    return { pontos: pontos, nomes: nomes, lidoEm: new Date().toISOString() };
   } catch (e) {
     return { erro: String(e && e.message ? e.message : e) };
   }

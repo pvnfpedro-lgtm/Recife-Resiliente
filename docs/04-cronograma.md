@@ -16,3 +16,9 @@
 2. Fechar os pesos com o grupo.
 3. Conferir as coordenadas dos 21 pontos.
 4. Definir o índice de vulnerabilidade social (IVS/Ipea ou outro).
+
+## O que o painel precisa (Ishikawa)
+![Ishikawa do painel de risco](img/ishikawa_painel.png)
+
+Situação em 03/10/2026. Gerado por `scripts/gerar_ishikawa.py`: mude a
+situação do item no script e rode de novo (o PNG é exportado do SVG).
