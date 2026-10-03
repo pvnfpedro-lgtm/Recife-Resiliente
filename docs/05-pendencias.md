@@ -35,6 +35,8 @@ Tudo o que estiver aqui **não** pode ir para a apresentação sem conferência.
   RPA 6, coordenadas e período ainda não conferidos.
 - Imóveis Especiais de Preservação (IEPs): formato, geometria e data de
   atualização ainda não conferidos; uso no modelo a decidir com o grupo.
+- Favelas, cortiços e loteamentos irregulares: se há geometria, ano de
+  referência e coerência com a malha IBGE 2022 ainda não conferidos.
 - Produtos do IBGE 2022 (Grade Estatística, CNEFE, agregados por setor):
   existência confirmada na busca, arquivos ainda não abertos.
 - Malha de favelas e comunidades 2022, tipo de domicílio por setor, curvas de
