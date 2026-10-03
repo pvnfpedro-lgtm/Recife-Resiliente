@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 544" width="760" height="544" font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="13">
+  <title>Risco = Probabilidade × Consequência, de 1 a 25</title>
+  <rect width="760" height="544" fill="#FFFFFF"/>
+  <defs>
+    <marker id="seta" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0 0L10 5L0 10z" fill="#8A8F94"/>
+    </marker>
+  </defs>
+  <text x="24" y="32" font-size="15" font-weight="600" fill="#1F2A33">Risco = Probabilidade × Consequência, de 1 a 25</text>
+  <text x="24" y="54" font-size="11.5" fill="#4A5763">Cada subcritério recebe nota de 1 a 5 (5 = mais crítico), medida no círculo de 300 m</text>
+
+  <g fill="none" stroke="#8A8F94" stroke-width="1.25">
+    <path d="M324 120H670V196" marker-end="url(#seta)"/>
+    <path d="M324 240H348M324 344H348M324 448H348M348 240V448"/>
+    <path d="M348 344H372" marker-end="url(#seta)"/>
+    <path d="M572 344H670V268" marker-end="url(#seta)"/>
+  </g>
+  <text x="480" y="110" text-anchor="middle" font-size="11.5" fill="#4A5763">multiplica a Consequência</text>
+
+  <g>
+    <rect x="24" y="76" width="300" height="88" rx="8" fill="#F2F2F2" stroke="#5496BF" stroke-width="1.25"/>
+    <text x="40" y="100" font-weight="600" fill="#1F2A33">Probabilidade</text>
+    <text x="40" y="116" font-size="11.5" fill="#4A5763">Quanto e com que facilidade o ponto alaga</text>
+    <text x="40" y="132" font-size="11.5" fill="#1F2A33">P1 a P6: frequência, severidade, maré,</text>
+    <text x="40" y="148" font-size="11.5" fill="#1F2A33">rio ou canal, impermeabilização, relevo</text>
+  </g>
+  <g>
+    <rect x="24" y="196" width="300" height="88" rx="8" fill="#F2F2F2" stroke="#5496BF" stroke-width="1.25"/>
+    <text x="40" y="220" font-weight="600" fill="#1F2A33">Exposição</text>
+    <text x="40" y="236" font-size="11.5" fill="#4A5763">O que está no círculo de 300 m</text>
+    <text x="40" y="252" font-size="11.5" fill="#1F2A33">E1 a E3: população, equipamentos</text>
+    <text x="40" y="268" font-size="11.5" fill="#1F2A33">públicos, comércio e serviços</text>
+  </g>
+  <g>
+    <rect x="24" y="300" width="300" height="88" rx="8" fill="#F2F2F2" stroke="#5496BF" stroke-width="1.25"/>
+    <text x="40" y="324" font-weight="600" fill="#1F2A33">Vulnerabilidade</text>
+    <text x="40" y="340" font-size="11.5" fill="#4A5763">Se quem está ali consegue lidar</text>
+    <text x="40" y="356" font-size="11.5" fill="#1F2A33">V1 a V6: idosos e crianças, ZEIS,</text>
+    <text x="40" y="372" font-size="11.5" fill="#1F2A33">moradia, evacuação, infraestrutura</text>
+  </g>
+  <g>
+    <rect x="24" y="404" width="300" height="88" rx="8" fill="#F2F2F2" stroke="#5496BF" stroke-width="1.25"/>
+    <text x="40" y="428" font-weight="600" fill="#1F2A33">Impacto</text>
+    <text x="40" y="444" font-size="11.5" fill="#4A5763">O efeito que vai além do local</text>
+    <text x="40" y="460" font-size="11.5" fill="#1F2A33">I1 a I3: tipo de via, esgoto,</text>
+    <text x="40" y="476" font-size="11.5" fill="#1F2A33">isolamento</text>
+  </g>
+  <g>
+    <rect x="372" y="316" width="200" height="56" rx="8" fill="#FFFFFF" stroke="#2685BF" stroke-width="1.5"/>
+    <text x="472" y="340" text-anchor="middle" font-weight="600" fill="#1F2A33">Consequência (1 a 5)</text>
+    <text x="472" y="356" text-anchor="middle" font-size="11.5" fill="#4A5763">média ponderada de E, V e I</text>
+  </g>
+  <g>
+    <rect x="604" y="196" width="132" height="72" rx="8" fill="#0869A6" stroke="#0869A6" stroke-width="2"/>
+    <text x="670" y="220" text-anchor="middle" font-weight="600" fill="#FFFFFF">Risco (1 a 25)</text>
+    <text x="670" y="236" text-anchor="middle" font-size="11.5" fill="#FFFFFF">Probabilidade ×</text>
+    <text x="670" y="252" text-anchor="middle" font-size="11.5" fill="#FFFFFF">Consequência</text>
+  </g>
+  <text x="24" y="524" font-size="11.5" fill="#4A5763">V5, V6 e I3 ainda sem definição. V1 só entra se faltar o V3; P6 só com curvas de nível.</text>
+</svg>

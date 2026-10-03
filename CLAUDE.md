@@ -30,6 +30,11 @@ Critérios, Fontes de dados e Pontos RPA 6.
   `dados/Recife_Resiliente_Checklist_Subcriterios.xlsx` (gerado por
   `scripts/gerar_checklist_subcriterios.py`). Índice de risco 0–1 =
   (Risco − 1) ÷ 24.
+- **Documento-chave dos critérios e subcritérios:**
+  `docs/10-criterios-e-subcriterios.md`. Toda decisão sobre critério,
+  subcritério ou escala é registrada nele primeiro. O Google Docs
+  `12zj_bPx0u5ejNpUsbFNEPsy7WGpTRwuH6k23O0k8f2I` é cópia para a equipe
+  ler e comentar; atualizar a partir do Markdown quando Pedro pedir.
 - **Planilha oficial das notas (Google Sheets nativa):**
   `1DN3abWIPk0dvOkh-28D2NGYBLgMI437Vx7Sk7TqpDc0`, aba "Notas dos pontos".
   As notas atuais são de TESTE (`=RANDBETWEEN(1,5)`); mudam a cada recálculo.
