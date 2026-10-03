@@ -24,6 +24,9 @@ Tudo o que estiver aqui **não** pode ir para a apresentação sem conferência.
 - Papéis de cada órgão na prevenção (tabela em `01-contexto.md`): leitura
   preliminar.
 - Ano-base do IVS/Ipea por UDH: a confirmar.
+- Base do IPTU (portal de dados abertos): coordenadas, sistema de
+  coordenadas, ano e categorias do tipo de empreendimento ainda não abertos
+  nem conferidos.
 - Produtos do IBGE 2022 (Grade Estatística, CNEFE, agregados por setor):
   existência confirmada na busca, arquivos ainda não abertos.
 - Malha de favelas e comunidades 2022, tipo de domicílio por setor, curvas de
