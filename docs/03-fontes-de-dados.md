@@ -29,13 +29,13 @@ coordenadas.
 | Fluxo de veículos por hora (Prefeitura do Recife) | [dados.recife.pe.gov.br — recurso fluxo de veículos por hora](https://dados.recife.pe.gov.br/dataset/fluxo-de-veiculo-por-hora/resource/e019893b-c054-4c1b-819f-fdf9b56399d6) | A confirmar | Impacto: Mobilidade afetada (volume de tráfego na via do ponto ou próxima a ele) | Localizada por Pedro em 03/10/2026; **não conferida** | Conferir de onde vem a contagem (pontos de medição), se há pontos de medição na RPA 6 perto dos 21 trechos, se há coordenadas, o período coberto e a data de atualização |
 | Imóveis Especiais de Preservação — IEPs (Prefeitura do Recife) | [dados.recife.pe.gov.br — IEPs](https://dados.recife.pe.gov.br/dataset/imoveis-especiais-de-preservacao-ieps) | A confirmar | **Uso a definir com o grupo.** Não corresponde a nenhum dos 13 subcritérios. Sugestão: coluna de contexto no painel (patrimônio exposto no raio de 300 m) | Localizada por Pedro em 03/10/2026; **não conferida** | Conferir formato, se há coordenadas ou polígonos, sistema de coordenadas e data de atualização |
 | Relação das favelas, cortiços e loteamentos irregulares (Prefeitura do Recife) | [dados.recife.pe.gov.br — favelas, cortiços e loteamentos irregulares](https://dados.recife.pe.gov.br/dataset/relacao-das-favelas-corticos-e-loteamentos-irregulares) | A confirmar | V3 Favelas e comunidades: complemento ou alternativa municipal à malha IBGE 2022 | Localizada por Pedro em 03/10/2026; **não conferida** | Pelo nome, pode ser só uma lista (sem geometria). Conferir se há polígonos ou coordenadas, sistema de coordenadas, ano de referência e se bate com a malha de favelas e comunidades do IBGE 2022 |
+| Zoneamento do Plano Diretor — recurso ZEC (Prefeitura do Recife) | [dados.recife.pe.gov.br — zoneamento, recurso ZEC](https://dados.recife.pe.gov.br/dataset/zoneamento/resource/f3076b94-d226-4e07-baea-a97f58b67884) | A confirmar | **Uso a definir.** Se a ZEC for zona de centralidade (comércio e serviços), reforça o E2 Usos expostos | Localizada por Pedro em 03/10/2026; **não conferida** | Significado da sigla ZEC a confirmar no Plano Diretor. O conjunto *zoneamento* tem outros recursos: ver se inclui ZEIS (apoio ao V3) |
 
 ### A procurar
 - Equipamentos: escolas, creches, unidades de saúde, hospitais/UPA.
 - Rede de drenagem, canais e bacias (pendência 3).
 - Curvas de nível ou altimetria.
-- ZEC do Plano Diretor: link e significado da sigla a confirmar com Pedro.
-- ZEIS do Plano Diretor (possível apoio ao V3).
+- ZEIS do Plano Diretor (possível apoio ao V3): verificar primeiro no conjunto *zoneamento*.
 - Lotes e quadras do cadastro imobiliário (só se o IPTU não trouxer coordenadas).
 
 ## Regras
