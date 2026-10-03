@@ -346,8 +346,8 @@ COR_DIMENSAO = {"Probabilidade": "DDEBF7", "Exposição": "E2EFDA",
 COR_NOTA = ("E2EFDA", "F4F9EE", "FFF9E5", "FDE9D9", "F8CBAD")
 COLS_PREENCHER = (15, 16, 17)  # O, P, Q
 # Preenchido pela equipe na planilha Google (copiar aqui para a planilha gerada não divergir).
-FONTE_MEDICAO = {"I1": "Sistema viário | CTTU"}
-CONFIRMACAO = {"I1": ("Sim", "Sim")}  # (Fonte confirmada?, Dado existe na fonte?)
+FONTE_MEDICAO = {"I1": "Sistema viário | CTTU", "E3": "IPTU 2026 | Prefeitura do Recife (dados abertos)"}
+CONFIRMACAO = {"I1": ("Sim", "Sim"), "E3": ("Sim", "Sim")}  # (Fonte confirmada?, Dado existe na fonte?)
 
 
 def gerar_glossario(wb):
