@@ -1,0 +1,105 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1720 1000" width="1720" height="1000" font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif">
+<rect width="1720" height="1000" fill="#FFFFFF"/>
+<text x="40" y="52" font-size="26" font-weight="700" fill="#1F2A33">Recife Resiliente — o que o painel de risco precisa (RPA 6)</text>
+<text x="40" y="80" font-size="15" fill="#4A5763">Diagrama de Ishikawa · situação em 03/10/2026</text>
+<line x1="40" y1="500" x2="1410" y2="500" stroke="#1F2A33" stroke-width="5"/>
+<line x1="550" y1="500" x2="360" y2="170" stroke="#1F2A33" stroke-width="3"/>
+<text x="360" y="154" font-size="18" font-weight="700" fill="#0869A6" text-anchor="middle">Método (modelo)</text>
+<line x1="369.030303030303" y1="210.0" x2="383.030303030303" y2="210.0" stroke="#1F2A33" stroke-width="1.5"/>
+<rect x="69.030303030303" y="193.0" width="300" height="34" rx="6" fill="#0869A6" stroke="#0869A6" stroke-width="1.5"/>
+<text x="219.030303030303" y="215.0" font-size="14" fill="#FFFFFF" text-anchor="middle">Critérios (4)</text>
+<line x1="406.4545454545455" y1="275.0" x2="420.4545454545455" y2="275.0" stroke="#1F2A33" stroke-width="1.5"/>
+<rect x="106.4545454545455" y="258.0" width="300" height="34" rx="6" fill="#0869A6" stroke="#0869A6" stroke-width="1.5"/>
+<text x="256.4545454545455" y="280.0" font-size="14" fill="#FFFFFF" text-anchor="middle">Fórmula P × C e índice 0–1</text>
+<line x1="443.8787878787879" y1="340.0" x2="457.8787878787879" y2="340.0" stroke="#1F2A33" stroke-width="1.5"/>
+<rect x="143.87878787878788" y="323.0" width="300" height="34" rx="6" fill="#5496BF" stroke="#5496BF" stroke-width="1.5"/>
+<text x="293.8787878787879" y="345.0" font-size="14" fill="#FFFFFF" text-anchor="middle">Subcritérios (13 + P6 e V1)</text>
+<line x1="481.3030303030303" y1="405.0" x2="495.3030303030303" y2="405.0" stroke="#1F2A33" stroke-width="1.5"/>
+<rect x="181.3030303030303" y="388.0" width="300" height="34" rx="6" fill="#5496BF" stroke="#5496BF" stroke-width="1.5"/>
+<text x="331.3030303030303" y="410.0" font-size="14" fill="#FFFFFF" text-anchor="middle">Escalas de nota 1–5</text>
+<line x1="518.7272727272727" y1="470.0" x2="532.7272727272727" y2="470.0" stroke="#1F2A33" stroke-width="1.5"/>
+<rect x="218.72727272727275" y="453.0" width="300" height="34" rx="6" fill="#5496BF" stroke="#5496BF" stroke-width="1.5"/>
+<text x="368.72727272727275" y="475.0" font-size="14" fill="#FFFFFF" text-anchor="middle">Pesos (de teste)</text>
+<line x1="960" y1="500" x2="770" y2="170" stroke="#1F2A33" stroke-width="3"/>
+<text x="770" y="154" font-size="18" font-weight="700" fill="#0869A6" text-anchor="middle">Dados (fontes)</text>
+<line x1="779.030303030303" y1="210.0" x2="793.030303030303" y2="210.0" stroke="#1F2A33" stroke-width="1.5"/>
+<rect x="479.030303030303" y="193.0" width="300" height="34" rx="6" fill="#F2F2F2" stroke="#5496BF" stroke-width="1.5"/>
+<text x="629.030303030303" y="215.0" font-size="14" fill="#1F2A33" text-anchor="middle">Bases nacionais: IBGE, Ipea, MapBiomas</text>
+<line x1="828.929292929293" y1="296.6666666666667" x2="842.929292929293" y2="296.6666666666667" stroke="#1F2A33" stroke-width="1.5"/>
+<rect x="528.929292929293" y="279.6666666666667" width="300" height="34" rx="6" fill="#F2F2F2" stroke="#5496BF" stroke-width="1.5"/>
+<text x="678.929292929293" y="301.6666666666667" font-size="14" fill="#1F2A33" text-anchor="middle">Bases municipais: portal e ESIG</text>
+<line x1="878.8282828282828" y1="383.33333333333337" x2="892.8282828282828" y2="383.33333333333337" stroke="#1F2A33" stroke-width="1.5"/>
+<rect x="578.8282828282828" y="366.33333333333337" width="300" height="34" rx="6" fill="#5496BF" stroke="#5496BF" stroke-width="1.5"/>
+<text x="728.8282828282828" y="388.33333333333337" font-size="14" fill="#FFFFFF" text-anchor="middle">7 links do portal localizados</text>
+<line x1="928.7272727272727" y1="470.0" x2="942.7272727272727" y2="470.0" stroke="#1F2A33" stroke-width="1.5"/>
+<rect x="628.7272727272727" y="453.0" width="300" height="34" rx="6" fill="#F2F2F2" stroke="#5496BF" stroke-width="1.5"/>
+<text x="778.7272727272727" y="475.0" font-size="14" fill="#1F2A33" text-anchor="middle">Pedidos aos órgãos</text>
+<line x1="1370" y1="500" x2="1180" y2="170" stroke="#1F2A33" stroke-width="3"/>
+<text x="1180" y="154" font-size="18" font-weight="700" fill="#0869A6" text-anchor="middle">Território (base SIG)</text>
+<line x1="1189.030303030303" y1="210.0" x2="1203.030303030303" y2="210.0" stroke="#1F2A33" stroke-width="1.5"/>
+<rect x="889.030303030303" y="193.0" width="300" height="34" rx="6" fill="#0869A6" stroke="#0869A6" stroke-width="1.5"/>
+<text x="1039.030303030303" y="215.0" font-size="14" fill="#FFFFFF" text-anchor="middle">EPSG:31985</text>
+<line x1="1238.9292929292928" y1="296.6666666666667" x2="1252.9292929292928" y2="296.6666666666667" stroke="#1F2A33" stroke-width="1.5"/>
+<rect x="938.9292929292928" y="279.6666666666667" width="300" height="34" rx="6" fill="#5496BF" stroke="#5496BF" stroke-width="1.5"/>
+<text x="1088.9292929292928" y="301.6666666666667" font-size="14" fill="#FFFFFF" text-anchor="middle">Buffers de 300 m e 1 km</text>
+<line x1="1288.828282828283" y1="383.33333333333337" x2="1302.828282828283" y2="383.33333333333337" stroke="#1F2A33" stroke-width="1.5"/>
+<rect x="988.8282828282829" y="366.33333333333337" width="300" height="34" rx="6" fill="#5496BF" stroke="#5496BF" stroke-width="1.5"/>
+<text x="1138.828282828283" y="388.33333333333337" font-size="14" fill="#FFFFFF" text-anchor="middle">Coordenadas dos 21 pontos</text>
+<line x1="1338.7272727272727" y1="470.0" x2="1352.7272727272727" y2="470.0" stroke="#1F2A33" stroke-width="1.5"/>
+<rect x="1038.7272727272727" y="453.0" width="300" height="34" rx="6" fill="#F2F2F2" stroke="#5496BF" stroke-width="1.5"/>
+<text x="1188.7272727272727" y="475.0" font-size="14" fill="#1F2A33" text-anchor="middle">Linha dos 12 trechos</text>
+<line x1="550" y1="500" x2="360" y2="830" stroke="#1F2A33" stroke-width="3"/>
+<text x="360" y="860" font-size="18" font-weight="700" fill="#0869A6" text-anchor="middle">Pessoas e órgãos</text>
+<line x1="369.030303030303" y1="790.0" x2="383.030303030303" y2="790.0" stroke="#1F2A33" stroke-width="1.5"/>
+<rect x="69.030303030303" y="773.0" width="300" height="34" rx="6" fill="#0869A6" stroke="#0869A6" stroke-width="1.5"/>
+<text x="219.030303030303" y="795.0" font-size="14" fill="#FFFFFF" text-anchor="middle">Equipe (6) e tutora</text>
+<line x1="406.4545454545455" y1="725.0" x2="420.4545454545455" y2="725.0" stroke="#1F2A33" stroke-width="1.5"/>
+<rect x="106.4545454545455" y="708.0" width="300" height="34" rx="6" fill="#F2F2F2" stroke="#5496BF" stroke-width="1.5"/>
+<text x="256.4545454545455" y="730.0" font-size="14" fill="#1F2A33" text-anchor="middle">EMLURB: Pedro Oliveira</text>
+<line x1="443.8787878787879" y1="660.0" x2="457.8787878787879" y2="660.0" stroke="#1F2A33" stroke-width="1.5"/>
+<rect x="143.87878787878788" y="643.0" width="300" height="34" rx="6" fill="#F2F2F2" stroke="#5496BF" stroke-width="1.5"/>
+<text x="293.8787878787879" y="665.0" font-size="14" fill="#1F2A33" text-anchor="middle">CTTU: Antônio</text>
+<line x1="481.3030303030303" y1="595.0" x2="495.3030303030303" y2="595.0" stroke="#1F2A33" stroke-width="1.5"/>
+<rect x="181.3030303030303" y="578.0" width="300" height="34" rx="6" fill="#F2F2F2" stroke="#5496BF" stroke-width="1.5"/>
+<text x="331.3030303030303" y="600.0" font-size="14" fill="#1F2A33" text-anchor="middle">SEPLAN: contato em aberto</text>
+<line x1="518.7272727272727" y1="530.0" x2="532.7272727272727" y2="530.0" stroke="#1F2A33" stroke-width="1.5"/>
+<rect x="218.72727272727275" y="513.0" width="300" height="34" rx="6" fill="#F2F2F2" stroke="#5496BF" stroke-width="1.5"/>
+<text x="368.72727272727275" y="535.0" font-size="14" fill="#1F2A33" text-anchor="middle">COP e Defesa Civil</text>
+<line x1="960" y1="500" x2="770" y2="830" stroke="#1F2A33" stroke-width="3"/>
+<text x="770" y="860" font-size="18" font-weight="700" fill="#0869A6" text-anchor="middle">Ferramentas</text>
+<line x1="779.030303030303" y1="790.0" x2="793.030303030303" y2="790.0" stroke="#1F2A33" stroke-width="1.5"/>
+<rect x="479.030303030303" y="773.0" width="300" height="34" rx="6" fill="#0869A6" stroke="#0869A6" stroke-width="1.5"/>
+<text x="629.030303030303" y="795.0" font-size="14" fill="#FFFFFF" text-anchor="middle">Script Python de cálculo</text>
+<line x1="828.929292929293" y1="703.3333333333333" x2="842.929292929293" y2="703.3333333333333" stroke="#1F2A33" stroke-width="1.5"/>
+<rect x="528.929292929293" y="686.3333333333333" width="300" height="34" rx="6" fill="#5496BF" stroke="#5496BF" stroke-width="1.5"/>
+<text x="678.929292929293" y="708.3333333333333" font-size="14" fill="#FFFFFF" text-anchor="middle">Planilha Google Sheets</text>
+<line x1="878.8282828282828" y1="616.6666666666666" x2="892.8282828282828" y2="616.6666666666666" stroke="#1F2A33" stroke-width="1.5"/>
+<rect x="578.8282828282828" y="599.6666666666666" width="300" height="34" rx="6" fill="#5496BF" stroke="#5496BF" stroke-width="1.5"/>
+<text x="728.8282828282828" y="621.6666666666666" font-size="14" fill="#FFFFFF" text-anchor="middle">Apps Script e clasp</text>
+<line x1="928.7272727272727" y1="530.0" x2="942.7272727272727" y2="530.0" stroke="#1F2A33" stroke-width="1.5"/>
+<rect x="628.7272727272727" y="513.0" width="300" height="34" rx="6" fill="#F2F2F2" stroke="#5496BF" stroke-width="1.5"/>
+<text x="778.7272727272727" y="535.0" font-size="14" fill="#1F2A33" text-anchor="middle">ArcGIS Pro e ESIG</text>
+<line x1="1370" y1="500" x2="1180" y2="830" stroke="#1F2A33" stroke-width="3"/>
+<text x="1180" y="860" font-size="18" font-weight="700" fill="#0869A6" text-anchor="middle">Validação</text>
+<line x1="1189.030303030303" y1="790.0" x2="1203.030303030303" y2="790.0" stroke="#1F2A33" stroke-width="1.5"/>
+<rect x="889.030303030303" y="773.0" width="300" height="34" rx="6" fill="#F2F2F2" stroke="#5496BF" stroke-width="1.5"/>
+<text x="1039.030303030303" y="795.0" font-size="14" fill="#1F2A33" text-anchor="middle">Teste com pesos iguais</text>
+<line x1="1263.878787878788" y1="660.0" x2="1277.878787878788" y2="660.0" stroke="#1F2A33" stroke-width="1.5"/>
+<rect x="963.878787878788" y="643.0" width="300" height="34" rx="6" fill="#F2F2F2" stroke="#5496BF" stroke-width="1.5"/>
+<text x="1113.878787878788" y="665.0" font-size="14" fill="#1F2A33" text-anchor="middle">Conferência: EMLURB, Defesa Civil, COP</text>
+<line x1="1338.7272727272727" y1="530.0" x2="1352.7272727272727" y2="530.0" stroke="#1F2A33" stroke-width="1.5"/>
+<rect x="1038.7272727272727" y="513.0" width="300" height="34" rx="6" fill="#F2F2F2" stroke="#5496BF" stroke-width="1.5"/>
+<text x="1188.7272727272727" y="535.0" font-size="14" fill="#1F2A33" text-anchor="middle">Vistoria de amostra</text>
+<path d="M1410 420 L1660 420 Q1700 500 1580 580 L1410 580 Z" fill="#0869A6"/>
+<text x="1540" y="494" font-size="22" font-weight="700" fill="#FFFFFF" text-anchor="middle">Painel com a</text>
+<text x="1540" y="522" font-size="22" font-weight="700" fill="#FFFFFF" text-anchor="middle">análise de risco</text>
+<text x="1540" y="615" font-size="13" fill="#4A5763" text-anchor="middle">No painel, fora do risco:</text>
+<text x="1540" y="633" font-size="13" fill="#4A5763" text-anchor="middle">tratabilidade e obras</text>
+<rect x="40" y="950" width="22" height="18" rx="4" fill="#0869A6" stroke="#0869A6" stroke-width="1.5"/>
+<text x="70" y="964" font-size="14" fill="#1F2A33">Decidido ou pronto</text>
+<rect x="300" y="950" width="22" height="18" rx="4" fill="#5496BF" stroke="#5496BF" stroke-width="1.5"/>
+<text x="330" y="964" font-size="14" fill="#1F2A33">Proposta, teste ou parcial</text>
+<rect x="560" y="950" width="22" height="18" rx="4" fill="#F2F2F2" stroke="#5496BF" stroke-width="1.5"/>
+<text x="590" y="964" font-size="14" fill="#1F2A33">Falta</text>
+<text x="1680" y="964" font-size="12" fill="#4A5763" text-anchor="end">Coordenadas e buffers: com pontos ainda aproximados. Pesos: só de teste; o grupo decide até 14/10.</text>
+</svg>
