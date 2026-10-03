@@ -187,3 +187,32 @@ O comentário do documento sugere uma **matriz GUT** para o score. O cálculo
 decidido em 02/10 é **Probabilidade × Consequência**; a recomendação é
 mantê-lo, porque usa as próprias 4 dimensões do documento. Fica para o grupo
 confirmar (pendência 14).
+
+## Lista adotada em 03/10/2026 (Pedro)
+Pedro decidiu trabalhar com a lista que junta o documento da Hellis à lista
+de 02/10. Os códigos antigos foram mantidos (o painel lê as colunas pelo
+código); as variáveis novas ganharam códigos novos. Escalas de nota, pesos e
+validação pelo grupo continuam em aberto.
+
+| Critério | Código | Subcritério | Situação |
+|---|---|---|---|
+| Probabilidade | P1 | Frequência e recorrência histórica | Manter (pendência 16) |
+| | P2 | Severidade | Manter |
+| | P3 | Influência da maré | Manter |
+| | P4 | Proximidade de rio ou canal | Manter |
+| | P5 | Impermeabilização | Manter |
+| | P6 | Relevo (baixio) | Condicional: curvas da Condepe/Fidem a conferir |
+| Exposição | E1 | População | Manter |
+| | E2 | Equipamentos públicos | Manter; inclui "hospitais/escolas atingidos" |
+| | E3 | Comércio e serviços | Manter; inclui "perdas econômicas" |
+| Vulnerabilidade | V2 | População vulnerável | Manter |
+| | V3 | ZEIS, favelas e comunidades | Manter |
+| | V4 | Tipo de moradia | Manter; pode ir para o V6 |
+| | V5 | Dificuldade de evacuação | **Nova**, sem definição nem escala (pendência 15) |
+| | V6 | Infraestrutura precária | **Nova**, sem definição nem escala (pendência 15) |
+| | V1 | IVS | Plano B |
+| Impacto | I1 | Interrupção do trânsito | Manter; inclui "vias principais" |
+| | I2 | Risco sanitário | Manter; pode ir para o V6 |
+| | I3 | Isolamento | **Nova**, sem definição nem escala (pendência 15) |
+
+Intensidade das chuvas: contexto no painel, fora da nota.

@@ -824,15 +824,15 @@ require([
   function fmtN(v, casas){ return v == null ? "—" : v.toFixed(casas).replace(".", ","); }
   function escHtml(t){ return String(t == null ? "" : t).replace(/[&<>"]/g, function(ch){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[ch]; }); }
 
-  var NOMES_SUB = { P1:"Frequência", P2:"Severidade", P3:"Maré", P4:"Rio/canal", P5:"Impermeabilização", P6:"Baixio",
-    E1:"População", E2:"Equip. sensíveis", E3:"Ativ. econômica",
-    V2:"Grupos sensíveis", V3:"Favelas/comunidades", V4:"Tipo de moradia", V1:"IVS",
-    I1:"Mobilidade", I2:"Sanitário" };
+  var NOMES_SUB = { P1:"Frequência", P2:"Severidade", P3:"Maré", P4:"Rio/canal", P5:"Impermeabilização", P6:"Relevo",
+    E1:"População", E2:"Equip. públicos", E3:"Comércio e serviços",
+    V2:"Pop. vulnerável", V3:"ZEIS/favelas", V4:"Tipo de moradia", V5:"Evacuação", V6:"Infra. precária", V1:"IVS",
+    I1:"Trânsito", I2:"Sanitário", I3:"Isolamento" };
   var GRUPOS_SUB = [
     { nome:"Probabilidade",   cods:["P1","P2","P3","P4","P5","P6"] },
     { nome:"Exposição",       cods:["E1","E2","E3"] },
-    { nome:"Vulnerabilidade", cods:["V2","V3","V4","V1"] },
-    { nome:"Impacto",         cods:["I1","I2"] }
+    { nome:"Vulnerabilidade", cods:["V2","V3","V4","V5","V6","V1"] },
+    { nome:"Impacto",         cods:["I1","I2","I3"] }
   ];
 
   function popupPonto(p){

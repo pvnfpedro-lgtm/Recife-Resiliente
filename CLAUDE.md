@@ -24,7 +24,8 @@ Arquivo de trabalho da equipe:
 Critérios, Fontes de dados e Pontos RPA 6.
 
 ## Estado atual (02/10/2026)
-- **Modelo:** 13 subcritérios + P6 (condicional) e V1 (plano B), escalas de
+- **Modelo:** 13 subcritérios + P6 (condicional) e V1 (plano B) + I3, V5 e
+  V6 (novas, do documento da Hellis, sem definição: pendência 15), escalas de
   nota, pesos de teste e cálculo em
   `dados/Recife_Resiliente_Checklist_Subcriterios.xlsx` (gerado por
   `scripts/gerar_checklist_subcriterios.py`). Índice de risco 0–1 =
