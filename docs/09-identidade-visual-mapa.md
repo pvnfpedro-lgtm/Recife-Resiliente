@@ -12,6 +12,14 @@
   tem cor).
 - **Formato:** SVG (símbolo personalizado no ArcGIS), com PNG de reserva.
 
+## Ponto crítico (decidido em 03/10/2026)
+- Desenho: **gota com onda** (gota da Maki + onda), em círculo.
+- Pedro vai usar **um único símbolo** no ArcGIS. Versão única em vermelho
+  #e31a1c: `mapa/icones/ponto_critico.svg` e `png/ponto_critico_64/128.png`.
+- Sugestão: mostrar o risco pelo **tamanho** do símbolo (índice de risco),
+  já que a imagem tem uma cor só. Escala de cor por classe (amarelo → vinho)
+  fica como alternativa, com 4 imagens.
+
 ## Origem dos desenhos
 - **Maki** (Mapbox), versão 8.2.0, licença CC0 (domínio público).
 - **Temaki** (Rapid), versão 5.13.0, licença CC0 (domínio público).
@@ -19,6 +27,7 @@
   (ex.: canal, com três ondas).
 
 ## Em aberto
+- Creche: o desenho da criança não ficou claro para Pedro (03/10); rever depois.
 - Desenho da escola: o da Maki (lápis e maçã) não se lê em tamanho pequeno.
   Alternativas: capelo, prédio escolar, livro.
 - Lista final de ícones (proposta abaixo) e quais equipamentos aparecem no
