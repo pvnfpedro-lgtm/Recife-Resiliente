@@ -227,6 +227,15 @@ funcionar na cidade quando o ponto alaga, mesmo para quem não mora perto.
 - **Cuidado:** se quase todos os pontos ficarem acima de 2 km, a variável não
   diferencia os pontos e vira contexto no painel.
 
+### Proposta em discussão (03/10/2026, Pedro + Claude; levar ao grupo e à Hellis)
+- **I2 Risco sanitário sai do Impacto e vira a definição do V6** (infraestrutura
+  precária = % de domicílios sem ligação à rede de esgoto). Motivo: mede a
+  condição de quem mora ali, não um efeito além do local, e sobrepõe o V3.
+- **I3 Isolamento sai do cálculo** e vira observação qualitativa na ficha da
+  EMLURB e da Defesa Civil ("o ponto isola alguma comunidade?"), mostrada no
+  cartão do painel. Motivo: sem definição nem dado, e sobrepõe o I1 e o I4.
+- Com isso, o Impacto fica com I1 e I4.
+
 ## O que fica fora da nota
 
 Estes temas aparecem no painel, mas não mudam o risco do ponto.

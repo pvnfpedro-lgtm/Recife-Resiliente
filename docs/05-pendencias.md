@@ -22,6 +22,7 @@
 | 16 | Recorrência histórica × frequência: são diferentes? | Pedro e Hellis | 08/10 | Se forem a mesma coisa, ficam no P1 |
 | 17 | I1: classe de corredor de cada via (metropolitano, urbano principal, urbano secundário) | Pedro | 13/10 | A classificação está no **Anexo 7 da LUOS (Lei 16.176/1996)**, segundo busca na web (anexo não aberto: site bloqueado no ambiente). Pedro envia a LUOS ou o anexo. Rascunho das notas em `dados/processados/notas_I1_tipo_de_via.csv`. Em 03/10 Pedro marcou na planilha: fonte de medição = Sistema viário (CTTU), fonte confirmada e dado existente |
 | 18 | I4: montar a camada de infraestrutura crítica (metrô, delegacias, bombeiros, SAMU, aeroporto, subestações) e medir a distância dos 21 pontos | Pedro | 27/10 | Conferir se as notas se espalham; se quase todos ficarem acima de 2 km, I4 vira contexto. Decidir se entram terminais integrados, Compesa, Defesa Civil e abrigos |
+| 19 | Proposta: I2 vira a definição do V6 (falta de esgoto) e I3 vira observação fora do cálculo | Grupo e Hellis | 14/10 | Ver `10-dimensoes-e-variaveis.md`, seção "Proposta em discussão" |
 
 ## Dados não verificados
 - I1 (Tipo de via): Av. Mascarenhas de Moraes e Av. Recife como corredores
