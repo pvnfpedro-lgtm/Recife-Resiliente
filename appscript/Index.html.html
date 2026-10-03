@@ -808,9 +808,9 @@ require([
   var PONTOS_TITULO = "Pontos críticos — RPA 6 (teste)";
   var CORTE_RISCO = 9;
   var pontosLayer = new GraphicsLayer({ title: PONTOS_TITULO });
-  /* Área de influência: círculo de 1 km em volta de cada ponto crítico (só informação; o score usa 300 m) */
-  var RAIO_TITULO = "Área de influência — 1 km";
-  var RAIO_M = 1000;
+  /* Área de análise: círculo de 300 m em volta de cada ponto crítico (o mesmo raio usado no score) */
+  var RAIO_TITULO = "Área de análise — 300 m";
+  var RAIO_M = 300;
   var raioLayer = new GraphicsLayer({ title: RAIO_TITULO });
   map.add(raioLayer);
   map.add(pontosLayer);
