@@ -124,9 +124,10 @@ function atualizarSubcriterios0310() {
   var cods = SUBCRITERIOS.map(function (cod) { return col(cod + ' '); }).filter(function (c) { return c > 0; });
   var formulas = [];
   for (var r = L + 1; r <= ultimaLinha; r++) {
-    formulas.push(['=COUNT(' + cods.map(function (c) {
-      return aba.getRange(r, c).getA1Notation();
-    }).join(',') + ')']);
+    // Soma de COUNT de uma célula cada: sem separador de argumentos, funciona em qualquer idioma.
+    formulas.push(['=' + cods.map(function (c) {
+      return 'COUNT(' + aba.getRange(r, c).getA1Notation() + ')';
+    }).join('+')]);
   }
   aba.getRange(L + 1, cNotas, formulas.length, 1).setFormulas(formulas);
   log.push('Notas preenchidas: ' + cods.length + ' colunas');
