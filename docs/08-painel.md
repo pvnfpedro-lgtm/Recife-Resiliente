@@ -42,6 +42,10 @@ O painel em Google Apps Script já existente é a base. Muita coisa vai mudar.
 - 03/10/2026: `clasp push` com o branch do painel (gota com onda, círculo
   de 300 m) juntado ao das variáveis. O push anterior do mesmo dia tinha
   ido sem esses commits.
+- 03/10/2026: painel conferido por Pedro (gota, círculo de 300 m, nomes no
+  cartão). Novo `clasp push` com os termos novos: o cartão mostra
+  "Dimensão / variável". Na planilha, a aba "Checklist subcritérios" passou
+  a se chamar "Checklist variáveis" (o painel não lê essa aba).
 
 ## Estado em 02/10/2026 (aprovado por Pedro)
 - Paleta: #0869A6 · #2685BF · #5496BF · #FFFFFF · #F2F2F2 (painel inteiro).

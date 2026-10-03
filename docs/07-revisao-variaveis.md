@@ -4,7 +4,7 @@
 > "subcritério" passou a se chamar **variável**. O texto abaixo já usa os
 > termos novos; a aba *Critérios* da planilha da equipe mantém o nome original.
 
-> **Atualização 02/10/2026:** Pedro decidiu os **4 dimensões principais**
+> **Atualização 02/10/2026:** Pedro decidiu as **4 dimensões principais**
 > (Probabilidade, Exposição, Vulnerabilidade e Impacto), o cálculo
 > **Probabilidade × Consequência** e o raio de **300 m** no score, com 1 km no
 > painel. Ver `02-metodologia-hierarquizacao.md`.
