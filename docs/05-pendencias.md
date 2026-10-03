@@ -33,6 +33,8 @@ Tudo o que estiver aqui **não** pode ir para a apresentação sem conferência.
   atualização ainda não conferidos.
 - Fluxo de veículos por hora: local dos pontos de medição, cobertura na
   RPA 6, coordenadas e período ainda não conferidos.
+- Imóveis Especiais de Preservação (IEPs): formato, geometria e data de
+  atualização ainda não conferidos; uso no modelo a decidir com o grupo.
 - Produtos do IBGE 2022 (Grade Estatística, CNEFE, agregados por setor):
   existência confirmada na busca, arquivos ainda não abertos.
 - Malha de favelas e comunidades 2022, tipo de domicílio por setor, curvas de
