@@ -15,7 +15,9 @@ medida que cada base for obtida e conferida.
 | Compesa | Rede de esgoto; extravasamentos | Rede / ponto | A obter |
 
 ## Catálogo de bases localizadas
-Onde encontrar cada base. Uma linha por conjunto encontrado; a *Situação* só
+Onde encontrar cada base. Aqui ficam **só os links**: os arquivos destas
+bases não são guardados no repositório (decisão de Pedro, 03/10/2026). Uma
+linha por conjunto encontrado; a *Situação* só
 passa a "Conferida" depois de abrir o arquivo e checar colunas e sistema de
 coordenadas.
 
