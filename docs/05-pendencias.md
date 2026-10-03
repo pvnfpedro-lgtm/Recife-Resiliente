@@ -27,6 +27,8 @@ Tudo o que estiver aqui **não** pode ir para a apresentação sem conferência.
 - Base do IPTU (portal de dados abertos): coordenadas, sistema de
   coordenadas, ano e categorias do tipo de empreendimento ainda não abertos
   nem conferidos.
+- Limites territoriais (bairro, microrregião, RPA, logradouro): formatos,
+  sistema de coordenadas e data de atualização ainda não conferidos.
 - Produtos do IBGE 2022 (Grade Estatística, CNEFE, agregados por setor):
   existência confirmada na busca, arquivos ainda não abertos.
 - Malha de favelas e comunidades 2022, tipo de domicílio por setor, curvas de
