@@ -1,0 +1,468 @@
+{
+ "type": "FeatureCollection",
+ "name": "pontos_rpa6",
+ "features": [
+  {
+   "type": "Feature",
+   "properties": {
+    "ponto_id": 5,
+    "bairro": "Boa Viagem",
+    "trecho": "Avenida Conselheiro Aguiar (Interseção com a Rua Tenente João Cícero)",
+    "x": 291396.5,
+    "y": 9102642.3,
+    "tipo": "Ponto",
+    "precisao_coordenada": "Interseção",
+    "prioridade_emlurb": "Não",
+    "coordenada_verificada": "não",
+    "grupo_sobreposicao": "G1"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -34.893163,
+     -8.113732
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "ponto_id": 6,
+    "bairro": "Boa Viagem",
+    "trecho": "Avenida Conselheiro Aguiar (Interseção com a Rua Dona Benvinda)",
+    "x": 291579.4,
+    "y": 9102944.4,
+    "tipo": "Ponto",
+    "precisao_coordenada": "Interseção",
+    "prioridade_emlurb": "Não",
+    "coordenada_verificada": "não",
+    "grupo_sobreposicao": "G1"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -34.891491,
+     -8.111009
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "ponto_id": 7,
+    "bairro": "Boa Viagem",
+    "trecho": "Avenida Conselheiro Aguiar (Interseção com a Rua Maria Carolina)",
+    "x": 291285.7,
+    "y": 9102459.5,
+    "tipo": "Ponto",
+    "precisao_coordenada": "Interseção",
+    "prioridade_emlurb": "Não",
+    "coordenada_verificada": "não",
+    "grupo_sobreposicao": "G1"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -34.894176,
+     -8.11538
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "ponto_id": 8,
+    "bairro": "Boa Viagem",
+    "trecho": "Avenida Conselheiro Aguiar (Do nº 1501 até a Rua Baltazar Pereira)",
+    "x": 292095.2,
+    "y": 9104046.6,
+    "tipo": "Linha",
+    "precisao_coordenada": "Interseção",
+    "prioridade_emlurb": "Não",
+    "coordenada_verificada": "não",
+    "grupo_sobreposicao": "G2"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -34.886765,
+     -8.101066
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "ponto_id": 9,
+    "bairro": "Imbiribeira",
+    "trecho": "Avenida Mascarenhas de Moraes (Da Rua General Mac Arthur até a Universo)",
+    "x": 289342.2,
+    "y": 9103163.4,
+    "tipo": "Linha",
+    "precisao_coordenada": "Interseção",
+    "prioridade_emlurb": "Não",
+    "coordenada_verificada": "não",
+    "grupo_sobreposicao": "G3"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -34.911777,
+     -8.108934
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "ponto_id": 11,
+    "bairro": "Boa Viagem",
+    "trecho": "Rua Professor José Brandão (Toda a extensão)",
+    "x": 291216.3,
+    "y": 9102853.4,
+    "tipo": "Linha",
+    "precisao_coordenada": "Aproximado",
+    "prioridade_emlurb": "Não",
+    "coordenada_verificada": "não",
+    "grupo_sobreposicao": "G1"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -34.894789,
+     -8.111816
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "ponto_id": 12,
+    "bairro": "Boa Viagem",
+    "trecho": "Rua Padre Bernardino Pessoa (Da Avenida Conselheiro Aguiar até a Via Mangue)",
+    "x": 290995.6,
+    "y": 9102728.6,
+    "tipo": "Linha",
+    "precisao_coordenada": "Aproximado",
+    "prioridade_emlurb": "Não",
+    "coordenada_verificada": "não",
+    "grupo_sobreposicao": "G1"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -34.896796,
+     -8.112935
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "ponto_id": 18,
+    "bairro": "Boa Viagem",
+    "trecho": "Rua Jornalista Alfredo Porto Silveira (Toda a extensão)",
+    "x": 289115.1,
+    "y": 9099859.2,
+    "tipo": "Linha",
+    "precisao_coordenada": "Aproximado",
+    "prioridade_emlurb": "Não",
+    "coordenada_verificada": "não",
+    "grupo_sobreposicao": ""
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -34.913979,
+     -8.138796
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "ponto_id": 19,
+    "bairro": "Pina",
+    "trecho": "Rua São Luiz (Final da rua)",
+    "x": 291923.0,
+    "y": 9105301.2,
+    "tipo": "Ponto",
+    "precisao_coordenada": "Aproximado",
+    "prioridade_emlurb": "Não",
+    "coordenada_verificada": "não",
+    "grupo_sobreposicao": ""
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -34.888275,
+     -8.089716
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "ponto_id": 22,
+    "bairro": "Jordão",
+    "trecho": "Avenida Maria Irene (Vários trechos)",
+    "x": 287641.4,
+    "y": 9099663.1,
+    "tipo": "Vários",
+    "precisao_coordenada": "Aproximado",
+    "prioridade_emlurb": "Não",
+    "coordenada_verificada": "não",
+    "grupo_sobreposicao": ""
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -34.927358,
+     -8.140505
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "ponto_id": 24,
+    "bairro": "Ipsep",
+    "trecho": "Rua Blumenau (Até a maré)",
+    "x": 288406.9,
+    "y": 9103305.3,
+    "tipo": "Linha",
+    "precisao_coordenada": "Aproximado",
+    "prioridade_emlurb": "Sim",
+    "coordenada_verificada": "não",
+    "grupo_sobreposicao": ""
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -34.920256,
+     -8.107611
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "ponto_id": 25,
+    "bairro": "Ipsep",
+    "trecho": "Rua Raimundo Diniz (Vários trechos)",
+    "x": 288277.1,
+    "y": 9102566.2,
+    "tipo": "Vários",
+    "precisao_coordenada": "Aproximado",
+    "prioridade_emlurb": "Não",
+    "coordenada_verificada": "não",
+    "grupo_sobreposicao": ""
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -34.921465,
+     -8.114288
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "ponto_id": 26,
+    "bairro": "Boa Viagem",
+    "trecho": "Avenida Boa Viagem (Antes da Rua Baltazar Passos)",
+    "x": 290095.5,
+    "y": 9099171.5,
+    "tipo": "Ponto",
+    "precisao_coordenada": "Interseção",
+    "prioridade_emlurb": "Não",
+    "coordenada_verificada": "não",
+    "grupo_sobreposicao": ""
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -34.905114,
+     -8.145055
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "ponto_id": 33,
+    "bairro": "Ibura",
+    "trecho": "Avenida Dois Rios (Interseção da Avenida Dois Rios com a Rua Rio Pajeú até a Rua Ecoporanga / interseção da Avenida Dois Rios com a Rua Rio Prado)",
+    "x": 286343.1,
+    "y": 9102641.2,
+    "tipo": "Linha",
+    "precisao_coordenada": "Interseção",
+    "prioridade_emlurb": "Sim",
+    "coordenada_verificada": "não",
+    "grupo_sobreposicao": "G4"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -34.939007,
+     -8.113526
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "ponto_id": 34,
+    "bairro": "Ibura",
+    "trecho": "Avenida Dom Helder Câmara (Interseção da Avenida Dom Helder Câmara com a Rua Achiles Amorim)",
+    "x": 287349.0,
+    "y": 9103313.4,
+    "tipo": "Ponto",
+    "precisao_coordenada": "Interseção",
+    "prioridade_emlurb": "Sim",
+    "coordenada_verificada": "não",
+    "grupo_sobreposicao": "G5"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -34.929853,
+     -8.107493
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "ponto_id": 35,
+    "bairro": "Ibura",
+    "trecho": "Avenida Dois Rios (Próximo ao SESI)",
+    "x": 286577.0,
+    "y": 9102989.1,
+    "tipo": "Ponto",
+    "precisao_coordenada": "Aproximado",
+    "prioridade_emlurb": "Sim",
+    "coordenada_verificada": "não",
+    "grupo_sobreposicao": "G4"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -34.93687,
+     -8.110391
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "ponto_id": 36,
+    "bairro": "Imbiribeira",
+    "trecho": "Avenida Mascarenhas de Moraes (Trecho da Ferreira Costa)",
+    "x": 289276.7,
+    "y": 9102833.4,
+    "tipo": "Ponto",
+    "precisao_coordenada": "Aproximado",
+    "prioridade_emlurb": "Sim",
+    "coordenada_verificada": "não",
+    "grupo_sobreposicao": "G3"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -34.912386,
+     -8.111915
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "ponto_id": 37,
+    "bairro": "Ipsep",
+    "trecho": "Avenida Recife (Da Avenida Dom Helder Câmara até o Rio Tejipió)",
+    "x": 287601.7,
+    "y": 9103570.5,
+    "tipo": "Linha",
+    "precisao_coordenada": "Aproximado",
+    "prioridade_emlurb": "Sim",
+    "coordenada_verificada": "não",
+    "grupo_sobreposicao": "G5"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -34.927549,
+     -8.105179
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "ponto_id": 41,
+    "bairro": "Boa Viagem",
+    "trecho": "Rua Thomé Gibson (Da Avenida Encanta Moça até a Via Mangue)",
+    "x": 291943.3,
+    "y": 9104377.7,
+    "tipo": "Linha",
+    "precisao_coordenada": "Aproximado",
+    "prioridade_emlurb": "Não",
+    "coordenada_verificada": "não",
+    "grupo_sobreposicao": "G2"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -34.888129,
+     -8.098066
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "ponto_id": 51,
+    "bairro": "Pina",
+    "trecho": "Avenida Antônio de Góes (Da saída da Via Mangue até a Bacia do Pina (Rio Capibaribe) e cruzamento com a Avenida Conselheiro Aguiar)",
+    "x": 292535.5,
+    "y": 9105336.5,
+    "tipo": "Linha",
+    "precisao_coordenada": "Interseção",
+    "prioridade_emlurb": "Não",
+    "coordenada_verificada": "não",
+    "grupo_sobreposicao": ""
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -34.882717,
+     -8.089423
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "ponto_id": 54,
+    "bairro": "Ibura",
+    "trecho": "Rua Rio Prado (Interseção da Rua Rio Prado com a Rua Rio Brígida)",
+    "x": 286156.4,
+    "y": 9102602.4,
+    "tipo": "Ponto",
+    "precisao_coordenada": "Interseção",
+    "prioridade_emlurb": "Não",
+    "coordenada_verificada": "não",
+    "grupo_sobreposicao": "G4"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -34.940702,
+     -8.113869
+    ]
+   }
+  }
+ ]
+}
