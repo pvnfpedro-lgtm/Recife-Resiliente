@@ -162,17 +162,33 @@ funcionar na cidade quando o ponto alaga, mesmo para quem não mora perto.
 ### I1 — Tipo de via
 - **O que é:** a importância da via que fica interrompida.
 - **Por que importa:** alagar um corredor de ônibus para milhares de pessoas;
-  alagar uma rua local afeta poucas.
-- **Como medimos:** classe da via mais importante afetada (nos trechos, a
-  própria via). Escala decidida por Pedro em 03/10/2026:
+  alagar uma via local afeta poucas.
+- **Como medimos** (decisão de Pedro, 03/10/2026: seguir estritamente a
+  hierarquia viária da CTTU):
+  1. **Identificar a via afetada.** Trecho (Linha ou Vários): a própria via
+     do trecho. Ponto num cruzamento: todas as vias que se cruzam ali; vale a
+     mais importante. Ponto isolado numa via: a própria via.
+  2. **Classificar a via pela hierarquia viária da CTTU**
+     ([sistema viário](https://cttu.recife.pe.gov.br/sistema-viario) e
+     [classificação hierárquica](https://cttu.recife.pe.gov.br/classificacao-hierarquica)):
+     corredor de transporte metropolitano, corredor de transporte urbano
+     principal, corredor de transporte urbano secundário ou via fora dos
+     corredores. O nome da via (avenida ou rua) não conta.
+  3. **Converter a classe em nota** pela escala abaixo.
+  - Se a classe muda ao longo da via, vale a classe no trecho do ponto. Se o
+    ponto pega mais de uma via, vale a de nota mais alta. Interdição
+    registrada pela CTTU só confere a nota, não soma.
+- **Escala** (decidida por Pedro em 03/10/2026):
   1. Ruas
   2. Demais avenidas
   3. Corredor de transporte urbano secundário
   4. Corredor de transporte urbano principal
   5. Corredor de transporte metropolitano
-- **De onde vem o dado:** corredores de ônibus do portal de dados abertos;
-  CTTU e Grande Recife. A interdição registrada pela CTTU só confere a nota.
-  Falta confirmar qual base classifica os corredores (pendência 17).
+
+  Em discussão: trocar as notas 1 e 2 por "vias locais" e "demais vias
+  arteriais e coletoras", para seguir a hierarquia também fora dos corredores.
+- **De onde vem o dado:** hierarquia viária da CTTU (o site está bloqueado no
+  ambiente; lista ainda não obtida). Pendência 17.
 
 ### I2 — Risco sanitário
 - **O que é:** a chance de a água do alagamento se misturar com esgoto.

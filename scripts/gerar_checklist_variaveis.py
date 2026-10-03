@@ -125,7 +125,7 @@ VARIAVEIS = [
      "Ipea — Atlas da Vulnerabilidade Social (UDH)", "Base do Censo 2010.",
      "Site confirmado na busca; faixas e ano-base a confirmar."),
     ("Impacto", "I1", "Tipo de via",
-     "Classe da via mais importante afetada pelo alagamento (no trecho: a própria via)", "Classe",
+     "Passo 1 — Identificar a via afetada. Trecho (Linha ou Vários): a própria via do trecho. Ponto num cruzamento: todas as vias que se cruzam ali; vale a mais importante. Ponto isolado numa via: a própria via.\nPasso 2 — Classificar a via estritamente pela hierarquia viária da CTTU (cttu.recife.pe.gov.br/sistema-viario e Classificação Hierárquica): corredor de transporte metropolitano, corredor de transporte urbano principal, corredor de transporte urbano secundário ou via fora dos corredores. O nome da via (avenida ou rua) não conta.\nPasso 3 — Converter a classe em nota pela escala das colunas G a K.\nRegras: se a classe muda ao longo da via, vale a classe no trecho do ponto; se o ponto pega mais de uma via, vale a de nota mais alta; interdição registrada pela CTTU só confere a nota, não soma.", "Classe",
      ("Ruas", "Demais avenidas", "Corredor de transporte urbano secundário",
       "Corredor de transporte urbano principal", "Corredor de transporte metropolitano"),
      "Pedro (03/10/2026)", "Manter",
