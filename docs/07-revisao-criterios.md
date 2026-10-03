@@ -211,8 +211,22 @@ validação pelo grupo continuam em aberto.
 | | V5 | Dificuldade de evacuação | **Nova**, sem definição nem escala (pendência 15) |
 | | V6 | Infraestrutura precária | **Nova**, sem definição nem escala (pendência 15) |
 | | V1 | IVS | Plano B |
-| Impacto | I1 | Interrupção do trânsito | Manter; inclui "vias principais" |
+| Impacto | I1 | Tipo de via | Manter; inclui "vias principais"; escala definida (abaixo) |
 | | I2 | Risco sanitário | Manter; pode ir para o V6 |
 | | I3 | Isolamento | **Nova**, sem definição nem escala (pendência 15) |
 
 Intensidade das chuvas: contexto no painel, fora da nota.
+
+### I1 — Tipo de via (escala definida por Pedro, 03/10/2026)
+| Nota | Classe |
+|---|---|
+| 5 | Corredor de transporte metropolitano |
+| 4 | Corredor de transporte urbano principal |
+| 3 | Corredor de transporte urbano secundário |
+| 2 | Demais avenidas |
+| 1 | Ruas |
+
+- Vale a via mais importante afetada; nos trechos, a própria via do trecho.
+- A interdição registrada pela CTTU não soma ponto: serve só para conferir.
+- Falta confirmar qual base classifica os corredores nessas três classes
+  (pendência 17).

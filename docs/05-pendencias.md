@@ -20,6 +20,7 @@
 | 14 | Score: matriz GUT (comentário no documento de Hellis) ou Probabilidade × Consequência (decidido em 02/10) | Grupo | 14/10 | Manter P × C |
 | 15 | Variáveis novas do documento de Hellis: isolamento, dificuldade de evacuação, infraestrutura precária | Pedro e Hellis | 08/10 | Pedir a definição de cada uma a Hellis antes de procurar dado |
 | 16 | Recorrência histórica × frequência: são diferentes? | Pedro e Hellis | 08/10 | Se forem a mesma coisa, ficam no P1 |
+| 17 | I1: qual base classifica os corredores (metropolitano, urbano principal, urbano secundário)? | Pedro | 13/10 | Conferir a base de corredores do portal; senão, pedir à CTTU (Antônio) ou ao Grande Recife |
 
 ## Dados não verificados
 Tudo o que estiver aqui **não** pode ir para a apresentação sem conferência.
