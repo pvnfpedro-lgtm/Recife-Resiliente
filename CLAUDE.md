@@ -14,7 +14,7 @@ obra, é prevenção priorizada por risco. A resposta ao evento é do COP.
 
 Etapa atual: hierarquização de pontos críticos na RPA 6 (21 trechos da
 EMLURB), adaptando os critérios do Plano Diretor de Drenagem de São Paulo
-(FCTH/SIURB). Decidido: 4 critérios (Probabilidade, Exposição,
+(FCTH/SIURB). Decidido: 4 dimensões (Probabilidade, Exposição,
 Vulnerabilidade, Impacto), risco = Probabilidade × Consequência (1–25),
 buffer de 300 m no score e 1 km no painel. Detalhes em
 `docs/02-metodologia-hierarquizacao.md`.
@@ -24,15 +24,15 @@ Arquivo de trabalho da equipe:
 Critérios, Fontes de dados e Pontos RPA 6.
 
 ## Estado atual (02/10/2026)
-- **Modelo:** 13 subcritérios + P6 (condicional) e V1 (plano B) + I3, V5 e
+- **Modelo:** 13 variáveis + P6 (condicional) e V1 (plano B) + I3, V5 e
   V6 (novas, do documento da Hellis, sem definição: pendência 15), escalas de
   nota, pesos de teste e cálculo em
-  `dados/Recife_Resiliente_Checklist_Subcriterios.xlsx` (gerado por
-  `scripts/gerar_checklist_subcriterios.py`). Índice de risco 0–1 =
+  `dados/Recife_Resiliente_Checklist_Variaveis.xlsx` (gerado por
+  `scripts/gerar_checklist_variaveis.py`). Índice de risco 0–1 =
   (Risco − 1) ÷ 24.
-- **Documento-chave dos critérios e subcritérios:**
-  `docs/10-criterios-e-subcriterios.md`. Toda decisão sobre critério,
-  subcritério ou escala é registrada nele primeiro. O Google Docs
+- **Documento-chave das dimensões e variáveis:**
+  `docs/10-dimensoes-e-variaveis.md`. Toda decisão sobre dimensão,
+  variável ou escala é registrada nele primeiro. O Google Docs
   `12zj_bPx0u5ejNpUsbFNEPsy7WGpTRwuH6k23O0k8f2I` é cópia para a equipe
   ler e comentar; atualizar a partir do Markdown quando Pedro pedir.
 - **Planilha oficial das notas (Google Sheets nativa):**
@@ -51,8 +51,8 @@ Critérios, Fontes de dados e Pontos RPA 6.
   liberados (leitura da planilha por export). O ArcGIS (`*.arcgis.com`,
   `esigportal2.recife.pe.gov.br`) ainda está bloqueado: não dá para testar o
   mapa aqui.
-- **PR aberto:** pvnfpedro-lgtm/Recife-Resiliente#1 (branch
-  `claude/dreamy-pasteur-j7phpz`).
+- **PRs:** pvnfpedro-lgtm/Recife-Resiliente#1 e #2 incorporados ao `main`
+  em 03/10/2026.
 
 ## Próximos passos (escolha de Pedro)
 1. Indicadores e ranking dos pontos críticos na aba 01 do painel.
@@ -65,8 +65,11 @@ Critérios, Fontes de dados e Pontos RPA 6.
   por vez, confirmando com Pedro antes de avançar.
 - Avise sempre que um dado não estiver verificado. Registre-o em
   `docs/05-pendencias.md`.
-- Não invente critérios, pesos, coordenadas nem números. Se faltar o dado,
+- Não invente dimensões, pesos, coordenadas nem números. Se faltar o dado,
   deixe o campo vazio e marque como pendente.
 - Escreva em português.
+- Termos (decisão de Pedro, 03/10/2026): **dimensão** (Probabilidade,
+  Exposição, Vulnerabilidade, Impacto) e **variável** (P1, E2, V3...). Não
+  usar "critério" nem "subcritério" para o modelo.
 - SIG: SIRGAS 2000 / UTM 25S (EPSG:31985); buffer de 300 m por ponto.
 - Testes: `python3 -m unittest discover -s tests`.

@@ -15,7 +15,7 @@ FIX = RAIZ / "tests" / "fixtures"
 
 def rodar(**kw):
     return h.hierarquizar(
-        h.ler_csv(FIX / "criterios.csv"),
+        h.ler_csv(FIX / "variaveis.csv"),
         h.ler_csv(FIX / "notas.csv"),
         h.ler_csv(FIX / "tratabilidade.csv"),
         **kw,
@@ -59,30 +59,30 @@ class TestHierarquizar(unittest.TestCase):
         self.assertEqual(rodar(corte_risco=13)[0]["quadrante"], "Oportunidade")
 
     def test_nota_fora_da_escala(self):
-        crit = h.ler_csv(FIX / "criterios.csv")
+        crit = h.ler_csv(FIX / "variaveis.csv")
         with self.assertRaises(h.ErroDeDados):
             h.hierarquizar(crit, [{"ponto_id": "P", "codigo": "P1", "nota": "6"}])
 
     def test_codigo_desconhecido(self):
-        crit = h.ler_csv(FIX / "criterios.csv")
+        crit = h.ler_csv(FIX / "variaveis.csv")
         with self.assertRaises(h.ErroDeDados):
             h.hierarquizar(crit, [{"ponto_id": "P", "codigo": "X9", "nota": "3"}])
 
     def test_peso_dimensao_inconsistente(self):
-        crit = h.ler_csv(FIX / "criterios.csv")
-        crit.append({"codigo": "E2", "dimensao": "Exposição", "subcriterio": "x",
-                     "peso_subcriterio": "1", "peso_dimensao": "9"})
+        crit = h.ler_csv(FIX / "variaveis.csv")
+        crit.append({"codigo": "E2", "dimensao": "Exposição", "variavel": "x",
+                     "peso_variavel": "1", "peso_dimensao": "9"})
         with self.assertRaises(h.ErroDeDados):
             h.hierarquizar(crit, [])
 
     def test_peso_vazio_so_na_probabilidade(self):
-        crit = h.ler_csv(FIX / "criterios.csv")
+        crit = h.ler_csv(FIX / "variaveis.csv")
         crit[2]["peso_dimensao"] = ""
         with self.assertRaises(h.ErroDeDados):
             h.hierarquizar(crit, [])
 
     def test_virgula_decimal(self):
-        crit = h.ler_csv(FIX / "criterios.csv")
+        crit = h.ler_csv(FIX / "variaveis.csv")
         notas = [{"ponto_id": "P", "codigo": "P1", "nota": "2,5"},
                  {"ponto_id": "P", "codigo": "E1", "nota": "4"}]
         self.assertAlmostEqual(h.hierarquizar(crit, notas)[0]["risco"], 10.0)

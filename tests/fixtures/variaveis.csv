@@ -1,4 +1,4 @@
-codigo,dimensao,subcriterio,peso_subcriterio,peso_dimensao
+codigo,dimensao,variavel,peso_variavel,peso_dimensao
 P1,Probabilidade,Fictício probabilidade 1,2,
 P2,Probabilidade,Fictício probabilidade 2,1,
 E1,Exposição,Fictício exposição 1,1,2

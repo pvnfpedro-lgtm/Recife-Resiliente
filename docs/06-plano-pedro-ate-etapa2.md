@@ -18,7 +18,7 @@ Frentes de Pedro: dados, território, causas de infraestrutura e cronograma.
 
 | Dia | Tarefa | Entregável |
 |---|---|---|
-| **Sex 02 – Seg 05** | Fechar o modelo: para cada um dos 24 subcritérios, definir a fonte, se o dado está disponível e o método de cálculo no buffer de 300 m. Subcritério sem dado viável até 27/10 sai do score ou vira pendência | `criterios.csv` preenchido + tabela de fontes por subcritério |
+| **Sex 02 – Seg 05** | Fechar o modelo: para cada um das 24 variáveis, definir a fonte, se o dado está disponível e o método de cálculo no buffer de 300 m. Variável sem dado viável até 27/10 sai do score ou vira pendência | `variaveis.csv` preenchido + tabela de fontes por variável |
 | **Seg 05** | Enviar os convites à SEPLAN e a Pedro Oliveira (EMLURB). Enviar à CTTU um pedido de dados de mobilidade. Se o modelo usar dados do COP ou da Compesa, pedir também | Convites e pedidos enviados |
 | **Ter 06 – Qua 07** | Reunião com a SEPLAN. Montar a base no ArcGIS Pro (EPSG:31985, buffers de 300 m, Censo 2022, IVS) | Base SIG preliminar |
 | **Qua 07 – Qui 08** | Reunião com Pedro Oliveira (EMLURB): conferir as coordenadas dos 21 trechos e as causas de cada ponto | `pontos.csv` com coordenadas verificadas |

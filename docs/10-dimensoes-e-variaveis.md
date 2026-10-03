@@ -1,13 +1,13 @@
-# 10. Critérios e subcritérios de risco de alagamento
+# 10. Dimensões e variáveis de risco de alagamento
 
-> **Documento-chave** dos critérios e subcritérios (decisão de Pedro,
+> **Documento-chave** das dimensões e variáveis (decisão de Pedro,
 > 03/10/2026). O que for decidido é registrado aqui. O
 > [Google Docs da equipe](https://docs.google.com/document/d/12zj_bPx0u5ejNpUsbFNEPsy7WGpTRwuH6k23O0k8f2I/edit)
 > é uma cópia para leitura e comentários, atualizada a partir deste arquivo.
 > Lista adotada em 03/10/2026, ainda não validada pelo grupo.
 
-O risco de cada um dos 21 pontos críticos da RPA 6 é medido por 4 critérios
-e 18 subcritérios. Este documento explica o que cada um significa e por que
+O risco de cada um dos 21 pontos críticos da RPA 6 é medido por 4 dimensões
+e 18 variáveis. Este documento explica o que cada uma significa e por que
 importa.
 
 ## Como o risco é calculado
@@ -16,11 +16,11 @@ importa.
 
 A Probabilidade multiplica a Consequência. Por isso um ponto que quase não
 alaga fica com risco baixo, mesmo com muita gente por perto. Os pesos de cada
-critério e subcritério ainda serão definidos pelo grupo (pendência 1).
+dimensão e variável ainda serão definidos pelo grupo (pendência 1).
 
 ## Probabilidade
 
-**Pergunta:** quanto e com que facilidade o ponto alaga? É o critério que
+**Pergunta:** quanto e com que facilidade o ponto alaga? É a dimensão que
 multiplica a Consequência. Sem nota de Probabilidade, o ponto não entra no
 ranking.
 

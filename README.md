@@ -18,7 +18,7 @@ RPA 6 (21 trechos da planilha da EMLURB).
 
 ```
 docs/            contexto, metodologia, fontes, cronograma e pendências
-dados/modelos/   modelos de CSV (critérios, pontos, notas, tratabilidade)
+dados/modelos/   modelos de CSV (dimensões, pontos, notas, tratabilidade)
 dados/brutos/    dados de origem (IBGE, IVS, EMLURB, COP…), sem edição
 dados/processados/ saídas do SIG e do script de hierarquização
 scripts/         hierarquizar.py: risco (Probabilidade × Consequência) + matriz
@@ -34,15 +34,15 @@ entregas/        slides, resumo executivo, plano de 90 dias
 4. [Cronograma](docs/04-cronograma.md)
 5. [Pendências e dados não verificados](docs/05-pendencias.md)
 6. [Plano de Pedro até a Etapa 2](docs/06-plano-pedro-ate-etapa2.md)
-7. [Revisão dos critérios](docs/07-revisao-criterios.md)
+7. [Revisão das dimensões](docs/07-revisao-variaveis.md)
 8. [Painel](docs/08-painel.md)
 9. [Identidade visual do mapa](docs/09-identidade-visual-mapa.md)
-10. [Critérios e subcritérios (documento-chave)](docs/10-criterios-e-subcriterios.md)
+10. [Dimensões e variáveis (documento-chave)](docs/10-dimensoes-e-variaveis.md)
 
-Checklist de subcritérios, escalas de nota (1 a 5), fontes, notas dos 21
+Checklist de variáveis, escalas de nota (1 a 5), fontes, notas dos 21
 pontos com o cálculo do risco e glossário:
-`dados/Recife_Resiliente_Checklist_Subcriterios.xlsx` (gerado por
-`scripts/gerar_checklist_subcriterios.py`).
+`dados/Recife_Resiliente_Checklist_Variaveis.xlsx` (gerado por
+`scripts/gerar_checklist_variaveis.py`).
 
 ## Calcular a hierarquização
 
@@ -50,7 +50,7 @@ O script usa só a biblioteca padrão do Python 3.9+.
 
 ```bash
 python3 scripts/hierarquizar.py \
-  --criterios dados/modelos/criterios.csv \
+  --variaveis dados/modelos/variaveis.csv \
   --notas dados/processados/notas.csv \
   --tratabilidade dados/processados/tratabilidade.csv \
   --saida dados/processados/ranking.csv

@@ -16,8 +16,8 @@ var PLANILHA_NOTAS_ID = '1DN3abWIPk0dvOkh-28D2NGYBLgMI437Vx7Sk7TqpDc0';
 var ABA_NOTAS = 'Notas dos pontos';
 var LINHA_CABECALHO = 6;
 
-/* Códigos dos subcritérios, na ordem das colunas da aba. */
-var SUBCRITERIOS = ['P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'E1', 'E2', 'E3',
+/* Códigos das variáveis, na ordem das colunas da aba. */
+var VARIAVEIS = ['P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'E1', 'E2', 'E3',
                     'V2', 'V3', 'V4', 'V5', 'V6', 'V1', 'I1', 'I2', 'I3'];
 
 function getPontosCriticos() {
@@ -46,9 +46,9 @@ function getPontosCriticos() {
     if (faltando.length) return { erro: 'Colunas não encontradas: ' + faltando.join(', ') };
 
     function num(v) { return (typeof v === 'number' && !isNaN(v)) ? v : null; }
-    // Nome de cada subcritério = texto do cabeçalho depois do código ("P1 Frequência..." → "Frequência...").
+    // Nome de cada variável = texto do cabeçalho depois do código ("P1 Frequência..." → "Frequência...").
     var nomes = {};
-    SUBCRITERIOS.forEach(function (cod) {
+    VARIAVEIS.forEach(function (cod) {
       var k = col(cod + ' ');
       if (k >= 0) nomes[cod] = cab[k].slice(cod.length).trim();
     });
@@ -57,7 +57,7 @@ function getPontosCriticos() {
       var linha = valores[r];
       if (typeof linha[c.id] !== 'number') break;  // fim da tabela
       var subs = {};
-      SUBCRITERIOS.forEach(function (cod) { var k = col(cod + ' '); subs[cod] = k < 0 ? null : num(linha[k]); });
+      VARIAVEIS.forEach(function (cod) { var k = col(cod + ' '); subs[cod] = k < 0 ? null : num(linha[k]); });
       pontos.push({
         id: linha[c.id], bairro: String(linha[c.bairro]), trecho: String(linha[c.trecho]),
         tipo: String(linha[c.tipo]), grupo: String(linha[c.grupo] || ''),

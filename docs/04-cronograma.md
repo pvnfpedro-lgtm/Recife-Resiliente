@@ -2,7 +2,7 @@
 
 | Etapa | Prazo | Entregas da equipe (proposta) |
 |---|---|---|
-| Etapa 2 — Escolher | **14/10/2026** | Recorte fechado; critérios e pesos aprovados pelo grupo; coordenadas dos 21 pontos conferidas |
+| Etapa 2 — Escolher | **14/10/2026** | Recorte fechado; dimensões e pesos aprovados pelo grupo; coordenadas dos 21 pontos conferidas |
 | Etapa 3 | **27/10/2026** | Dados de SIG coletados (buffers de 300 m); notas preenchidas; primeiro ranking e matriz |
 | Etapa 4 | **04/11/2026** | Teste do protótipo: validação do ranking com EMLURB, Defesa Civil e COP; vistorias de campo de uma amostra |
 | Etapa 5 — Final | **11/11/2026** | Apresentação (até 8 slides), resumo executivo de 1 página, protótipo/teste e plano de 90 dias |
@@ -12,7 +12,7 @@
 > equipe e com a tutora.
 
 ## Caminho crítico até 14/10
-1. Transcrever os 24 subcritérios da planilha para `dados/modelos/criterios.csv`.
+1. Transcrever as 24 variáveis da planilha para `dados/modelos/variaveis.csv`.
 2. Fechar os pesos com o grupo.
 3. Conferir as coordenadas dos 21 pontos.
 4. Definir o índice de vulnerabilidade social (IVS/Ipea ou outro).
