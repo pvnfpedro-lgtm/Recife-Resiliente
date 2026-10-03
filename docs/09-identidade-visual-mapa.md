@@ -19,6 +19,8 @@
   (ex.: canal, com três ondas).
 
 ## Em aberto
+- Creche: o desenho da criança não ficou claro para Pedro (03/10); rever depois.
+- Símbolo do ponto crítico: em definição (opções de desenho dentro do círculo colorido).
 - Desenho da escola: o da Maki (lápis e maçã) não se lê em tamanho pequeno.
   Alternativas: capelo, prédio escolar, livro.
 - Lista final de ícones (proposta abaixo) e quais equipamentos aparecem no
