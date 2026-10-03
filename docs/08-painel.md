@@ -46,6 +46,10 @@ O painel em Google Apps Script já existente é a base. Muita coisa vai mudar.
   cartão). Novo `clasp push` com os termos novos: o cartão mostra
   "Dimensão / variável". Na planilha, a aba "Checklist subcritérios" passou
   a se chamar "Checklist variáveis" (o painel não lê essa aba).
+- 03/10/2026: planilha renomeada para "Recife_Resiliente_Checklist_Variaveis"
+  (o link não muda). Abas "Checklist variáveis" e "Glossário" reescritas com o
+  conteúdo do `.xlsx` atual (18 variáveis, termos novos); as fórmulas do
+  resumo foram mantidas e se ajustaram às linhas novas (N5:N22).
 
 ## Estado em 02/10/2026 (aprovado por Pedro)
 - Paleta: #0869A6 · #2685BF · #5496BF · #FFFFFF · #F2F2F2 (painel inteiro).

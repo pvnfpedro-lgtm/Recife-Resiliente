@@ -185,7 +185,7 @@ GLOSSARIO = [
      "Média em que cada item conta conforme o seu peso.",
      "Notas 5 (peso 2) e 2 (peso 1): (5×2 + 2×1) ÷ 3 = 4."),
     ("Modelo de risco", "Cobertura",
-     "Quantos variáveis têm nota para o ponto. Nota faltante não vira zero nem média: fica de fora e a cobertura mostra a falta.",
+     "Quantas variáveis têm nota para o ponto. Nota faltante não vira zero nem média: fica de fora e a cobertura mostra a falta.",
      "Cobertura 11/13 = faltam 2 notas para aquele ponto."),
     ("Modelo de risco", "Sem Probabilidade, sem risco",
      "Como o risco é uma multiplicação, um ponto sem nota de Probabilidade não tem risco calculado nem posição no ranking.",
