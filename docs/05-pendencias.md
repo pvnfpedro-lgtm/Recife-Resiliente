@@ -23,6 +23,7 @@
 | 17 | I1: classe de corredor de cada via (metropolitano, urbano principal, urbano secundário) | Pedro | 13/10 | A classificação está no **Anexo 7 da LUOS (Lei 16.176/1996)**, segundo busca na web (anexo não aberto: site bloqueado no ambiente). Pedro envia a LUOS ou o anexo. Rascunho das notas em `dados/processados/notas_I1_tipo_de_via.csv`. Em 03/10 Pedro marcou na planilha: fonte de medição = Sistema viário (CTTU), fonte confirmada e dado existente |
 | 18 | I4: montar a camada de infraestrutura crítica (metrô, delegacias, bombeiros, SAMU, aeroporto, subestações) e medir a distância dos 21 pontos | Pedro | 27/10 | Conferir se as notas se espalham; se quase todos ficarem acima de 2 km, I4 vira contexto. Decidir se entram terminais integrados, Compesa, Defesa Civil e abrigos |
 | 19 | Proposta: I2 vira a definição do V6 (falta de esgoto) e I3 vira observação fora do cálculo | Grupo e Hellis | 14/10 | Ver `10-dimensoes-e-variaveis.md`, seção "Proposta em discussão" |
+| 20 | E3: conferir as colunas do IPTU 2026 (tipo de uso para separar não residenciais, valor lançado × valor pago, isenções, sistema de coordenadas) | Pedro | 13/10 | Pedro envia o CSV ou a lista de colunas (portal bloqueado no ambiente). Sem tipo de uso, a soma mistura moradias |
 
 ## Dados não verificados
 - I1 (Tipo de via): Av. Mascarenhas de Moraes e Av. Recife como corredores
@@ -34,9 +35,9 @@ Tudo o que estiver aqui **não** pode ir para a apresentação sem conferência.
 - Papéis de cada órgão na prevenção (tabela em `01-contexto.md`): leitura
   preliminar.
 - Ano-base do IVS/Ipea por UDH: a confirmar.
-- Base do IPTU (portal de dados abertos): coordenadas, sistema de
-  coordenadas, ano e categorias do tipo de empreendimento ainda não abertos
-  nem conferidos.
+- Base do IPTU 2026 (portal de dados abertos): segundo Pedro, traz
+  coordenadas e valor pago. Sistema de coordenadas, tipo de uso, valor
+  lançado e isenções ainda não conferidos (pendência 20).
 - Limites territoriais (bairro, microrregião, RPA, logradouro): formatos,
   sistema de coordenadas e data de atualização ainda não conferidos.
 - Faixas e corredores de ônibus: formato, sistema de coordenadas e data de
@@ -47,8 +48,9 @@ Tudo o que estiver aqui **não** pode ir para a apresentação sem conferência.
   atualização ainda não conferidos; uso no modelo a decidir com o grupo.
 - Favelas, cortiços e loteamentos irregulares: se há geometria, ano de
   referência e coerência com a malha IBGE 2022 ainda não conferidos.
-- ZEC (zoneamento do Plano Diretor): significado da sigla, geometria e data
-  ainda não conferidos; uso no modelo a definir.
+- ZEC (zoneamento): é Zona Especial de Centralidade (LPUOS 2025, lida em
+  03/10). Descartada para o modelo; geometria e data do arquivo do portal
+  não conferidas.
 - Bases localizadas na busca em 03/10/2026 (escolas municipais, UBS,
   hospitais, rede de saúde, ZEIS, bacias e sub-bacias, drenagem da EMLURB,
   curvas da Condepe/Fidem): formatos, datas e coberturas vêm só dos resumos

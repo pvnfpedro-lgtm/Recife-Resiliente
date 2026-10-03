@@ -74,8 +74,8 @@ ranking.
 ## Exposição
 
 **Pergunta:** quem e o que está no caminho da água? Conta o que existe dentro
-do círculo de 300 m em volta do ponto. O que é contado aqui não é contado de
-novo no Impacto.
+do círculo de 300 m em volta do ponto (exceção: E3 usa 1 km). O que é
+contado aqui não é contado de novo no Impacto.
 
 ### E1 — População
 - **O que é:** quantas pessoas moram perto do ponto.
@@ -96,12 +96,25 @@ novo no Impacto.
   hospitais); IBGE (CNEFE 2022); CNES/DATASUS.
 
 ### E3 — Comércio e serviços
-- **O que é:** lojas e serviços perto do ponto.
+- **O que é:** o peso da atividade econômica em volta do ponto. É a variável
+  que leva o aspecto econômico para o modelo (decisão de Pedro, 03/10/2026).
 - **Por que importa:** alagamento fecha negócios, estraga mercadoria e afeta
-  quem trabalha ali.
-- **Como medimos:** número de comércios e serviços no círculo; os pontos com
-  mais recebem nota 5.
-- **De onde vem o dado:** IBGE (CNEFE 2022) e cadastro do IPTU.
+  quem trabalha ali. Um centro comercial pesa mais que uma banca.
+- **Como medimos** (decisão de Pedro, 03/10/2026):
+  1. Somar o IPTU dos imóveis **não residenciais** no **círculo de 1 km** em
+     volta do ponto (exceção ao círculo de 300 m: Pedro considerou 300 m
+     pequeno demais para a atividade econômica). Usar o valor lançado, se a
+     planilha tiver; se só houver o valor pago, usar o pago e registrar.
+  2. Ordenar os 21 pontos pela soma e dividir em 5 grupos (quintis): o grupo
+     de menor soma recebe nota 1; o de maior, nota 5. Empates ficam no mesmo
+     grupo. Ponto sem imóvel não residencial no círculo recebe nota 1.
+  - Limitações: imóveis isentos (templos, imóveis públicos) entram com valor
+    zero; a nota é relativa aos 21 pontos e precisa ser recalculada se o
+    modelo for para outras RPAs; com 1 km, os círculos de pontos próximos se
+    sobrepõem e as notas desses pontos tendem a ficar parecidas.
+- **De onde vem o dado:** IPTU 2026, portal de dados abertos da Prefeitura.
+  Segundo Pedro, traz as coordenadas dos imóveis e o valor pago; colunas de
+  tipo de uso e de valor lançado **não conferidas** (pendência 20).
 
 ## Vulnerabilidade
 

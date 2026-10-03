@@ -83,11 +83,14 @@ VARIAVEIS = [
      "Perguntar se 'equipamentos públicos' inclui outros (CRAS, abrigos). Calibrar com as contagens reais.",
      "CNEFE confirmado na busca (não baixado). Bases do portal localizadas em 03/10 (não abertas)."),
     ("Exposição", "E3", "Comércio e serviços",
-     "Nº de comércios e serviços no círculo", "Quintil", Q, "Planilha original", "Manter",
-     "IBGE — CNEFE 2022 (outras finalidades); IPTU (tipo de empreendimento)",
-     "'Outras finalidades' pode incluir templos e órgãos públicos. Inclui 'perdas econômicas' do "
-     "documento da equipe, que não tem fonte própria.",
-     "CNEFE confirmado na busca (não baixado)."),
+     "Soma do IPTU dos imóveis não residenciais no círculo de 1 km (valor lançado; se não houver, "
+     "o pago). Pontos ordenados e divididos em 5 grupos; empates no mesmo grupo; sem imóvel não "
+     "residencial = nota 1",
+     "Quintil", Q, "Decisão de Pedro (03/10/2026)", "Manter",
+     "Prefeitura do Recife — IPTU 2026 (dados abertos)",
+     "Aspecto econômico do modelo. Círculo de 1 km (exceção aos 300 m). Isentos entram com valor "
+     "zero. Nota relativa aos 21 pontos.",
+     "Segundo Pedro, tem coordenadas e valor pago. Tipo de uso e valor lançado não conferidos."),
     ("Vulnerabilidade", "V2", "População vulnerável",
      "% de moradores com 60+ anos ou 0–4 anos nos setores do círculo (ponderado pela área)",
      "Quintil", Q, "Planilha original", "Manter",
