@@ -824,6 +824,9 @@ require([
   function fmtN(v, casas){ return v == null ? "—" : v.toFixed(casas).replace(".", ","); }
   function escHtml(t){ return String(t == null ? "" : t).replace(/[&<>"]/g, function(ch){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[ch]; }); }
 
+  // Nomes dos subcritérios: vêm do cabeçalho da planilha (NOMES_PLANILHA).
+  // NOMES_SUB é só a reserva, se a planilha não mandar o nome.
+  var NOMES_PLANILHA = {};
   var NOMES_SUB = { P1:"Frequência", P2:"Severidade", P3:"Maré", P4:"Rio/canal", P5:"Impermeabilização", P6:"Relevo",
     E1:"População", E2:"Equip. públicos", E3:"Comércio e serviços",
     V2:"Pop. vulnerável", V3:"ZEIS/favelas", V4:"Tipo de moradia", V5:"Evacuação", V6:"Infra. precária", V1:"IVS",
@@ -844,7 +847,7 @@ require([
                 '</td><td>' + fmtN(notaCrit, 1) + '</td></tr>';
       g.cods.forEach(function(c){
         if(p.notas[c] == null) return;
-        linhas += '<tr class="rr-subl ' + cls + '" data-g="' + gi + '"><td>' + NOMES_SUB[c] + '</td><td>' + p.notas[c] + '</td></tr>';
+        linhas += '<tr class="rr-subl ' + cls + '" data-g="' + gi + '"><td>' + escHtml(NOMES_PLANILHA[c] || NOMES_SUB[c]) + '</td><td>' + p.notas[c] + '</td></tr>';
       });
     });
     return '' +
@@ -944,6 +947,7 @@ require([
     }
     pontosLayer.removeAll();
     fecharCartao();
+    NOMES_PLANILHA = res.nomes || {};
     PONTOS_POR_ID = {};
     res.pontos.forEach(function(p){
       if(p.lat == null || p.lon == null) return;

@@ -46,6 +46,12 @@ function getPontosCriticos() {
     if (faltando.length) return { erro: 'Colunas não encontradas: ' + faltando.join(', ') };
 
     function num(v) { return (typeof v === 'number' && !isNaN(v)) ? v : null; }
+    // Nome de cada subcritério = texto do cabeçalho depois do código ("P1 Frequência..." → "Frequência...").
+    var nomes = {};
+    SUBCRITERIOS.forEach(function (cod) {
+      var k = col(cod + ' ');
+      if (k >= 0) nomes[cod] = cab[k].slice(cod.length).trim();
+    });
     var pontos = [];
     for (var r = LINHA_CABECALHO; r < valores.length; r++) {
       var linha = valores[r];
@@ -61,80 +67,8 @@ function getPontosCriticos() {
         posicao: num(linha[c.posicao]), preenchidas: num(linha[c.preenchidas]), notas: subs
       });
     }
-    return { pontos: pontos, lidoEm: new Date().toISOString() };
+    return { pontos: pontos, nomes: nomes, lidoEm: new Date().toISOString() };
   } catch (e) {
     return { erro: String(e && e.message ? e.message : e) };
   }
-}
-
-/* =====================================================================
-   AJUSTE ÚNICO DA PLANILHA — subcritérios de 03/10/2026
-   Renomeia cabeçalhos, insere V5 e V6 (antes do V1) e I3 (antes do I2),
-   sem nota e sem peso, e refaz a fórmula de "Notas preenchidas".
-   Pode ser executada mais de uma vez: o que já foi feito é pulado.
-   Executar pelo editor do Apps Script (Executar → atualizarSubcriterios0310).
-   ===================================================================== */
-function atualizarSubcriterios0310() {
-  var aba = SpreadsheetApp.openById(PLANILHA_NOTAS_ID).getSheetByName(ABA_NOTAS);
-  var L = LINHA_CABECALHO;
-  var log = [];
-  function cab() {
-    return aba.getRange(L, 1, 1, aba.getLastColumn()).getValues()[0].map(function (h) {
-      return String(h).replace(/\s+/g, ' ').trim();
-    });
-  }
-  function col(inicio) {  // número da coluna (1 = A) cujo cabeçalho começa com o texto
-    var c = cab();
-    for (var i = 0; i < c.length; i++) if (c[i].indexOf(inicio) === 0) return i + 1;
-    return -1;
-  }
-  var ultimaLinha = L;
-  var ids = aba.getRange(L + 1, 1, aba.getLastRow() - L, 1).getValues();
-  for (var k = 0; k < ids.length && typeof ids[k][0] === 'number'; k++) ultimaLinha = L + 1 + k;
-  var nLinhas = ultimaLinha - L;
-
-  var nomes = { P1: 'Frequência e recorrência histórica', P6: 'Relevo (baixio)',
-                E2: 'Equipamentos públicos', E3: 'Comércio e serviços',
-                V2: 'População vulnerável', V3: 'ZEIS, favelas e comunidades',
-                I1: 'Interrupção do trânsito' };
-  Object.keys(nomes).forEach(function (cod) {
-    var c = col(cod + ' ');
-    if (c < 0) { log.push('Não achei ' + cod); return; }
-    aba.getRange(L, c).setValue(cod + '\n' + nomes[cod]);
-  });
-  log.push('Cabeçalhos renomeados');
-
-  function inserir(antesDe, novos) {
-    if (col(novos[0][0] + ' ') > 0) { log.push(novos[0][0] + ' já existe'); return; }
-    var c = col(antesDe + ' ');
-    if (c < 0) throw new Error('Coluna ' + antesDe + ' não encontrada');
-    aba.insertColumnsBefore(c, novos.length);
-    var modelo = c + novos.length;  // a coluna que foi empurrada
-    novos.forEach(function (n, i) {
-      aba.getRange(L - 1, modelo, nLinhas + 2, 1).copyFormatToRange(aba, c + i, c + i, L - 1, ultimaLinha);
-      aba.getRange(L - 1, c + i, nLinhas + 2, 1).clearContent();  // sem peso e sem nota
-      aba.getRange(L, c + i).setValue(n[0] + '\n' + n[1]);
-    });
-    log.push('Inseridas: ' + novos.map(function (n) { return n[0]; }).join(', '));
-  }
-  inserir('V1', [['V5', 'Dificuldade de evacuação'], ['V6', 'Infraestrutura precária']]);
-  inserir('I2', [['I3', 'Isolamento']]);
-
-  var cNotas = col('Notas preenchidas');
-  var cods = SUBCRITERIOS.map(function (cod) { return col(cod + ' '); }).filter(function (c) { return c > 0; });
-  var formulas = [];
-  for (var r = L + 1; r <= ultimaLinha; r++) {
-    // Soma de COUNT de uma célula cada: sem separador de argumentos, funciona em qualquer idioma.
-    formulas.push(['=' + cods.map(function (c) {
-      return 'COUNT(' + aba.getRange(r, c).getA1Notation() + ')';
-    }).join('+')]);
-  }
-  aba.getRange(L + 1, cNotas, formulas.length, 1).setFormulas(formulas);
-  log.push('Notas preenchidas: ' + cods.length + ' colunas');
-
-  var a2 = aba.getRange('A2');
-  a2.setValue(String(a2.getValue()).replace('P6 e V1 são condicionais:',
-    'P6 e V1 são condicionais e I3, V5 e V6 ainda não têm definição:'));
-  Logger.log(log.join('\n'));
-  return log;
 }

@@ -35,6 +35,10 @@ O painel em Google Apps Script já existente é a base. Muita coisa vai mudar.
   sem peso, "Notas preenchidas" = 15 nos 21 pontos, risco calculado nos 21.
   Fórmulas escritas por script não usam separador de argumentos (planilha em
   pt-BR usa `;`).
+- 03/10/2026: o cartão do ponto passa a mostrar o nome de cada subcritério
+  como está no cabeçalho da planilha. Para renomear, basta mudar o texto
+  depois do código (ex.: `V5` + quebra de linha + novo nome); **não mudar o
+  código**. A função `atualizarSubcriterios0310` foi removida.
 
 ## Estado em 02/10/2026 (aprovado por Pedro)
 - Paleta: #0869A6 · #2685BF · #5496BF · #FFFFFF · #F2F2F2 (painel inteiro).
