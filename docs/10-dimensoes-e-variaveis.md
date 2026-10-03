@@ -7,7 +7,7 @@
 > Lista adotada em 03/10/2026, ainda não validada pelo grupo.
 
 O risco de cada um dos 21 pontos críticos da RPA 6 é medido por 4 dimensões
-e 18 variáveis. Este documento explica o que cada uma significa e por que
+e 19 variáveis. Este documento explica o que cada uma significa e por que
 importa.
 
 ## Como o risco é calculado
@@ -203,6 +203,29 @@ funcionar na cidade quando o ponto alaga, mesmo para quem não mora perto.
   quando o ponto alaga.
 - **Pergunta em aberto:** confirmar o sentido com a equipe. Enquanto não for
   definido, não entra no cálculo (pendência 15).
+
+### I4 — Proximidade a infraestrutura crítica (proposta, 03/10/2026)
+- **O que é:** a distância do ponto até a infraestrutura crítica mais
+  próxima.
+- **Infraestrutura crítica** (definição do projeto): estrutura cuja
+  interrupção por alagamento deixa sem um serviço essencial uma área maior que
+  o entorno do ponto. Lista definida por Pedro: estação de metrô, delegacia,
+  Corpo de Bombeiros, base do SAMU, aeroporto, subestação da Neoenergia.
+  Hospital e UPA ficam no E2, para não contar duas vezes. Em aberto: terminais
+  integrados de ônibus, estruturas da Compesa, Defesa Civil e abrigos.
+- **Por que importa:** quando uma dessas estruturas é atingida, ou fica
+  difícil de alcançar, a região inteira perde o serviço.
+- **Como medimos:** distância em linha reta (EPSG:31985) do ponto, ou da
+  linha do trecho, até a estrutura mais próxima. Escala decidida por Pedro:
+  1. acima de 2.000 m
+  2. de 1.500 m a 2.000 m
+  3. de 1.000 m a 1.500 m
+  4. de 500 m a 1.000 m
+  5. até 500 m
+- **De onde vem o dado:** CBTU, Polícia Civil, Corpo de Bombeiros, SAMU,
+  aeroporto e Neoenergia. Camada ainda não montada.
+- **Cuidado:** se quase todos os pontos ficarem acima de 2 km, a variável não
+  diferencia os pontos e vira contexto no painel.
 
 ## O que fica fora da nota
 

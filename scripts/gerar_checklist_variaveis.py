@@ -147,6 +147,17 @@ VARIAVEIS = [
      "Nova — só entra com definição e fonte", "",
      "Leitura possível: comunidade sem rota alternativa quando o ponto alaga (malha viária). Confirmar com Hellis.",
      "Não pesquisado."),
+    ("Impacto", "I4", "Proximidade a infraestrutura crítica",
+     "Distância em linha reta (EPSG:31985) do ponto, ou da linha do trecho, até a infraestrutura crítica mais "
+     "próxima. Infraestrutura crítica = estrutura cuja interrupção por alagamento deixa sem serviço essencial uma "
+     "área maior que o entorno do ponto: estação de metrô, delegacia, Corpo de Bombeiros, base do SAMU, aeroporto, "
+     "subestação da Neoenergia.", "Faixa fixa",
+     ("> 2.000 m", "1.500–2.000 m", "1.000–1.500 m", "500–1.000 m", "≤ 500 m"),
+     "Pedro (03/10/2026)", "Proposta — conferir se diferencia os 21 pontos",
+     "CBTU (metrô); Polícia Civil / SDS-PE (delegacias); CBMPE (bombeiros); SAMU; Aeroporto do Recife; Neoenergia (subestações)",
+     "Lista definida por Pedro. Em aberto: terminais integrados, estruturas da Compesa, Defesa Civil e abrigos. "
+     "Hospital e UPA ficam no E2. Se quase todos os pontos ficarem acima de 2 km, vira contexto no painel (pendência 18).",
+     "Não pesquisado."),
 ]
 
 # (grupo, termo, o que significa, exemplo no projeto)
@@ -331,6 +342,9 @@ COR_DIMENSAO = {"Probabilidade": "DDEBF7", "Exposição": "E2EFDA",
                 "Vulnerabilidade": "FCE4D6", "Impacto": "EDE2F6"}
 COR_NOTA = ("E2EFDA", "F4F9EE", "FFF9E5", "FDE9D9", "F8CBAD")
 COLS_PREENCHER = (15, 16, 17)  # O, P, Q
+# Preenchido pela equipe na planilha Google (copiar aqui para a planilha gerada não divergir).
+FONTE_MEDICAO = {"I1": "Sistema viário | CTTU"}
+CONFIRMACAO = {"I1": ("Sim", "Sim")}  # (Fonte confirmada?, Dado existe na fonte?)
 
 
 def gerar_glossario(wb):
@@ -586,8 +600,8 @@ def gerar(saida=SAIDA):
     r0 = h + 1
     for i, (crit, cod, sub, medir, tipo, notas, origem, rec, fonte, obs, busca) in enumerate(VARIAVEIS):
         r = r0 + i
-        valores = [crit, cod, sub, medir, "", tipo, *notas, origem, rec, fonte,
-                   "Pendente", "Pendente", obs, busca]
+        valores = [crit, cod, sub, medir, FONTE_MEDICAO.get(cod, ""), tipo, *notas, origem, rec, fonte,
+                   *CONFIRMACAO.get(cod, ("Pendente", "Pendente")), obs, busca]
         for c, v in enumerate(valores, 1):
             cel = ws.cell(row=r, column=c, value=v)
             cel.border = borda
