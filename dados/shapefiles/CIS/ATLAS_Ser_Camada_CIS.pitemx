@@ -1,0 +1,12 @@
+
+
+{
+"name":"ATLAS/Ser_Camada_CIS",
+"title":"ATLAS/Ser_Camada_CIS",
+"type":"Map Service",
+"typeKeywords":["ArcGIS Server","Service","Map Service"],
+"description":"Documento de Mapa com os dados da matriz para as CIS.",
+"extent":[[257531.34899488208,316586.4671051183],[9089006.796247417,9130176.045252582]],
+
+"url":"https://esigportal2.recife.pe.gov.br/arcgis/rest/services/ATLAS/Ser_Camada_CIS/MapServer"
+}
