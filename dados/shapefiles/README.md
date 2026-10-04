@@ -1,0 +1,29 @@
+# Shapefiles
+
+Pasta para ir juntando os shapefiles do projeto. Uma subpasta por camada.
+
+## Como subir
+1. No GitHub, abra esta pasta no branch de trabalho e use
+   **Add file → Upload files**.
+2. No nome do arquivo, escreva antes o nome da subpasta, por exemplo
+   `canais/` (o GitHub cria a pasta). Ou zipe a camada e mande na conversa
+   com o Claude.
+3. Suba **todos** os arquivos da camada juntos: `.shp`, `.shx`, `.dbf`,
+   `.prj` e, se tiver, `.cpg`. Sem o `.prj` não dá para saber o sistema de
+   referência.
+
+## Regras
+- Nome da subpasta e dos arquivos: minúsculas, sem acento e sem espaço
+  (ex.: `canais/canais.shp`).
+- Pelo site, o GitHub aceita até 25 MB por arquivo, e no máximo 100 MB por
+  outros meios. Camada maior (malha da cidade inteira): não suba; anote o
+  link abaixo e recortamos para a RPA 6.
+- Sistema de referência do projeto: SIRGAS 2000 / UTM 25S (EPSG:31985).
+  Camada em outro sistema pode subir como veio; a conversão fica registrada.
+
+## Catálogo
+Preencha uma linha por camada ao subir (fonte e data são obrigatórias).
+
+| Subpasta | O que é | Fonte (órgão / link) | Data | Variável | Observação |
+|---|---|---|---|---|---|
+| | | | | | |
