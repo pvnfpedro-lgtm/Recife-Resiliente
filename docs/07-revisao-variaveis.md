@@ -14,7 +14,7 @@
 > `dados/Recife_Resiliente_Checklist_Variaveis.xlsx`. A tabela de 12
 > variáveis logo abaixo é a versão de 01/10, mantida como histórico.
 
-Revisão da aba *Critérios* de `dados/Recife_Resiliente_RPA6_Criterios_Pontos_Criticos.xlsx`
+Revisão da aba *Critérios* de `dados/historico/Recife_Resiliente_RPA6_Criterios_Pontos_Criticos.xlsx`
 (24 variáveis no score e 7 itens de tratabilidade). Esta é uma
 **recomendação** para o grupo decidir, não uma decisão tomada.
 

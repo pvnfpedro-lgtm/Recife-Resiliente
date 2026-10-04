@@ -75,7 +75,8 @@ O painel em Google Apps Script já existente é a base. Muita coisa vai mudar.
    publicado só muda quando Pedro publicar uma nova versão.
 
 ## Camadas para o ArcGIS (`dados/processados/arcgis/`)
-- `pontos_criticos_rpa6.geojson` / `.csv`: os 21 pontos com atributos.
+- Pontos: usar `dados/processados/pontos_rpa6.geojson` / `.csv` (os 21 pontos,
+  com lat/lon e UTM). A cópia `pontos_criticos_rpa6` foi removida em 04/10/2026.
 - `buffer_300m_rpa6.geojson` e `buffer_1000m_rpa6.geojson`: círculos.
 - Coordenadas ainda aproximadas.
 

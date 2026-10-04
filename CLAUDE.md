@@ -21,7 +21,7 @@ buffer de 300 m no score e 1 km no painel. Detalhes em
 
 Arquivo de trabalho da equipe: a planilha Google
 "Recife_Resiliente_Checklist_Variaveis" (ver "Estado atual"). O arquivo
-`dados/Recife_Resiliente_RPA6_Criterios_Pontos_Criticos.xlsx` é histórico
+`dados/historico/Recife_Resiliente_RPA6_Criterios_Pontos_Criticos.xlsx` é histórico
 (modelo antigo de 01/10, com 8 dimensões); não atualizar.
 
 ## Estado atual (02/10/2026)
