@@ -24,6 +24,7 @@
 | 18 | I4: montar a camada de infraestrutura crítica (metrô, delegacias, bombeiros, SAMU, aeroporto, subestações) e medir a distância dos 21 pontos | Pedro | 27/10 | Conferir se as notas se espalham; se quase todos ficarem acima de 2 km, I4 vira contexto. Decidir se entram terminais integrados, Compesa, Defesa Civil e abrigos |
 | 19 | Proposta: I2 vira a definição do V6 (falta de esgoto) e I3 vira observação fora do cálculo | Grupo e Hellis | 14/10 | Ver `10-dimensoes-e-variaveis.md`, seção "Proposta em discussão" |
 | 20 | E3: conferir as colunas do IPTU 2026 (tipo de uso para separar não residenciais, valor lançado × valor pago, isenções, sistema de coordenadas) | Pedro | 13/10 | Pedro envia o CSV ou a lista de colunas (portal bloqueado no ambiente). Sem tipo de uso, a soma mistura moradias |
+| 21 | CIS: decidir se a área de CIS no círculo de 300 m entra como V6 ou como plano B do V1, e conferir o significado dos campos da camada (nomes cortados na exportação para shapefile) | Pedro | 14/10 | Resultado de teste em `dados/processados/cis_buffer_300m.csv`. Para os campos: no ArcGIS Pro, abrir Dados → Campos da camada do serviço e copiar os apelidos |
 
 ## Dados não verificados
 - I1 (Tipo de via): Av. Mascarenhas de Moraes e Av. Recife como corredores
@@ -58,5 +59,10 @@ Tudo o que estiver aqui **não** pode ir para a apresentação sem conferência.
   precisa ser conferida.
 - Produtos do IBGE 2022 (Grade Estatística, CNEFE, agregados por setor):
   existência confirmada na busca, arquivos ainda não abertos.
+- Limites das CIS (ESIG, exportados em 04/10/2026): 545 polígonos, SIRGAS 2000 /
+  UTM 25S, 5 geometrias inválidas corrigidas no cálculo. Data de atualização
+  da camada e significado dos campos (`INDICADO_*`, `Criterio_*`) não
+  conferidos. A área de CIS por ponto depende das coordenadas, 11 delas
+  aproximadas.
 - Malha de favelas e comunidades 2022, tipo de domicílio por setor, curvas de
   nível no ESIG e MapBiomas: não verificados.

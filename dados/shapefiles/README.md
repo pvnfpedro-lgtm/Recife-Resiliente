@@ -26,4 +26,4 @@ Preencha uma linha por camada ao subir (fonte e data são obrigatórias).
 
 | Subpasta | O que é | Fonte (órgão / link) | Data | Variável | Observação |
 |---|---|---|---|---|---|
-| | | | | | |
+| `CIS/` | Limites das Comunidades de Interesse Social (545 polígonos; shapefile `shp_CIS` + `.pitemx` do serviço) | ESIG Recife, `ATLAS/Ser_Camada_CIS/MapServer/1` | exportado em 04/10/2026 (data dos dados: não conferida) | V6 ou plano B do V1 (a decidir) | SIRGAS 2000 / UTM 25S. Nomes dos campos cortados na exportação (`INDICADORE`, `INDICADO_1`…): significado pendente |
