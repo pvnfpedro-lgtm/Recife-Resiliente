@@ -19,9 +19,10 @@ Vulnerabilidade, Impacto), risco = Probabilidade × Consequência (1–25),
 buffer de 300 m no score e 1 km no painel. Detalhes em
 `docs/02-metodologia-hierarquizacao.md`.
 
-Arquivo de trabalho da equipe:
-`dados/Recife_Resiliente_RPA6_Criterios_Pontos_Criticos.xlsx`, com as abas Leia-me,
-Critérios, Fontes de dados e Pontos RPA 6.
+Arquivo de trabalho da equipe: a planilha Google
+"Recife_Resiliente_Checklist_Variaveis" (ver "Estado atual"). O arquivo
+`dados/historico/Recife_Resiliente_RPA6_Criterios_Pontos_Criticos.xlsx` é histórico
+(modelo antigo de 01/10, com 8 dimensões); não atualizar.
 
 ## Estado atual (02/10/2026)
 - **Modelo:** 13 variáveis + P6 (condicional) e V1 (plano B) + I3, V5 e
@@ -51,8 +52,13 @@ Critérios, Fontes de dados e Pontos RPA 6.
   liberados (leitura da planilha por export). O ArcGIS (`*.arcgis.com`,
   `esigportal2.recife.pe.gov.br`) ainda está bloqueado: não dá para testar o
   mapa aqui.
-- **PRs:** pvnfpedro-lgtm/Recife-Resiliente#1 e #2 incorporados ao `main`
-  em 03/10/2026.
+- **PRs:** pvnfpedro-lgtm/Recife-Resiliente#1, #2 e #3 incorporados ao
+  `main` em 03/10/2026.
+- **Decisões de 03/10:** I1 mantém a escala por corredores (não usar a
+  hierarquia da LPUOS 2025); I4 Proximidade a infraestrutura crítica (faixas
+  de 500 m a 2 km; ainda fora da aba "Notas dos pontos" e do painel); E3 leva
+  o aspecto econômico: soma do IPTU não residencial no círculo de 1 km
+  (exceção aos 300 m), notas por quintis. ZEC descartada.
 
 ## Próximos passos (escolha de Pedro)
 1. Indicadores e ranking dos pontos críticos na aba 01 do painel.
