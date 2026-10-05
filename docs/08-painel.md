@@ -55,7 +55,7 @@ O painel em Google Apps Script já existente é a base. Muita coisa vai mudar.
   variáveis", ao lado de "Como medir", vazia (a preencher). As colunas a
   preencher passaram a ser O, P e Q; fórmulas e listas se ajustaram.
 
-- 05/10/2026 (código, ainda sem `clasp push`): WebMap trocado para "Recife Resiliente v2";
+- 05/10/2026 (`clasp push` feito com aprovação de Pedro): WebMap trocado para "Recife Resiliente v2";
   a lista "Legenda e Camadas" mostra os grupos do WebMap (▸ abre as camadas de dentro)
   e segue a ordem do Conteúdo do ArcGIS (camada de cima primeiro).
 
