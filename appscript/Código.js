@@ -88,7 +88,7 @@ function lerAbaComoObjetos_(planilha, nomeAba) {
   var valores = aba.getDataRange().getValues();
   if (valores.length < 2) return [];
   var cab = valores[0].map(function (h) { return String(h).trim().split(/\s+/)[0].toLowerCase(); });
-  var fuso = Session.getScriptTimeZone();
+  var fuso = planilha.getSpreadsheetTimeZone();  // mesmo fuso da planilha, para a data não mudar de dia
   var linhas = [];
   for (var r = 1; r < valores.length; r++) {
     var obj = {}, temAlgo = false;
