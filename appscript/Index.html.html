@@ -1644,9 +1644,70 @@ require([
     if(/conclu/.test(t)) return "concluido";
     return "indefinido";
   }
+  function lerPlanilhaObras(){
+    return new Promise(function(resolve){
+      if(typeof google === "undefined" || !google.script || !google.script.run){ resolve(null); return; }
+      google.script.run
+        .withSuccessHandler(function(res){ if(res && res.erro) console.warn("Planilha de obras:", res.erro); resolve(res && res.obras ? res : null); })
+        .withFailureHandler(function(e){ console.warn("Planilha de obras:", e); resolve(null); })
+        .getObras();
+    });
+  }
+  function numero(v){ if(v === null || v === undefined || v === "") return null; var n = +String(v).replace(/[^\d,.-]/g, "").replace(/\.(?=\d{3}(\D|$))/g, "").replace(",", "."); return isNaN(n) ? null : n; }
+  function subbaciaId(bId, texto){
+    var b = baciaOf(bId), t = semAcento(texto);
+    if(!b || !t) return null;
+    var sb = b.subbacias.find(function(x){ return x.id === t || semAcento(x.nome).indexOf(t) > -1 || t.indexOf(x.id) > -1; });
+    if(sb) return sb.id;
+    var id = t.replace(/[^a-z0-9]+/g, "-");
+    b.subbacias.push({ id:id, nome:String(texto).trim() });
+    return id;
+  }
+  function diasEntre(a, b){ return Math.round((new Date(b) - new Date(a)) / 86400000); }
+  // A planilha manda nos dados; o mapa entra com o desenho (local). Junção pelo número da obra.
+  function aplicarPlanilha(res){
+    if(!res) return;
+    res.obras.forEach(function(o){
+      var num = String(o.obra_id);
+      var p = PROJECTS.find(function(x){ return x.id === "obra-" + num; });
+      if(!p){
+        p = { id:"obra-" + num, code:"OBRA " + num, real:true, semDesenho:true, title:"Obra " + num, bairro:"—", bacia:null, subbacia:null,
+              status:"indefinido", investNum:null, invest:"Investimento a informar", kind:"area", pos:INITIAL_VIEW.center,
+              pctFisico:null, pctFinanceiro:null, atrasoDias:null, x:{} };
+        PROJECTS.push(p);
+        criarGraficoObra(p);
+      }
+      if(o.nome) p.title = String(o.nome);
+      if(o.bairro) p.bairro = String(o.bairro);
+      if(o.bacia) p.bacia = baciaId(o.bacia);
+      if(o.subbacia) p.subbacia = subbaciaId(p.bacia, o.subbacia);
+      if(o.status) p.status = statusId(o.status);
+      var inv = numero(o.investimento_total);
+      if(inv != null){ p.investNum = inv > 1000 ? inv / 1e6 : inv; p.invest = fmtMi(p.investNum); }
+      var med = numero(o.valor_medido);
+      if(med != null && inv) p.pctFinanceiro = Math.max(0, Math.min(100, med / inv * 100));
+      var pf = numero(o.pct_fisico);
+      if(pf != null) p.pctFisico = Math.max(0, Math.min(100, Math.round(pf)));
+      if(o.termino_previsto && o.termino_atual) p.atrasoDias = Math.max(0, diasEntre(o.termino_previsto, o.termino_atual));
+      p.x = {
+        orgao: o.orgao || p.x.orgao, fonte: o.fonte_recurso || null, fonteInfo: o.fonte_info || p.x.fonte || null,
+        empresa: o.empresa || null, fase: o.fase || null, tipo: o.tipo || null,
+        inicio: o.inicio || null, fim: o.termino_atual || o.termino_previsto || null,
+        fimPrevisto: o.termino_previsto || null, fimAtual: o.termino_atual || null,
+        solucao: o.solucao || null, extensao: o.extensao || null,
+        populacao: numero(o.populacao_beneficiada), pontos: o.pontos_criticos || null,
+        valorMedido: med, entraves: { licenca:o.licenca, desapropriacao:o.desapropriacao, concessionarias:o.concessionarias }
+      };
+      p.etapas = o.etapas || [];
+    });
+  }
   function carregarObras(){
     var camada = map.allLayers.find(function(l){ return l.type === "feature" && /obra/i.test(l.title || ""); });
-    if(!camada){ OBRAS_ESTADO = "sem-camada"; renderAll(); return; }
+    var planilha = lerPlanilhaObras();
+    if(!camada){
+      planilha.then(function(res){ aplicarPlanilha(res); OBRAS_ESTADO = PROJECTS.length ? "ok" : "sem-camada"; renderAll(); });
+      return;
+    }
     camada.load().then(function(){
       return camada.queryFeatures({ where:"1=1", outFields:["*"], returnGeometry:true, outSpatialReference:{ wkid:4326 } });
     }).then(function(res){
@@ -1684,11 +1745,14 @@ require([
       });
       if(semNumero) console.warn(semNumero + " polígono(s) da camada de obras sem número de obra e sem nome foram ignorados.");
       PROJECTS.forEach(criarGraficoObra);
+      return planilha;
+    }).then(function(res){
+      aplicarPlanilha(res);
       OBRAS_ESTADO = "ok";
       renderAll();
     }).catch(function(err){
       console.error("Falha ao ler a camada de obras:", err);
-      OBRAS_ESTADO = "erro"; renderAll();
+      planilha.then(function(res){ aplicarPlanilha(res); OBRAS_ESTADO = PROJECTS.length ? "ok" : "erro"; renderAll(); });
     });
   }
   map.when(carregarObras, function(){ OBRAS_ESTADO = "erro"; renderAll(); });
@@ -2469,19 +2533,66 @@ require([
     }
   }
 
+  var ENTRAVE_LABEL = { ok:"ok", andamento:"em andamento", pendente:"pendente" };
+  function fmtData(iso){ if(!iso) return "a informar"; var d = String(iso).split("-"); return d.length === 3 ? d[2] + "/" + d[1] + "/" + d[0] : String(iso); }
+  function ganttEtapas(etapas){
+    var datas = [];
+    etapas.forEach(function(e){ ["inicio_previsto","termino_previsto","inicio_real","termino_real"].forEach(function(k){ if(e[k]) datas.push(new Date(e[k]).getTime()); }); });
+    if(!datas.length) return '<div class="p2-sub">As macroetapas estão cadastradas, mas ainda sem datas.</div>';
+    var hoje = Date.now(), ini = Math.min.apply(null, datas), fim = Math.max.apply(null, datas.concat([hoje]));
+    var span = Math.max(fim - ini, 86400000);
+    function pos(iso){ return ((new Date(iso).getTime() - ini) / span * 100).toFixed(2); }
+    function larg(a, b){ return Math.max(0.8, (new Date(b).getTime() - new Date(a).getTime()) / span * 100).toFixed(2); }
+    var linhas = etapas.map(function(e){
+      var atrasada = e.termino_previsto && ((e.termino_real && e.termino_real > e.termino_previsto) ||
+                     (!e.termino_real && new Date(e.termino_previsto).getTime() < hoje && (+e.pct_concluido || 0) < 100));
+      var critica = semAcento(e.caminho_critico) === "sim";
+      var prev = (e.inicio_previsto && e.termino_previsto) ? '<div style="position:absolute;top:3px;height:6px;border-radius:3px;background:rgba(51,65,85,.18);left:' + pos(e.inicio_previsto) + '%;width:' + larg(e.inicio_previsto, e.termino_previsto) + '%"></div>' : '';
+      var fimReal = e.termino_real || (e.inicio_real ? new Date(Math.min(hoje, fim)).toISOString().slice(0,10) : null);
+      var real = e.inicio_real ? '<div style="position:absolute;top:11px;height:6px;border-radius:3px;background:' + (atrasada ? 'var(--critico)' : '#334155') + ';left:' + pos(e.inicio_real) + '%;width:' + larg(e.inicio_real, fimReal) + '%"></div>' : '';
+      return '<div style="display:grid;grid-template-columns:minmax(140px,30%) 1fr 44px;gap:10px;align-items:center;padding:5px 0;border-bottom:1px solid var(--border)">' +
+        '<div style="font-size:12px;line-height:1.3">' + (critica ? '<b title="Caminho crítico" style="color:var(--critico)">● </b>' : '') + esc(e.macroetapa) + (atrasada ? ' <span style="color:var(--critico);font-size:10.5px;font-weight:700">atrasada</span>' : '') + '</div>' +
+        '<div style="position:relative;height:20px">' + prev + real + '</div>' +
+        '<div style="font-size:11px;text-align:right;color:var(--text-dim)">' + (e.pct_concluido != null ? Math.round(+e.pct_concluido) + '%' : '—') + '</div></div>';
+    }).join("");
+    return '<div>' + linhas + '</div>' +
+      '<div style="display:flex;gap:16px;font-size:11px;color:var(--text-dim);margin-top:8px">' +
+        '<span><i style="display:inline-block;width:14px;height:6px;border-radius:3px;background:rgba(51,65,85,.18);margin-right:5px"></i>Previsto</span>' +
+        '<span><i style="display:inline-block;width:14px;height:6px;border-radius:3px;background:#334155;margin-right:5px"></i>Realizado</span>' +
+        '<span><i style="display:inline-block;width:14px;height:6px;border-radius:3px;background:var(--critico);margin-right:5px"></i>Atrasado</span>' +
+        '<span><b style="color:var(--critico)">●</b> Caminho crítico</span></div>';
+  }
   function fichaSimples(p){
     var wrap = document.querySelector("#page-3 .f-wrap");
     var sheet = wrap.querySelector(".f-sheet");
     var box = document.getElementById("fSimples");
     if(!box){ box = document.createElement("div"); box.id = "fSimples"; wrap.insertBefore(box, sheet); }
-    var b = baciaOf(p.bacia);
-    var linhas = [["Bairro", p.bairro], ["Bacia", b ? b.nome : "—"], ["Status", STATUS_LABEL[p.status]], ["Investimento", p.invest],
-                  ["Órgão", p.x.orgao || "—"], ["Fonte da informação", p.x.fonte || "a informar"],
-                  ["Andamento físico", "a informar"], ["Prazo", "a informar"]];
-    box.innerHTML = '<div class="p2-card f-head"><div class="f-code">' + esc(p.code) + '</div><h2 class="f-title">' + esc(p.title) + '</h2>' +
-      '<div class="p2-sub" style="margin:6px 0 14px">Dados da camada de obras do mapa. Andamento, prazos e cronograma ainda não estão na base.</div>' +
-      '<div class="f-dl">' + linhas.map(function(l){ return '<div class="r"><span>' + esc(l[0]) + '</span><span>' + esc(l[1]) + '</span></div>'; }).join("") + '</div>' +
-      '<div style="margin-top:14px"><button class="streetview-btn" id="fSimplesSv" type="button">Street View</button></div></div>';
+    var b = baciaOf(p.bacia), sub = subOf(p.bacia, p.subbacia), x = p.x || {}, en = x.entraves || {};
+    function v(t){ return (t === null || t === undefined || t === "") ? "a informar" : t; }
+    var linhas = [
+      ["Bairro", p.bairro], ["Bacia", b ? b.nome + (sub ? " / " + sub.nome : "") : "a informar"],
+      ["Status", STATUS_LABEL[p.status]], ["Fase", v(x.fase)], ["Tipo", v(x.tipo)],
+      ["Órgão", v(x.orgao)], ["Empresa", v(x.empresa)],
+      ["Investimento", p.invest], ["Valor medido", x.valorMedido != null ? fmtMi(x.valorMedido > 1000 ? x.valorMedido / 1e6 : x.valorMedido) : "a informar"],
+      ["Fonte do recurso", v(x.fonte)],
+      ["Andamento físico", p.pctFisico != null ? p.pctFisico + "%" : "a informar"],
+      ["Início", fmtData(x.inicio)], ["Término previsto", fmtData(x.fimPrevisto)], ["Término atual", fmtData(x.fimAtual)],
+      ["Solução", v(x.solucao)], ["Extensão", v(x.extensao)],
+      ["População beneficiada", x.populacao != null ? fmtNum(x.populacao) : "a informar"],
+      ["Pontos críticos atendidos", v(x.pontos)],
+      ["Licença", v(ENTRAVE_LABEL[en.licenca] || en.licenca)], ["Desapropriação", v(ENTRAVE_LABEL[en.desapropriacao] || en.desapropriacao)],
+      ["Concessionárias", v(ENTRAVE_LABEL[en.concessionarias] || en.concessionarias)],
+      ["Fonte da informação", v(x.fonteInfo)]
+    ];
+    var etapas = p.etapas || [];
+    box.innerHTML =
+      '<div class="p2-card f-head"><div class="f-code">' + esc(p.code) + (p.semDesenho ? ' · <span style="color:var(--critico)">sem desenho no mapa</span>' : '') + '</div>' +
+      '<h2 class="f-title">' + esc(p.title) + '</h2>' +
+      '<div class="p2-sub" style="margin:6px 0 14px">Dados da planilha de obras (aba "Obras") e desenho da camada de obras do mapa.</div>' +
+      '<div class="f-dl">' + linhas.map(function(l){ return '<div class="r"><span>' + esc(l[0]) + '</span><span>' + esc(String(l[1])) + '</span></div>'; }).join("") + '</div>' +
+      '<div style="margin-top:14px"><button class="streetview-btn" id="fSimplesSv" type="button">Street View</button></div></div>' +
+      '<div class="p2-card" style="margin-top:12px"><h3>Cronograma das macroetapas</h3>' +
+      (etapas.length ? ganttEtapas(etapas) : '<div class="p2-sub">Nenhuma macroetapa preenchida na aba "Cronograma das obras".</div>') + '</div>';
     document.getElementById("fSimplesSv").onclick = function(){ var c = streetViewCoords(p); openStreetView(c.lat, c.lng); };
     box.style.display = ""; sheet.style.display = "none";
     document.getElementById("p3Crumbs").innerHTML = (b ? '<b>' + esc(b.nome) + '</b><span class="sep">/</span>' : '') + esc(p.bairro);

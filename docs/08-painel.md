@@ -82,6 +82,12 @@ O painel em Google Apps Script já existente é a base. Muita coisa vai mudar.
   observações), com 11 linhas para cada obra (1 e 2). Nome da macroetapa, datas e % em branco, para
   preenchimento livre (decisão de Pedro, 05/10). Vai alimentar o Gantt da ficha (aba 03).
 
+- 05/10/2026 (código; push após aprovação): o painel lê as abas "Obras" e "Cronograma das obras"
+  (`getObras()` em `Código.js`) e junta com o desenho da camada de obras pelo `obra_id`. A planilha
+  manda nos dados; obra só na planilha aparece como "sem desenho no mapa". A ficha (aba 03) mostra todos
+  os campos da aba "Obras" e o Gantt das macroetapas (previsto, realizado, atrasado, caminho crítico).
+  A aba 02 continua com o aviso até ser adaptada aos dados reais.
+
 ## Estado em 02/10/2026 (aprovado por Pedro)
 - Paleta: #0869A6 · #2685BF · #5496BF · #FFFFFF · #F2F2F2 (painel inteiro).
 - Pontos críticos lidos da planilha Google Sheets, cor pelo índice de risco.
