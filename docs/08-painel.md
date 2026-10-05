@@ -88,6 +88,9 @@ O painel em Google Apps Script já existente é a base. Muita coisa vai mudar.
   os campos da aba "Obras" e o Gantt das macroetapas (previsto, realizado, atrasado, caminho crítico).
   A aba 02 continua com o aviso até ser adaptada aos dados reais.
 
+- 05/10/2026: lista de intervenções mostra **só as obras da aba "Obras"** (decisão de Pedro). Polígono
+  do mapa sem linha na planilha fica de fora; se a planilha não puder ser lida, a lista avisa.
+
 ## Estado em 02/10/2026 (aprovado por Pedro)
 - Paleta: #0869A6 · #2685BF · #5496BF · #FFFFFF · #F2F2F2 (painel inteiro).
 - Pontos críticos lidos da planilha Google Sheets, cor pelo índice de risco.

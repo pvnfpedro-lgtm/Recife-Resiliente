@@ -1665,8 +1665,17 @@ require([
   }
   function diasEntre(a, b){ return Math.round((new Date(b) - new Date(a)) / 86400000); }
   // A planilha manda nos dados; o mapa entra com o desenho (local). Junção pelo número da obra.
+  // Só entram no painel as obras que existem na aba "Obras" da planilha (decisão de Pedro, 05/10/2026).
+  // Polígono do mapa sem linha correspondente na planilha fica de fora.
   function aplicarPlanilha(res){
-    if(!res) return;
+    if(!res){ PROJECTS.forEach(function(p){ if(p._graphic) graphicsLayer.remove(p._graphic); }); PROJECTS = []; OBRAS_ESTADO = "sem-planilha"; return; }
+    var naPlanilha = {};
+    res.obras.forEach(function(o){ naPlanilha["obra-" + String(o.obra_id)] = true; });
+    PROJECTS = PROJECTS.filter(function(p){
+      if(naPlanilha[p.id]) return true;
+      if(p._graphic) graphicsLayer.remove(p._graphic);
+      return false;
+    });
     res.obras.forEach(function(o){
       var num = String(o.obra_id);
       var p = PROJECTS.find(function(x){ return x.id === "obra-" + num; });
@@ -1705,7 +1714,7 @@ require([
     var camada = map.allLayers.find(function(l){ return l.type === "feature" && /obra/i.test(l.title || ""); });
     var planilha = lerPlanilhaObras();
     if(!camada){
-      planilha.then(function(res){ aplicarPlanilha(res); OBRAS_ESTADO = PROJECTS.length ? "ok" : "sem-camada"; renderAll(); });
+      planilha.then(function(res){ aplicarPlanilha(res); if(OBRAS_ESTADO !== "sem-planilha") OBRAS_ESTADO = "ok"; renderAll(); });
       return;
     }
     camada.load().then(function(){
@@ -1748,11 +1757,11 @@ require([
       return planilha;
     }).then(function(res){
       aplicarPlanilha(res);
-      OBRAS_ESTADO = "ok";
+      if(OBRAS_ESTADO !== "sem-planilha") OBRAS_ESTADO = "ok";
       renderAll();
     }).catch(function(err){
       console.error("Falha ao ler a camada de obras:", err);
-      planilha.then(function(res){ aplicarPlanilha(res); OBRAS_ESTADO = PROJECTS.length ? "ok" : "erro"; renderAll(); });
+      planilha.then(function(res){ aplicarPlanilha(res); if(OBRAS_ESTADO !== "sem-planilha") OBRAS_ESTADO = "ok"; renderAll(); });
     });
   }
   map.when(carregarObras, function(){ OBRAS_ESTADO = "erro"; renderAll(); });
@@ -2005,7 +2014,7 @@ require([
     countEl.textContent = visible.length + (visible.length===1 ? " item" : " itens");
     listEl.innerHTML = "";
     if(OBRAS_ESTADO !== "ok"){
-      var msg = { carregando:"Carregando as obras do mapa…", "sem-camada":"Nenhuma camada de obras encontrada no mapa. O nome da camada precisa conter “obra”.", erro:"Não foi possível ler a camada de obras do mapa." }[OBRAS_ESTADO];
+      var msg = { carregando:"Carregando as obras do mapa…", "sem-camada":"Nenhuma camada de obras encontrada no mapa. O nome da camada precisa conter “obra”.", erro:"Não foi possível ler a camada de obras do mapa.", "sem-planilha":"Não foi possível ler a aba “Obras” da planilha." }[OBRAS_ESTADO];
       listEl.innerHTML = '<div class="empty-state">' + msg + '</div>';
       return;
     }
