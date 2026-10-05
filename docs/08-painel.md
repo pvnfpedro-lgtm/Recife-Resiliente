@@ -59,6 +59,10 @@ O painel em Google Apps Script já existente é a base. Muita coisa vai mudar.
   a lista "Legenda e Camadas" mostra os grupos do WebMap (▸ abre as camadas de dentro)
   e segue a ordem do Conteúdo do ArcGIS (camada de cima primeiro).
 
+- 05/10/2026: restauradas 346 regras de estilo (lista de camadas, mapa base, controles do mapa, aviso do
+  Google Maps, abas 02 e 03) que tinham sido apagadas por engano no commit 2982a35 (02/10). Ficam antes
+  das regras atuais, que prevalecem em caso de conflito.
+
 ## Estado em 02/10/2026 (aprovado por Pedro)
 - Paleta: #0869A6 · #2685BF · #5496BF · #FFFFFF · #F2F2F2 (painel inteiro).
 - Pontos críticos lidos da planilha Google Sheets, cor pelo índice de risco.
