@@ -14,7 +14,7 @@ O painel em Google Apps Script já existente é a base. Muita coisa vai mudar.
 ## Decisões
 | Tema | Decisão |
 |---|---|
-| Obras fictícias | Ficam por enquanto |
+| Obras fictícias | Substituídas em 05/10/2026 pelas obras reais da camada de obras do WebMap |
 | Notas pelo Google Sheets | Ainda não |
 | Acesso ao painel | A definir |
 | Pontos críticos | Pedro vai subir um mapa novo no ArcGIS com os pontos |
@@ -66,6 +66,12 @@ O painel em Google Apps Script já existente é a base. Muita coisa vai mudar.
 - 05/10/2026: nova legenda "Camadas": amostra do símbolo real de cada camada (inclui hachuras do
   ArcGIS Pro), classes de cada camada (ex.: tipos de via), olho para mostrar/ocultar, grupos recolhíveis,
   nomes sem a numeração do Conteúdo e painel que recolhe no título.
+
+- 05/10/2026: lista, KPIs, filtros e ficha passam a usar as **obras reais** da camada de obras do
+  WebMap (camada cujo nome contém "obra"; campos obra, nome, bairro, bacia, status, invest, orgao, fonte;
+  polígonos com o mesmo número viram uma obra só). Andamento, prazos, empresa e entraves não existem na
+  base: aparecem como "a informar"; a aba 02 mostra aviso de "sem dados de acompanhamento" e a ficha
+  (aba 03) mostra só os dados da camada. KPI "Pontos mitigados" virou "Obras concluídas".
 
 ## Estado em 02/10/2026 (aprovado por Pedro)
 - Paleta: #0869A6 · #2685BF · #5496BF · #FFFFFF · #F2F2F2 (painel inteiro).

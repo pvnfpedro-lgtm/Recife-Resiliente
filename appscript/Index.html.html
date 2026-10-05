@@ -1127,7 +1127,8 @@ require([
      Tejipió, não bacias) + campos novos para as Páginas 2 e 3.
      Coordenadas geográficas seguem aproximadas (posicionamento de bairro).
      ===================================================================== */
-  var PROJECTS = [
+  // Exemplos usados até 05/10/2026 (não aparecem mais no painel; ficam só como referência do formato).
+  var PROJECTS_FICTICIOS = [
     { id:"tej-003", code:"PRJ-TEJ-003", title:"Requalificação e Revestimento do Canal do Tejipió",
       bairro:"Coqueiral", bacia:"tejipio", subbacia:null, status:"obra", invest:"R$ 18,2 Mi", investNum:18.2,
       desc:"Revestimento de 2,1 km de canal e reforço de margens para aumento de vazão.",
@@ -1205,23 +1206,28 @@ require([
     "tej-019":{ inicio:null, fim:"2027-03-31", fase:"Licitação", empresa:null, fonte:"Tesouro Municipal", extensao:"—", solucao:"Galeria de macrodrenagem", pontosImpactados:1, populacao:6500 },
     "jor-022":{ inicio:"2026-03-02", fim:"2026-12-18", fase:"Escavação", empresa:"Construtora XYZ", fonte:"Tesouro Municipal", extensao:"—", solucao:"Ampliação de galerias", pontosImpactados:1, populacao:8200 }
   };
-  PROJECTS.forEach(function(p){ p.x = EXTRA[p.id] || {}; });
+  PROJECTS_FICTICIOS.forEach(function(p){ p.x = EXTRA[p.id] || {}; });
+  // Obras reais: lidas da camada de obras do WebMap (ver carregarObras). Começa vazio.
+  var PROJECTS = [];
+  var OBRAS_ESTADO = "carregando";  // carregando | ok | sem-camada | erro
 
   function fmtMes(iso){ if(!iso) return "—"; var m=["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"]; var d=iso.split("-"); return m[+d[1]-1]+"/"+d[0]; }
   function fmtMi(n){ return "R$ " + n.toFixed(1).replace(".",",") + " Mi"; }
   function fmtNum(n){ return n==null ? "—" : n.toLocaleString("pt-BR"); }
   var PRAZO_LABEL = { saudavel:"No prazo", atencao:"Em atenção", critico:"Atrasado" };
   function progressBar(p){
+    if(p.pctFisico == null) return '<div class="pcard-line"><span>Andamento físico: <b>a informar</b></span></div>';
     return '<div class="pbar"><div class="pbar-track"><div class="pbar-fill" style="width:'+p.pctFisico+'%"></div></div><span class="pbar-val">'+p.pctFisico+'%</span></div>';
   }
-  function medidoMi(p){ return p.investNum * p.pctFinanceiro / 100; }
+  function medidoMi(p){ return (p.investNum == null || p.pctFinanceiro == null) ? null : p.investNum * p.pctFinanceiro / 100; }
 
-  var STATUS_LABEL = { obra:"Em Obra", licitacao:"Em Licitação", concluido:"Concluído" };
-  var SCHED_LABEL = { saudavel:"Saudável", atencao:"Atenção", critico:"Crítico" };
+  var STATUS_LABEL = { obra:"Em Obra", licitacao:"Em Licitação", concluido:"Concluído", indefinido:"Status a informar" };
+  var SCHED_LABEL = { saudavel:"Saudável", atencao:"Atenção", critico:"Crítico", neutro:"Sem dados" };
 
   function statusClass(s){ return s==="obra"?"obra":s==="licitacao"?"licitacao":"concluido"; }
   function schedStatus(p){
     if(p.status==="concluido") return "saudavel";
+    if(p.atrasoDias == null) return "neutro";
     if(p.atrasoDias>=25) return "critico";
     if(p.atrasoDias>=10) return "atencao";
     return "saudavel";
@@ -1599,12 +1605,93 @@ require([
     });
   }
 
-  PROJECTS.forEach(function(p){
+  // Gráfico em memória de cada obra (não vai para o mapa: a camada de obras do WebMap já desenha as áreas).
+  function criarGraficoObra(p){
     var geometry = p.kind === "canal" ? { type:"polyline", paths:[p.path] } : { type:"point", longitude:p.pos[0], latitude:p.pos[1] };
     var symbol = p.kind === "canal" ? canalSymbol : pontoSymbol;
-    p._graphic = new Graphic({ geometry: geometry, symbol: symbol, attributes: { id:p.id }, popupTemplate: popupTemplateFor(p) });
+    p._graphic = new Graphic({ geometry: geometry, symbol: symbol, attributes: { id:p.id } });
     graphicsLayer.add(p._graphic);
-  });
+  }
+
+  /* =====================================================================
+     OBRAS REAIS — lidas da camada de obras do WebMap (desde 05/10/2026)
+     Campos procurados pelo nome, sem diferenciar maiúsculas:
+     obra/obra_id, nome, bairro, bacia, status, invest/invest_mi/investimento, orgao, fonte.
+     Investimento acima de 1.000 é lido como reais; abaixo, como milhões.
+     Andamento, datas, empresa e entraves não existem na base: aparecem como "a informar".
+     ===================================================================== */
+  function semAcento(t){ return String(t == null ? "" : t).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim(); }
+  function campo(attrs, nomes){
+    var chaves = Object.keys(attrs || {});
+    for(var i = 0; i < nomes.length; i++){
+      for(var j = 0; j < chaves.length; j++){ if(chaves[j].toLowerCase() === nomes[i]) return attrs[chaves[j]]; }
+    }
+    return null;
+  }
+  function baciaId(texto){
+    var t = semAcento(texto);
+    if(!t) return null;
+    var b = BACIAS.find(function(x){ return x.id === t || semAcento(x.nome) === t || semAcento(x.nome).indexOf(t) > -1 || t.indexOf(x.id) > -1; });
+    if(b) return b.id;
+    var id = t.replace(/[^a-z0-9]+/g, "-");
+    if(!baciaOf(id)) BACIAS.push({ id:id, nome:String(texto).trim(), cor:"var(--text-dim)", subbacias:[] });
+    return id;
+  }
+  function statusId(texto){
+    var t = semAcento(texto);
+    if(/obra|execu/.test(t)) return "obra";
+    if(/licit|previst|projeto/.test(t)) return "licitacao";
+    if(/conclu/.test(t)) return "concluido";
+    return "indefinido";
+  }
+  function carregarObras(){
+    var camada = map.allLayers.find(function(l){ return l.type === "feature" && /obra/i.test(l.title || ""); });
+    if(!camada){ OBRAS_ESTADO = "sem-camada"; renderAll(); return; }
+    camada.load().then(function(){
+      return camada.queryFeatures({ where:"1=1", outFields:["*"], returnGeometry:true, outSpatialReference:{ wkid:4326 } });
+    }).then(function(res){
+      var grupos = {}, ordem = [], semNumero = 0;
+      res.features.forEach(function(f){
+        var a = f.attributes || {};
+        var id = campo(a, ["obra", "obra_id"]);
+        // Polígono sem número de obra e sem nome: provavelmente um trecho ainda não preenchido. Fica de fora (aviso no console).
+        if((id == null || id === 0 || id === "") && !campo(a, ["nome"])){ semNumero++; return; }
+        var chave = (id == null || id === 0 || id === "") ? "oid-" + (campo(a, ["objectid", "fid", "oid"]) || ordem.length) : String(id);
+        if(!grupos[chave]){ grupos[chave] = { id:id, attrs:{}, feats:[] }; ordem.push(chave); }
+        Object.keys(a).forEach(function(k){ var v = a[k]; if(v !== null && v !== "" && grupos[chave].attrs[k] == null) grupos[chave].attrs[k] = v; });
+        grupos[chave].feats.push(f);
+      });
+      PROJECTS = ordem.map(function(chave){
+        var g = grupos[chave], a = g.attrs;
+        var ext = null;
+        g.feats.forEach(function(f){ if(f.geometry && f.geometry.extent){ ext = ext ? ext.union(f.geometry.extent) : f.geometry.extent.clone(); } });
+        var c = ext ? ext.center : null;
+        var inv = campo(a, ["invest", "invest_mi", "investimento"]);
+        inv = (inv === null || inv === "" || isNaN(+inv)) ? null : +inv;
+        var investNum = inv == null ? null : (inv > 1000 ? inv / 1e6 : inv);
+        var num = g.id != null ? String(g.id) : chave;
+        return {
+          id: "obra-" + num, code: "OBRA " + num, real: true,
+          title: campo(a, ["nome"]) || ("Obra " + num),
+          bairro: campo(a, ["bairro"]) || "—",
+          bacia: baciaId(campo(a, ["bacia"])), subbacia: null,
+          status: statusId(campo(a, ["status"])),
+          investNum: investNum, invest: investNum == null ? "Investimento a informar" : fmtMi(investNum),
+          kind: "area", pos: c ? [c.longitude, c.latitude] : INITIAL_VIEW.center,
+          pctFisico: null, pctFinanceiro: null, atrasoDias: null,
+          x: { orgao: campo(a, ["orgao"]), fonte: campo(a, ["fonte"]) }
+        };
+      });
+      if(semNumero) console.warn(semNumero + " polígono(s) da camada de obras sem número de obra e sem nome foram ignorados.");
+      PROJECTS.forEach(criarGraficoObra);
+      OBRAS_ESTADO = "ok";
+      renderAll();
+    }).catch(function(err){
+      console.error("Falha ao ler a camada de obras:", err);
+      OBRAS_ESTADO = "erro"; renderAll();
+    });
+  }
+  map.when(carregarObras, function(){ OBRAS_ESTADO = "erro"; renderAll(); });
 
   view.on("click", function(evt){
     view.hitTest(evt).then(function(res){
@@ -1832,13 +1919,13 @@ require([
   var kpiStripEl = document.getElementById("kpiStrip");
   function renderKpiStrip(){
     var list = filteredProjects();
-    var totalInvest = list.reduce(function(s,p){return s+p.investNum;},0);
-    var mitigados = list.filter(function(p){return p.status==="concluido";}).length;
-    var bairros = new Set(list.map(function(p){return p.bairro;})).size;
+    var totalInvest = list.reduce(function(s,p){return s+(p.investNum||0);},0);
+    var concluidas = list.filter(function(p){return p.status==="concluido";}).length;
+    var bairros = new Set(list.map(function(p){return p.bairro;}).filter(function(x){ return x && x !== "—"; })).size;
     kpiStripEl.innerHTML =
       kpiTile("Investimento Total", "R$ " + totalInvest.toLocaleString("pt-BR",{minimumFractionDigits:1,maximumFractionDigits:1}), "Mi") +
-      kpiTile("Pontos Mitigados", mitigados, "/ " + list.length) +
-      kpiTile("Bairros Impactados", bairros, "");
+      kpiTile("Obras Concluídas", concluidas, "/ " + list.length) +
+      kpiTile("Bairros com Obras", bairros, "");
   }
   function kpiTile(label, value, small){
     return '<div class="kpi-tile"><div class="kpi-label">'+label+'</div><div class="kpi-value">'+value+(small?' <small>'+small+'</small>':'')+'</div></div>';
@@ -1853,6 +1940,11 @@ require([
     PROJECTS.forEach(function(p){ p._graphic.visible = visible.indexOf(p) > -1; });
     countEl.textContent = visible.length + (visible.length===1 ? " item" : " itens");
     listEl.innerHTML = "";
+    if(OBRAS_ESTADO !== "ok"){
+      var msg = { carregando:"Carregando as obras do mapa…", "sem-camada":"Nenhuma camada de obras encontrada no mapa. O nome da camada precisa conter “obra”.", erro:"Não foi possível ler a camada de obras do mapa." }[OBRAS_ESTADO];
+      listEl.innerHTML = '<div class="empty-state">' + msg + '</div>';
+      return;
+    }
     if(visible.length===0){
       listEl.innerHTML = '<div class="empty-state">Nenhuma intervenção encontrada para os filtros aplicados.</div>';
       return;
@@ -1868,10 +1960,11 @@ require([
           '<span class="project-code">' + esc(p.code) + '</span>' +
         '</div>' +
         '<div class="project-title">' + esc(p.title) + '</div>' +
-        '<div class="project-meta"><b>' + esc(p.bairro) + '</b> &middot; ' + esc(b.nome) + (sub? ' — '+esc(sub.nome) : '') + '</div>' +
+        '<div class="project-meta"><b>' + esc(p.bairro) + '</b>' + (b ? ' &middot; ' + esc(b.nome) : '') + (sub? ' — '+esc(sub.nome) : '') + '</div>' +
         progressBar(p) +
-        '<div class="pcard-line"><span>Início: <b>' + fmtMes(p.x.inicio) + '</b></span><span>Término: <b>' + fmtMes(p.x.fim) + '</b></span></div>' +
-        '<div class="pcard-line"><span><b>' + p.invest + '</b> (medido ' + fmtMi(medidoMi(p)) + ')</span><span>' + esc(p.x.empresa || '') + '</span></div>' +
+        ((p.x.inicio || p.x.fim) ? '<div class="pcard-line"><span>Início: <b>' + fmtMes(p.x.inicio) + '</b></span><span>Término: <b>' + fmtMes(p.x.fim) + '</b></span></div>'
+                                 : '<div class="pcard-line"><span>Prazo: <b>a informar</b></span></div>') +
+        '<div class="pcard-line"><span><b>' + esc(p.invest) + '</b>' + (medidoMi(p) != null ? ' (medido ' + fmtMi(medidoMi(p)) + ')' : '') + '</span><span>' + esc(p.x.empresa || p.x.orgao || '') + '</span></div>' +
         '<div class="project-card-actions">' +
           '<button class="streetview-btn" data-id="'+p.id+'" title="Ver Street View deste ponto">Street View</button>' +
           '<button class="link-ficha" data-id="'+p.id+'">Ver ficha completa →</button>' +
@@ -1946,8 +2039,25 @@ require([
      ===================================================================== */
   function avg(arr){ return arr.length ? arr.reduce(function(s,v){return s+v;},0)/arr.length : 0; }
 
+  function avisoPagina2(mostrar){
+    var root = document.querySelector("#page-2 .page-scroll");
+    var av = document.getElementById("p2Aviso");
+    if(!av){
+      av = document.createElement("div");
+      av.id = "p2Aviso"; av.className = "p2-card";
+      av.style.cssText = "max-width:640px;margin:40px auto;text-align:center;";
+      av.innerHTML = '<h3>Sem dados de acompanhamento físico-financeiro</h3>' +
+        '<div class="p2-sub" style="margin-top:8px">As obras do mapa ainda não têm andamento físico, medições, prazos nem cronograma. ' +
+        'Esta aba volta a mostrar os gráficos quando esses dados chegarem (pedido à URB, pendência 11).</div>';
+      root.insertBefore(av, root.firstChild);
+    }
+    av.style.display = mostrar ? "" : "none";
+    Array.prototype.forEach.call(root.children, function(el){ if(el !== av) el.style.display = mostrar ? "none" : ""; });
+  }
   function renderPage2(){
     var list = filteredProjects();
+    if(!list.some(function(p){ return p.pctFisico != null; })){ avisoPagina2(true); return; }
+    avisoPagina2(false);
     var avgFisico = avg(list.map(function(p){return p.pctFisico;}));
     var avgFin = avg(list.map(function(p){return p.pctFinanceiro;}));
     var previstoAtual = 57;
@@ -2359,9 +2469,31 @@ require([
     }
   }
 
+  function fichaSimples(p){
+    var wrap = document.querySelector("#page-3 .f-wrap");
+    var sheet = wrap.querySelector(".f-sheet");
+    var box = document.getElementById("fSimples");
+    if(!box){ box = document.createElement("div"); box.id = "fSimples"; wrap.insertBefore(box, sheet); }
+    var b = baciaOf(p.bacia);
+    var linhas = [["Bairro", p.bairro], ["Bacia", b ? b.nome : "—"], ["Status", STATUS_LABEL[p.status]], ["Investimento", p.invest],
+                  ["Órgão", p.x.orgao || "—"], ["Fonte da informação", p.x.fonte || "a informar"],
+                  ["Andamento físico", "a informar"], ["Prazo", "a informar"]];
+    box.innerHTML = '<div class="p2-card f-head"><div class="f-code">' + esc(p.code) + '</div><h2 class="f-title">' + esc(p.title) + '</h2>' +
+      '<div class="p2-sub" style="margin:6px 0 14px">Dados da camada de obras do mapa. Andamento, prazos e cronograma ainda não estão na base.</div>' +
+      '<div class="f-dl">' + linhas.map(function(l){ return '<div class="r"><span>' + esc(l[0]) + '</span><span>' + esc(l[1]) + '</span></div>'; }).join("") + '</div>' +
+      '<div style="margin-top:14px"><button class="streetview-btn" id="fSimplesSv" type="button">Street View</button></div></div>';
+    document.getElementById("fSimplesSv").onclick = function(){ var c = streetViewCoords(p); openStreetView(c.lat, c.lng); };
+    box.style.display = ""; sheet.style.display = "none";
+    document.getElementById("p3Crumbs").innerHTML = (b ? '<b>' + esc(b.nome) + '</b><span class="sep">/</span>' : '') + esc(p.bairro);
+    goTab("3");
+    document.querySelector("#page-3 .page-scroll").scrollTop = 0;
+  }
   function openFicha(p){
     if(!p) return;
     selected = p;
+    if(p.real){ fichaSimples(p); return; }
+    var fs = document.getElementById("fSimples"); if(fs) fs.style.display = "none";
+    document.querySelector("#page-3 .f-sheet").style.display = "";
     var b = baciaOf(p.bacia), sub = subOf(p.bacia,p.subbacia), g = buildGantt(p);
 
     document.getElementById("p3Crumbs").innerHTML = '<b>'+esc(b.nome)+'</b>' + (sub?'<span class="sep">/</span>'+esc(sub.nome):'') + '<span class="sep">/</span>'+esc(p.bairro);
@@ -2393,7 +2525,7 @@ require([
      INIT
      ===================================================================== */
   function renderAll(){
-    elCount.textContent = filteredProjects().length + " de " + PROJECTS.length + " intervenções";
+    elCount.textContent = OBRAS_ESTADO === "ok" ? (filteredProjects().length + " de " + PROJECTS.length + (PROJECTS.length === 1 ? " obra" : " obras")) : "";
     renderKpiStrip();
     renderProjectList();
     renderPage2();
