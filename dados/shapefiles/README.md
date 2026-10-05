@@ -26,4 +26,5 @@ Preencha uma linha por camada ao subir (fonte e data são obrigatórias).
 
 | Subpasta | O que é | Fonte (órgão / link) | Data | Variável | Observação |
 |---|---|---|---|---|---|
-| | | | | | |
+| `CIS/` | Limites das Comunidades de Interesse Social (545 polígonos; shapefile `shp_CIS` + `.pitemx` do serviço) | ESIG Recife, `ATLAS/Ser_Camada_CIS/MapServer/1` | exportado em 04/10/2026 (data dos dados: não conferida) | V6 ou plano B do V1 (a decidir) | SIRGAS 2000 / UTM 25S. Nomes dos campos cortados na exportação (`INDICADORE`, `INDICADO_1`…): significado pendente |
+| `pontos_criticos/` | Os 21 pontos críticos da RPA 6 (shapefile `pontos_criticos_rpa6`; `pontos_criticos_kit.zip` traz também o ícone da gota) | Gerado de `dados/processados/pontos_rpa6.csv` (planilha da EMLURB de 02/10/2026) | 05/10/2026 | Todas (local dos pontos) | SIRGAS 2000 / UTM 25S. 11 coordenadas aproximadas; nenhuma verificada (pendência 4) |
