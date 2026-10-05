@@ -77,6 +77,10 @@ O painel em Google Apps Script já existente é a base. Muita coisa vai mudar.
   identificação, situação, valores, prazos, % físico, escopo, entraves, fonte_info), com a obra 1
   (Canal do Sanbra) preenchida a partir da camada e a obra 2 em branco. O painel **ainda não lê** essa aba
   (próximo passo: ligar pela `obra_id`, com a planilha mandando nos dados e o mapa só no desenho).
+- 05/10/2026: criada a aba **"Cronograma das obras"** (uma linha por macroetapa: obra_id, ordem,
+  macroetapa, início e término previstos e reais, % concluído, caminho crítico, responsável,
+  observações), com 11 macroetapas-padrão de obra de drenagem para as obras 1 e 2, sem datas. Os nomes
+  das etapas são sugestão e devem ser conferidos com a URB. Vai alimentar o Gantt da ficha (aba 03).
 
 ## Estado em 02/10/2026 (aprovado por Pedro)
 - Paleta: #0869A6 · #2685BF · #5496BF · #FFFFFF · #F2F2F2 (painel inteiro).
