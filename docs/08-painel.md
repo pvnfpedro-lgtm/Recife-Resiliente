@@ -6,7 +6,8 @@ O painel em Google Apps Script já existente é a base. Muita coisa vai mudar.
 - Código: pasta `appscript/` (cópia baixada com `clasp`, projeto
   `1Om9PIGQQrIXZ9cTFqbv_iLv9DIvyGW3AbJEDejtEU2SC9PbKDbUVuIFr`).
 - Web app (`doGet`) com ArcGIS Maps SDK 4.29, que carrega um WebMap do portal
-  ESIG (`esigportal2.recife.pe.gov.br`, item `df725ec964b840a1afbc348ae4555c20`).
+  ESIG (`esigportal2.recife.pe.gov.br`). Desde 05/10/2026, item `d19385d68f1b4303b5f94ddc5ce58ff6`
+  ("Recife Resiliente v2", publicado por Pedro; antes `df725ec964b840a1afbc348ae4555c20`).
 - Abas atuais: 01 Panorama · 02 Físico-Financeiro · 03 Ficha do Ponto.
 - Os dados atuais são ilustrativos (8 obras fictícias), escritos no código.
 
@@ -53,6 +54,10 @@ O painel em Google Apps Script já existente é a base. Muita coisa vai mudar.
 - 03/10/2026: coluna "Fonte de medição" (E) criada na aba "Checklist
   variáveis", ao lado de "Como medir", vazia (a preencher). As colunas a
   preencher passaram a ser O, P e Q; fórmulas e listas se ajustaram.
+
+- 05/10/2026 (código, ainda sem `clasp push`): WebMap trocado para "Recife Resiliente v2";
+  a lista "Legenda e Camadas" mostra os grupos do WebMap (▸ abre as camadas de dentro)
+  e segue a ordem do Conteúdo do ArcGIS (camada de cima primeiro).
 
 ## Estado em 02/10/2026 (aprovado por Pedro)
 - Paleta: #0869A6 · #2685BF · #5496BF · #FFFFFF · #F2F2F2 (painel inteiro).

@@ -761,7 +761,7 @@ require([
   /* ---------------------------------------------------------------------
      MAPA
      --------------------------------------------------------------------- */
-  var WEBMAP_ID = "df725ec964b840a1afbc348ae4555c20";
+  var WEBMAP_ID = "d19385d68f1b4303b5f94ddc5ce58ff6";  // "Recife Resiliente v2" (publicado por Pedro em 04/10/2026)
   var PORTAL_URL = "https://esigportal2.recife.pe.gov.br/portal";
   var map = new WebMap({ portalItem: { id: WEBMAP_ID, portal: { url: PORTAL_URL } } });
 
@@ -1167,21 +1167,50 @@ require([
       container.innerHTML = '<span style="font-size:11px;color:var(--text-faint)">Nenhuma camada encontrada.</span>';
       return;
     }
-    map.layers.forEach(function(layer){
-      var row = document.createElement("label");
-      row.className = "layer-row";
-      var cb = document.createElement("input");
-      cb.type = "checkbox";
-      cb.checked = layer.visible;
-      cb.addEventListener("change", function(){ layer.visible = cb.checked; });
-      row.appendChild(cb);
-      var sw = document.createElement("span");
-      sw.className = "layer-swatch";
-      sw.innerHTML = layerSwatchSvg(layer.title);
-      row.appendChild(sw);
-      row.appendChild(document.createTextNode(layer.title || "(sem nome)"));
-      container.appendChild(row);
-    });
+    // Ordem do Conteúdo do ArcGIS: camada de cima primeiro. Grupos abrem com ▸ e mostram as camadas de dentro.
+    function addRows(layers, parent, depth){
+      layers.toArray().slice().reverse().forEach(function(layer){
+        var isGroup = layer.type === "group" && layer.layers && layer.layers.length > 0;
+        var row = document.createElement("label");
+        row.className = "layer-row";
+        row.style.paddingLeft = (depth * 14) + "px";
+        var children = null;
+        if(isGroup){
+          var caret = document.createElement("span");
+          caret.textContent = "▸";
+          caret.style.cssText = "display:inline-block;width:12px;cursor:pointer;color:var(--text-faint)";
+          caret.addEventListener("click", function(ev){
+            ev.preventDefault();
+            var aberto = children.style.display !== "none";
+            children.style.display = aberto ? "none" : "";
+            caret.textContent = aberto ? "▸" : "▾";
+          });
+          row.appendChild(caret);
+        }
+        var cb = document.createElement("input");
+        cb.type = "checkbox";
+        cb.checked = layer.visible;
+        cb.addEventListener("change", function(){ layer.visible = cb.checked; });
+        row.appendChild(cb);
+        if(!isGroup){
+          var sw = document.createElement("span");
+          sw.className = "layer-swatch";
+          sw.innerHTML = layerSwatchSvg(layer.title);
+          row.appendChild(sw);
+        }
+        var nome = document.createElement(isGroup ? "strong" : "span");
+        nome.textContent = layer.title || "(sem nome)";
+        row.appendChild(nome);
+        parent.appendChild(row);
+        if(isGroup){
+          children = document.createElement("div");
+          children.style.display = "none";
+          parent.appendChild(children);
+          addRows(layer.layers, children, depth + 1);
+        }
+      });
+    }
+    addRows(map.layers, container, 0);
   }
   /* =====================================================================
      MAPA BASE (cinza por padrão; "Original" restaura o do WebMap)
