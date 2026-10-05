@@ -73,6 +73,11 @@ O painel em Google Apps Script já existente é a base. Muita coisa vai mudar.
   base: aparecem como "a informar"; a aba 02 mostra aviso de "sem dados de acompanhamento" e a ficha
   (aba 03) mostra só os dados da camada. KPI "Pontos mitigados" virou "Obras concluídas".
 
+- 05/10/2026: `clasp push` das obras reais. Criada a aba **"Obras"** na planilha do painel (25 colunas:
+  identificação, situação, valores, prazos, % físico, escopo, entraves, fonte_info), com a obra 1
+  (Canal do Sanbra) preenchida a partir da camada e a obra 2 em branco. O painel **ainda não lê** essa aba
+  (próximo passo: ligar pela `obra_id`, com a planilha mandando nos dados e o mapa só no desenho).
+
 ## Estado em 02/10/2026 (aprovado por Pedro)
 - Paleta: #0869A6 · #2685BF · #5496BF · #FFFFFF · #F2F2F2 (painel inteiro).
 - Pontos críticos lidos da planilha Google Sheets, cor pelo índice de risco.
