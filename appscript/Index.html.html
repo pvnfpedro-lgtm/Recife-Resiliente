@@ -722,6 +722,33 @@
   .rr-th-n{font-weight:400;font-size:9.5px;opacity:.85;}
   .rr-pe{margin-top:10px;font-size:10.5px;color:#9ca3af;}
   .rr-pe a{color:var(--rr);font-weight:600;}
+
+  /* ---------- Legenda e Camadas (05/10/2026) ---------- */
+  #layerPanel{width:272px;padding:0;overflow:hidden;}
+  #layerPanel .lg-head{display:flex;align-items:center;justify-content:space-between;padding:11px 14px 9px;border-bottom:1px solid var(--border);cursor:pointer;user-select:none;}
+  #layerPanel .lg-head h4{margin:0;}
+  #layerPanel .lg-head .lg-min{border:none;background:transparent;color:var(--text-dim);font-size:13px;line-height:1;cursor:pointer;padding:2px 4px;border-radius:6px;}
+  #layerPanel .lg-head .lg-min:hover{background:var(--bg);color:var(--text);}
+  #layerPanel.min .lg-head{border-bottom:none;}
+  #layerPanel.min #layerToggleList{display:none;}
+  #layerToggleList{max-height:38vh;overflow-y:auto;padding:6px 6px 8px;}
+  .lg-item{display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:8px;font-size:11.5px;color:var(--text);line-height:1.25;}
+  .lg-item:hover{background:rgba(15,23,42,.045);}
+  .lg-item.off{opacity:.45;}
+  .lg-item .lg-chev{flex:none;width:14px;height:14px;display:inline-flex;align-items:center;justify-content:center;color:var(--text-faint);transition:transform .15s;cursor:pointer;}
+  .lg-item .lg-chev.open{transform:rotate(90deg);}
+  .lg-item .lg-chev.empty{visibility:hidden;}
+  .lg-item .lg-sw{flex:none;width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center;}
+  .lg-item .lg-sw svg,.lg-item .lg-sw img{max-width:18px;max-height:18px;}
+  .lg-item .lg-name{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer;}
+  .lg-item.grp .lg-name{font-weight:700;font-size:12px;color:var(--text);}
+  .lg-item .lg-eye{flex:none;border:none;background:transparent;padding:2px;border-radius:6px;color:var(--text-dim);cursor:pointer;display:inline-flex;}
+  .lg-item .lg-eye:hover{background:var(--bg);color:var(--text);}
+  .lg-kids{margin-left:15px;padding-left:6px;border-left:1px solid var(--border);}
+  .lg-classes{margin:0 0 4px 37px;}
+  .lg-class{display:flex;align-items:center;gap:7px;font-size:10.5px;color:var(--text-dim);padding:2px 0;}
+  .lg-class .lg-sw{flex:none;width:16px;height:16px;display:inline-flex;align-items:center;justify-content:center;}
+  .lg-sep{height:1px;background:var(--border);margin:5px 8px;}
 </style>
 </head>
 <body>
@@ -825,7 +852,7 @@
             <button class="map-source-toggle" id="btnMapSource" type="button"><span id="mapSourceLabel">Ver no Google Maps</span></button>
           </div>
           <div class="legend" id="layerPanel">
-            <h4>Legenda e Camadas</h4>
+            <div class="lg-head" id="layerPanelHead"><h4>Camadas</h4><button class="lg-min" id="layerPanelMin" type="button" title="Recolher">–</button></div>
             <div id="layerToggleList"><span style="font-size:11px;color:var(--text-faint)">Carregando…</span></div>
           </div>
         </div>
@@ -1034,8 +1061,9 @@ require([
   "esri/PopupTemplate",
   "esri/Map",
   "esri/core/reactiveUtils",
-  "esri/widgets/Popup"
-], function(WebMap, MapView, GraphicsLayer, Graphic, PopupTemplate, EsriMap, reactiveUtils, Popup){
+  "esri/widgets/Popup",
+  "esri/symbols/support/symbolUtils"
+], function(WebMap, MapView, GraphicsLayer, Graphic, PopupTemplate, EsriMap, reactiveUtils, Popup, symbolUtils){
   "use strict";
 
   /* =====================================================================
@@ -1585,58 +1613,126 @@ require([
     }
     return '<svg width="12" height="12" viewBox="0 0 12 12"><rect width="12" height="12" rx="2" fill="#94a3b8"/></svg>';
   }
+  // Nome sem a numeração do Conteúdo do ArcGIS ("3. Território" -> "Território").
+  function nomeCamada(t){ return String(t || "(sem nome)").replace(/^\s*\d+\s*[.)\-–]\s*/, ""); }
+  var ICON_CHEV = '<svg width="10" height="10" viewBox="0 0 10 10"><path d="M3 1.5 6.5 5 3 8.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  var ICON_EYE = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1.5 12S5.5 4.5 12 4.5 22.5 12 22.5 12 18.5 19.5 12 19.5 1.5 12 1.5 12Z"/><circle cx="12" cy="12" r="3"/></svg>';
+  var ICON_EYE_OFF = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l18 18"/><path d="M10.6 5.1A10 10 0 0 1 12 4.5c6.5 0 10.5 7.5 10.5 7.5a17 17 0 0 1-3 3.8M6.2 6.6C3.3 8.5 1.5 12 1.5 12S5.5 19.5 12 19.5a9.6 9.6 0 0 0 4.4-1.1"/></svg>';
+  // Amostra do símbolo real da camada (vale também para os símbolos do ArcGIS Pro, como hachuras).
+  function amostra(el, symbol, size){
+    if(!symbol || !symbolUtils){ el.innerHTML = layerSwatchSvg(""); return; }
+    symbolUtils.renderPreviewHTML(symbol, { size: size || 16 }).then(function(node){
+      el.innerHTML = ""; el.appendChild(node);
+    }).catch(function(){ el.innerHTML = layerSwatchSvg(""); });
+  }
+  function classesDoRenderer(r){
+    if(!r) return [];
+    if(r.type === "unique-value"){
+      var infos = (r.uniqueValueInfos || []).map(function(i){ return { symbol: i.symbol, label: i.label || String(i.value) }; });
+      if(r.defaultSymbol && r.defaultLabel) infos.push({ symbol: r.defaultSymbol, label: r.defaultLabel });
+      return infos;
+    }
+    if(r.type === "class-breaks"){
+      return (r.classBreakInfos || []).map(function(i){ return { symbol: i.symbol, label: i.label || (i.minValue + "–" + i.maxValue) }; });
+    }
+    return [];
+  }
   function buildLayerToggle(){
     var container = document.getElementById("layerToggleList");
     container.innerHTML = "";
     if(map.layers.length === 0){
-      container.innerHTML = '<span style="font-size:11px;color:var(--text-faint)">Nenhuma camada encontrada.</span>';
+      container.innerHTML = '<span style="font-size:11px;color:var(--text-faint);padding:6px 8px;display:block">Nenhuma camada encontrada.</span>';
       return;
     }
-    // Ordem do Conteúdo do ArcGIS: camada de cima primeiro. Grupos abrem com ▸ e mostram as camadas de dentro.
-    function addRows(layers, parent, depth){
+    function olho(layer, row){
+      var btn = document.createElement("button");
+      btn.type = "button"; btn.className = "lg-eye";
+      function pinta(){ btn.innerHTML = layer.visible ? ICON_EYE : ICON_EYE_OFF; btn.title = layer.visible ? "Ocultar" : "Mostrar"; row.classList.toggle("off", !layer.visible); }
+      btn.addEventListener("click", function(ev){ ev.stopPropagation(); layer.visible = !layer.visible; pinta(); });
+      reactiveUtils.watch(function(){ return layer.visible; }, pinta);
+      pinta();
+      return btn;
+    }
+    function chevron(target, abertoInicial){
+      var c = document.createElement("span");
+      c.className = "lg-chev" + (abertoInicial ? " open" : "");
+      c.innerHTML = ICON_CHEV;
+      target.style.display = abertoInicial ? "" : "none";
+      function alterna(){ var aberto = target.style.display !== "none"; target.style.display = aberto ? "none" : ""; c.classList.toggle("open", !aberto); }
+      return { el: c, alterna: alterna };
+    }
+    // Ordem do Conteúdo do ArcGIS: camada de cima primeiro.
+    function addRows(layers, parent, nivel){
       layers.toArray().slice().reverse().forEach(function(layer){
         var isGroup = layer.type === "group" && layer.layers && layer.layers.length > 0;
-        var row = document.createElement("label");
-        row.className = "layer-row";
-        row.style.paddingLeft = (depth * 14) + "px";
-        var children = null;
+        var row = document.createElement("div");
+        row.className = "lg-item" + (isGroup ? " grp" : "");
+        var nome = document.createElement("span");
+        nome.className = "lg-name";
+        nome.textContent = nomeCamada(layer.title);
+        nome.title = nomeCamada(layer.title);
         if(isGroup){
-          var caret = document.createElement("span");
-          caret.textContent = "▸";
-          caret.style.cssText = "display:inline-block;width:12px;cursor:pointer;color:var(--text-faint)";
-          caret.addEventListener("click", function(ev){
-            ev.preventDefault();
-            var aberto = children.style.display !== "none";
-            children.style.display = aberto ? "none" : "";
-            caret.textContent = aberto ? "▸" : "▾";
-          });
-          row.appendChild(caret);
+          var kids = document.createElement("div");
+          kids.className = "lg-kids";
+          var ch = chevron(kids, true);
+          row.appendChild(ch.el);
+          row.appendChild(nome);
+          row.appendChild(olho(layer, row));
+          ch.el.addEventListener("click", ch.alterna);
+          nome.addEventListener("click", ch.alterna);
+          if(nivel === 0 && parent.childNodes.length) parent.appendChild(Object.assign(document.createElement("div"), { className: "lg-sep" }));
+          parent.appendChild(row);
+          parent.appendChild(kids);
+          addRows(layer.layers, kids, nivel + 1);
+          return;
         }
-        var cb = document.createElement("input");
-        cb.type = "checkbox";
-        cb.checked = layer.visible;
-        cb.addEventListener("change", function(){ layer.visible = cb.checked; });
-        row.appendChild(cb);
-        if(!isGroup){
-          var sw = document.createElement("span");
-          sw.className = "layer-swatch";
-          sw.innerHTML = layerSwatchSvg(layer.title);
-          row.appendChild(sw);
-        }
-        var nome = document.createElement(isGroup ? "strong" : "span");
-        nome.textContent = layer.title || "(sem nome)";
+        var sw = document.createElement("span");
+        sw.className = "lg-sw";
+        var classes = document.createElement("div");
+        classes.className = "lg-classes";
+        var ch2 = chevron(classes, false);
+        ch2.el.classList.add("empty");
+        row.appendChild(ch2.el);
+        row.appendChild(sw);
         row.appendChild(nome);
+        row.appendChild(olho(layer, row));
         parent.appendChild(row);
-        if(isGroup){
-          children = document.createElement("div");
-          children.style.display = "none";
-          parent.appendChild(children);
-          addRows(layer.layers, children, depth + 1);
-        }
+        parent.appendChild(classes);
+        if(layer.type === "graphics"){ sw.innerHTML = layerSwatchSvg(layer.title); return; }
+        layer.when(function(){
+          var r = layer.renderer;
+          var lista = classesDoRenderer(r);
+          if(lista.length){
+            amostra(sw, lista[0].symbol, 16);
+            lista.forEach(function(it){
+              var linha = document.createElement("div");
+              linha.className = "lg-class";
+              var s2 = document.createElement("span"); s2.className = "lg-sw";
+              linha.appendChild(s2);
+              linha.appendChild(document.createTextNode(it.label));
+              classes.appendChild(linha);
+              amostra(s2, it.symbol, 14);
+            });
+            ch2.el.classList.remove("empty");
+            ch2.el.addEventListener("click", ch2.alterna);
+            nome.addEventListener("click", ch2.alterna);
+          } else {
+            amostra(sw, r && r.symbol, 16);
+          }
+        }, function(){ sw.innerHTML = layerSwatchSvg(""); });
       });
     }
     addRows(map.layers, container, 0);
   }
+  (function(){
+    var panel = document.getElementById("layerPanel"), head = document.getElementById("layerPanelHead"), btn = document.getElementById("layerPanelMin");
+    if(!panel || !head) return;
+    head.addEventListener("click", function(){
+      var min = panel.classList.toggle("min");
+      btn.textContent = min ? "+" : "–";
+      btn.title = min ? "Expandir" : "Recolher";
+    });
+  })();
   /* =====================================================================
      MAPA BASE (cinza por padrão; "Original" restaura o do WebMap)
      ===================================================================== */

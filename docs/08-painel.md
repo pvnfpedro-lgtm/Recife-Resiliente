@@ -63,6 +63,10 @@ O painel em Google Apps Script já existente é a base. Muita coisa vai mudar.
   Google Maps, abas 02 e 03) que tinham sido apagadas por engano no commit 2982a35 (02/10). Ficam antes
   das regras atuais, que prevalecem em caso de conflito.
 
+- 05/10/2026: nova legenda "Camadas": amostra do símbolo real de cada camada (inclui hachuras do
+  ArcGIS Pro), classes de cada camada (ex.: tipos de via), olho para mostrar/ocultar, grupos recolhíveis,
+  nomes sem a numeração do Conteúdo e painel que recolhe no título.
+
 ## Estado em 02/10/2026 (aprovado por Pedro)
 - Paleta: #0869A6 · #2685BF · #5496BF · #FFFFFF · #F2F2F2 (painel inteiro).
 - Pontos críticos lidos da planilha Google Sheets, cor pelo índice de risco.
