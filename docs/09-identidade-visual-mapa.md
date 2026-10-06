@@ -20,6 +20,16 @@
   já que a imagem tem uma cor só. Escala de cor por classe (amarelo → vinho)
   fica como alternativa, com 4 imagens.
 
+## Drenagem (proposta de 06/10/2026, a aprovar)
+- Quadrado arredondado em grafite, desenho branco. Desenhos próprios (não há
+  na Maki/Temaki): canal (três ondas), galeria (terreno e tubo em corte com
+  água), reservatório (bacia com água), estação de bombeamento (símbolo de
+  bomba: círculo com triângulo), comporta (porta com barra de içamento, água
+  alta de um lado e baixa do outro).
+- Arquivos: `mapa/icones/drenagem_*.svg` e `png/drenagem_*_64/128.png`,
+  gerados por `scripts/gerar_icones_drenagem.py`. Prévia:
+  `mapa/icones/previa_drenagem.png`.
+
 ## Origem dos desenhos
 - **Maki** (Mapbox), versão 8.2.0, licença CC0 (domínio público).
 - **Temaki** (Rapid), versão 5.13.0, licença CC0 (domínio público).
