@@ -29,6 +29,11 @@
 - Arquivos: `mapa/icones/drenagem_*.svg` e `png/drenagem_*_64/128.png`,
   gerados por `scripts/gerar_icones_drenagem.py`. Prévia:
   `mapa/icones/previa_drenagem.png`.
+- Teste sobre o mapa base cinza (06/10): o grafite tem contraste de cerca
+  de 9:1 com o fundo e o vermelho do ponto crítico se destaca. Manter as
+  cores; não pintar a drenagem de azul (só o risco tem cor). Usar **no
+  mínimo 32 px** no ArcGIS: em 28 px, galeria, comporta e bombeamento ficam
+  difíceis de ler. Imagem: `mapa/icones/teste_fundo_cinza.png`.
 
 ## Origem dos desenhos
 - **Maki** (Mapbox), versão 8.2.0, licença CC0 (domínio público).
