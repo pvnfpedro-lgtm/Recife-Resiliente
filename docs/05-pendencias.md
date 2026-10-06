@@ -25,7 +25,7 @@
 | 19 | Proposta: I2 vira a definição do V6 (falta de esgoto) e I3 vira observação fora do cálculo | Grupo e Hellis | 14/10 | Ver `10-dimensoes-e-variaveis.md`, seção "Proposta em discussão" |
 | 20 | E3: conferir as colunas do IPTU 2026 (tipo de uso para separar não residenciais, valor lançado × valor pago, isenções, sistema de coordenadas) | Pedro | 13/10 | Pedro envia o CSV ou a lista de colunas (portal bloqueado no ambiente). Sem tipo de uso, a soma mistura moradias |
 | 21 | CIS: decidir se a área de CIS no círculo de 300 m entra como V6 ou como plano B do V1, e conferir o significado dos campos da camada (nomes cortados na exportação para shapefile) | Pedro | 14/10 | Resultado de teste em `dados/processados/cis_buffer_300m.csv`. Para os campos: no ArcGIS Pro, abrir Dados → Campos da camada do serviço e copiar os apelidos |
-| 22 | Obras da Tabela 84 (lista de controle em `dados/controle/controle_obras_arcgis.xlsx`, 26 itens): identificar o documento de origem e a situação de cada obra (a tabela só indica 3 concluídas) | Pedro | 14/10 | Situação não informada fica vazia na camada; não marcar "Em obra" sem confirmação da URB/ProMorar (ligar à pendência 11) |
+| 22 | Obras da Tabela 84 (26 itens, obra_id 3 a 28, gravados em 06/10/2026 na aba "Obras" da planilha do painel; lista de controle em `dados/controle/controle_obras_arcgis.xlsx`): identificar o documento de origem e a situação de cada obra (a tabela só indica 3 concluídas) | Pedro | 14/10 | Situação não informada fica vazia na camada; não marcar "Em obra" sem confirmação da URB/ProMorar (ligar à pendência 11) |
 
 ## Dados não verificados
 - I1 (Tipo de via): Av. Mascarenhas de Moraes e Av. Recife como corredores
