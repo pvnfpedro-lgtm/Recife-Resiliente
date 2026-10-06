@@ -10,6 +10,12 @@ O painel em Google Apps Script já existente é a base. Muita coisa vai mudar.
 - Abas atuais: 01 Panorama · 02 Físico-Financeiro · 03 Ficha do Ponto.
 - Os dados atuais são ilustrativos (8 obras fictícias), escritos no código.
 
+## Fluxo de dados
+![Fluxo de dados do painel](img/fluxo_painel.png)
+
+Gerado por `scripts/gerar_fluxo_painel.py` (06/10/2026). Tracejado = a fazer ou
+não conectado.
+
 ## Decisões
 | Tema | Decisão |
 |---|---|
