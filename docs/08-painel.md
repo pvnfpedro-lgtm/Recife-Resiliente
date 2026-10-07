@@ -6,14 +6,15 @@ O painel em Google Apps Script já existente é a base. Muita coisa vai mudar.
 - Código: pasta `appscript/` (cópia baixada com `clasp`, projeto
   `1Om9PIGQQrIXZ9cTFqbv_iLv9DIvyGW3AbJEDejtEU2SC9PbKDbUVuIFr`).
 - Web app (`doGet`) com ArcGIS Maps SDK 4.29, que carrega um WebMap do portal
-  ESIG (`esigportal2.recife.pe.gov.br`, item `df725ec964b840a1afbc348ae4555c20`).
+  ESIG (`esigportal2.recife.pe.gov.br`). Desde 05/10/2026, item `d19385d68f1b4303b5f94ddc5ce58ff6`
+  ("Recife Resiliente v2", publicado por Pedro; antes `df725ec964b840a1afbc348ae4555c20`).
 - Abas atuais: 01 Panorama · 02 Físico-Financeiro · 03 Ficha do Ponto.
 - Os dados atuais são ilustrativos (8 obras fictícias), escritos no código.
 
 ## Decisões
 | Tema | Decisão |
 |---|---|
-| Obras fictícias | Ficam por enquanto |
+| Obras fictícias | Substituídas em 05/10/2026 pelas obras reais da camada de obras do WebMap |
 | Notas pelo Google Sheets | Ainda não |
 | Acesso ao painel | A definir |
 | Pontos críticos | Pedro vai subir um mapa novo no ArcGIS com os pontos |
@@ -53,15 +54,48 @@ O painel em Google Apps Script já existente é a base. Muita coisa vai mudar.
 - 03/10/2026: coluna "Fonte de medição" (E) criada na aba "Checklist
   variáveis", ao lado de "Como medir", vazia (a preencher). As colunas a
   preencher passaram a ser O, P e Q; fórmulas e listas se ajustaram.
-- 07/10/2026 (ainda sem `clasp push`): CSS apagado por engano no commit
-  `2982a35` (02/10) restaurado: Street View, legenda e camadas, botões de
-  zoom, aviso de dados, páginas 02 e 03. Lista de cartões dos pontos
-  críticos à direita do mapa (pedido de Pedro), no estilo da lista de
-  intervenções: ordem do ranking, posição, índice de risco (cor na borda),
-  trecho, bairro · tipo e aviso "Local aproximado". Clicar no cartão
-  aproxima o mapa e abre o cartão do ponto; clicar no ponto do mapa marca
-  o cartão na lista. A busca do topo também filtra a lista (trecho ou
-  bairro). Botões de zoom e legenda passaram para a esquerda da lista.
+
+- 05/10/2026 (`clasp push` feito com aprovação de Pedro): WebMap trocado para "Recife Resiliente v2";
+  a lista "Legenda e Camadas" mostra os grupos do WebMap (▸ abre as camadas de dentro)
+  e segue a ordem do Conteúdo do ArcGIS (camada de cima primeiro).
+
+- 05/10/2026: restauradas 346 regras de estilo (lista de camadas, mapa base, controles do mapa, aviso do
+  Google Maps, abas 02 e 03) que tinham sido apagadas por engano no commit 2982a35 (02/10). Ficam antes
+  das regras atuais, que prevalecem em caso de conflito.
+
+- 05/10/2026: nova legenda "Camadas": amostra do símbolo real de cada camada (inclui hachuras do
+  ArcGIS Pro), classes de cada camada (ex.: tipos de via), olho para mostrar/ocultar, grupos recolhíveis,
+  nomes sem a numeração do Conteúdo e painel que recolhe no título.
+
+- 05/10/2026: lista, KPIs, filtros e ficha passam a usar as **obras reais** da camada de obras do
+  WebMap (camada cujo nome contém "obra"; campos obra, nome, bairro, bacia, status, invest, orgao, fonte;
+  polígonos com o mesmo número viram uma obra só). Andamento, prazos, empresa e entraves não existem na
+  base: aparecem como "a informar"; a aba 02 mostra aviso de "sem dados de acompanhamento" e a ficha
+  (aba 03) mostra só os dados da camada. KPI "Pontos mitigados" virou "Obras concluídas".
+
+- 05/10/2026: `clasp push` das obras reais. Criada a aba **"Obras"** na planilha do painel (25 colunas:
+  identificação, situação, valores, prazos, % físico, escopo, entraves, fonte_info), com a obra 1
+  (Canal do Sanbra) preenchida a partir da camada e a obra 2 em branco. O painel **ainda não lê** essa aba
+  (próximo passo: ligar pela `obra_id`, com a planilha mandando nos dados e o mapa só no desenho).
+- 05/10/2026: criada a aba **"Cronograma das obras"** (uma linha por macroetapa: obra_id, ordem,
+  macroetapa, início e término previstos e reais, % concluído, caminho crítico, responsável,
+  observações), com 11 linhas para cada obra (1 e 2). Nome da macroetapa, datas e % em branco, para
+  preenchimento livre (decisão de Pedro, 05/10). Vai alimentar o Gantt da ficha (aba 03).
+
+- 05/10/2026 (código; push após aprovação): o painel lê as abas "Obras" e "Cronograma das obras"
+  (`getObras()` em `Código.js`) e junta com o desenho da camada de obras pelo `obra_id`. A planilha
+  manda nos dados; obra só na planilha aparece como "sem desenho no mapa". A ficha (aba 03) mostra todos
+  os campos da aba "Obras" e o Gantt das macroetapas (previsto, realizado, atrasado, caminho crítico).
+  A aba 02 continua com o aviso até ser adaptada aos dados reais.
+
+- 05/10/2026: lista de intervenções mostra **só as obras da aba "Obras"** (decisão de Pedro). Polígono
+  do mapa sem linha na planilha fica de fora; se a planilha não puder ser lida, a lista avisa.
+
+- 07/10/2026 (`clasp push` com aprovação de Pedro): **lista de cartões dos pontos críticos à
+  direita do mapa**, no estilo da lista de intervenções: ordem do ranking, posição, índice de risco
+  (cor na borda), trecho, bairro · tipo e aviso "Local aproximado". Clicar no cartão aproxima o mapa
+  e abre o cartão do ponto; clicar no ponto do mapa marca o cartão na lista. A busca do topo também
+  filtra a lista (trecho ou bairro). Botões de zoom e legenda passaram para a esquerda da lista.
 
 ## Estado em 02/10/2026 (aprovado por Pedro)
 - Paleta: #0869A6 · #2685BF · #5496BF · #FFFFFF · #F2F2F2 (painel inteiro).
