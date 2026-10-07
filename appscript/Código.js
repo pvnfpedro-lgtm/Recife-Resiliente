@@ -72,3 +72,57 @@ function getPontosCriticos() {
     return { erro: String(e && e.message ? e.message : e) };
   }
 }
+
+/* =====================================================================
+   OBRAS — abas "Obras" e "Cronograma das obras" da mesma planilha (05/10/2026)
+   Cabeçalho na linha 1. O nome da coluna vale até o primeiro espaço
+   ("investimento_total (R$)" -> "investimento_total"). Linha sem obra_id fica de fora.
+   Datas voltam como texto aaaa-mm-dd (o google.script.run não envia objetos Date).
+   ===================================================================== */
+var ABA_OBRAS = 'Obras';
+var ABA_CRONOGRAMA = 'Cronograma das obras';
+
+function lerAbaComoObjetos_(planilha, nomeAba) {
+  var aba = planilha.getSheetByName(nomeAba);
+  if (!aba) return null;
+  var valores = aba.getDataRange().getValues();
+  if (valores.length < 2) return [];
+  var cab = valores[0].map(function (h) { return String(h).trim().split(/\s+/)[0].toLowerCase(); });
+  var fuso = planilha.getSpreadsheetTimeZone();  // mesmo fuso da planilha, para a data não mudar de dia
+  var linhas = [];
+  for (var r = 1; r < valores.length; r++) {
+    var obj = {}, temAlgo = false;
+    for (var c = 0; c < cab.length; c++) {
+      if (!cab[c]) continue;
+      var v = valores[r][c];
+      if (v instanceof Date) v = Utilities.formatDate(v, fuso, 'yyyy-MM-dd');
+      if (v === '') v = null;
+      if (v !== null) temAlgo = true;
+      obj[cab[c]] = v;
+    }
+    if (temAlgo && obj.obra_id !== null && obj.obra_id !== undefined) linhas.push(obj);
+  }
+  return linhas;
+}
+
+function getObras() {
+  try {
+    var planilha = SpreadsheetApp.openById(PLANILHA_NOTAS_ID);
+    var obras = lerAbaComoObjetos_(planilha, ABA_OBRAS);
+    if (obras === null) return { erro: 'Aba "' + ABA_OBRAS + '" não encontrada na planilha.' };
+    var etapas = lerAbaComoObjetos_(planilha, ABA_CRONOGRAMA) || [];
+    var porObra = {};
+    etapas.forEach(function (e) {
+      if (!e.macroetapa) return;  // linha guia ainda sem nome de tarefa
+      var k = String(e.obra_id);
+      (porObra[k] = porObra[k] || []).push(e);
+    });
+    Object.keys(porObra).forEach(function (k) {
+      porObra[k].sort(function (a, b) { return (Number(a.ordem) || 0) - (Number(b.ordem) || 0); });
+    });
+    obras.forEach(function (o) { o.etapas = porObra[String(o.obra_id)] || []; });
+    return { obras: obras, lidoEm: new Date().toISOString() };
+  } catch (e) {
+    return { erro: String(e && e.message ? e.message : e) };
+  }
+}
