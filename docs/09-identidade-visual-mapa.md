@@ -20,6 +20,31 @@
   já que a imagem tem uma cor só. Escala de cor por classe (amarelo → vinho)
   fica como alternativa, com 4 imagens.
 
+## Drenagem (proposta de 06/10/2026, a aprovar)
+- Quadrado arredondado em grafite, desenho branco. Desenhos próprios (não há
+  na Maki/Temaki): canal (três ondas), galeria (terreno e tubo em corte com
+  água), reservatório (bacia com água), estação de bombeamento (símbolo de
+  bomba: círculo com triângulo), comporta (porta com barra de içamento, água
+  alta de um lado e baixa do outro).
+- Arquivos: `mapa/icones/drenagem_*.svg` e `png/drenagem_*_64/128.png`,
+  gerados por `scripts/gerar_icones_drenagem.py`. Prévia:
+  `mapa/icones/previa_drenagem.png`.
+- Teste sobre o mapa base cinza (06/10): o grafite tem contraste de cerca
+  de 9:1 com o fundo e o vermelho do ponto crítico se destaca. Manter as
+  cores; não pintar a drenagem de azul (só o risco tem cor). Usar **no
+  mínimo 32 px** no ArcGIS: em 28 px, galeria, comporta e bombeamento ficam
+  difíceis de ler. Imagem: `mapa/icones/teste_fundo_cinza.png`.
+
+## Obras (proposta de 06/10/2026, a aprovar)
+- Forma do grupo: **hexágono**. Símbolo: cone de obra. Situações iguais às
+  do painel (Em obra, Em licitação, Concluído), mostradas sem cor:
+  - **Em obra:** hexágono grafite cheio, cone branco.
+  - **Em licitação:** hexágono vazado (branco, borda grafite), cone grafite.
+  - **Concluído:** hexágono grafite cheio, sinal de feito (✓) branco.
+- Arquivos: `mapa/icones/obra_*.svg` e `png/obra_*_64/128.png`, gerados por
+  `scripts/gerar_icones_obras.py`. Prévia sobre o mapa base cinza:
+  `mapa/icones/previa_obras.png`.
+
 ## Origem dos desenhos
 - **Maki** (Mapbox), versão 8.2.0, licença CC0 (domínio público).
 - **Temaki** (Rapid), versão 5.13.0, licença CC0 (domínio público).
@@ -32,7 +57,7 @@
   Alternativas: capelo, prédio escolar, livro.
 - Lista final de ícones (proposta abaixo) e quais equipamentos aparecem no
   mapa como camada.
-- Forma dos grupos ainda sem definição: resposta e apoio, mobilidade, obras.
+- Forma dos grupos ainda sem definição: resposta e apoio, mobilidade.
 
 ## Lista proposta (a confirmar)
 | Grupo | Ícones |
@@ -42,4 +67,4 @@
 | Equipamentos sensíveis (E2) | Escola; creche; unidade de saúde; hospital; ILPI |
 | Resposta e apoio | Abrigo / ponto de apoio da Defesa Civil; base do COP |
 | Mobilidade (I1) | Terminal integrado; estação de BRT; corredor de ônibus |
-| Obras | Em execução; prevista; concluída |
+| Obras | Em obra; em licitação; concluído (proposta acima) |
