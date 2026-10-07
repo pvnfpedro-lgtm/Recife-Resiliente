@@ -68,6 +68,13 @@
   `mapa/icones/previa_obras_tipo.png`.
 - No ArcGIS: símbolo por "Valores únicos" do campo de categoria (o CSV dos
   pontos vai levar a coluna). Usar no mínimo 32 px.
+- CSV dos pontos (07/10/2026): `dados/processados/arcgis/obras_pontos.csv`,
+  gerado por `scripts/gerar_pontos_obras.py` a partir da aba "Obras" (campos
+  obra_id, nome, tipo, categoria, status, icone, lat, lon, coord_precisao).
+  No ArcGIS Pro: Tabela XY para Ponto (X = lon, Y = lat, WGS 1984) →
+  Simbologia → Valores únicos no campo `icone` → em cada valor, símbolo de
+  imagem com o SVG de mesmo nome em `mapa/icones/`, 32 px. Obra sem tipo fica
+  com `icone` vazio (cai em "todos os outros valores").
 - Pendente: obras 26, 32 e 33 sem `tipo` na planilha; status quase todo
   vazio (só 1, 2 e 6), então quase todas aparecem cheias.
 
