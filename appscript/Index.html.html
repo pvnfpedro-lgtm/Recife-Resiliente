@@ -1343,6 +1343,11 @@ require([
   var RAIO_TITULO = "Área de análise — 300 m";
   var RAIO_M = 300;
   var raioLayer = new GraphicsLayer({ title: RAIO_TITULO });
+  /* Obras: um ponto por obra, na coordenada da coluna "coordenadas (lat, lon)" da aba "Obras".
+     Ícone pelo tipo (hexágono; vazado = em licitação), igual a mapa/icones/obra_*.svg (docs/09). */
+  var OBRAS_PONTOS_TITULO = "Obras (pontos da planilha)";
+  var obrasPontosLayer = new GraphicsLayer({ title: OBRAS_PONTOS_TITULO });
+  map.add(obrasPontosLayer);
   map.add(raioLayer);
   map.add(pontosLayer);
   // Polígono do círculo (64 vértices) calculado na esfera a partir de lon/lat.
@@ -1712,6 +1717,43 @@ require([
     });
   }
 
+  // Ícones das obras por tipo: gerados por `python3 scripts/gerar_icones_obras_tipo.py --js`.
+  var ICONES_OBRA = {
+    canal: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHBvbHlnb24gcG9pbnRzPSIxNiwyIDI4LjEsOSAyOC4xLDIzIDE2LDMwIDMuOSwyMyAzLjksOSIgZmlsbD0iIzMzNDE1NSIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSg4LjUsOC41KSI+PHBhdGggZD0iTTIgNCBxMS4zNzUgLTEuNiAyLjc1IDAgdDIuNzUgMCB0Mi43NSAwIHQyLjc1IDAgTTIgNy41IHExLjM3NSAtMS42IDIuNzUgMCB0Mi43NSAwIHQyLjc1IDAgdDIuNzUgMCBNMiAxMSBxMS4zNzUgLTEuNiAyLjc1IDAgdDIuNzUgMCB0Mi43NSAwIHQyLjc1IDAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSIxLjYiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjwvZz48L3N2Zz4=",
+    canal_licitacao: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHBvbHlnb24gcG9pbnRzPSIxNiwyIDI4LjEsOSAyOC4xLDIzIDE2LDMwIDMuOSwyMyAzLjksOSIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjMzM0MTU1IiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSg4LjUsOC41KSI+PHBhdGggZD0iTTIgNCBxMS4zNzUgLTEuNiAyLjc1IDAgdDIuNzUgMCB0Mi43NSAwIHQyLjc1IDAgTTIgNy41IHExLjM3NSAtMS42IDIuNzUgMCB0Mi43NSAwIHQyLjc1IDAgdDIuNzUgMCBNMiAxMSBxMS4zNzUgLTEuNiAyLjc1IDAgdDIuNzUgMCB0Mi43NSAwIHQyLjc1IDAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzMzNDE1NSIgc3Ryb2tlLXdpZHRoPSIxLjYiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjwvZz48L3N2Zz4=",
+    dragagem: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHBvbHlnb24gcG9pbnRzPSIxNiwyIDI4LjEsOSAyOC4xLDIzIDE2LDMwIDMuOSwyMyAzLjksOSIgZmlsbD0iIzMzNDE1NSIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSg4LjUsOC41KSI+PHBhdGggZD0iTTAuOCAyLjQgcTEuMSAtMS4yIDIuMiAwIHQyLjIgMCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjEuNiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PHBhdGggZD0iTTE0IDEgTDkuNiA1LjYiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSIxLjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjxwYXRoIGQ9Ik01IDQuNiBIMTEgTDkuOCA5LjQgSDYuMiBaIiBmaWxsPSIjZmZmIi8+PHBhdGggZD0iTTAuNSAxNC41IFE3LjUgOS42IDE0LjUgMTQuNSBaIiBmaWxsPSIjZmZmIi8+PC9nPjwvc3ZnPg==",
+    dragagem_licitacao: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHBvbHlnb24gcG9pbnRzPSIxNiwyIDI4LjEsOSAyOC4xLDIzIDE2LDMwIDMuOSwyMyAzLjksOSIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjMzM0MTU1IiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSg4LjUsOC41KSI+PHBhdGggZD0iTTAuOCAyLjQgcTEuMSAtMS4yIDIuMiAwIHQyLjIgMCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMzM0MTU1IiBzdHJva2Utd2lkdGg9IjEuNiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PHBhdGggZD0iTTE0IDEgTDkuNiA1LjYiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzMzNDE1NSIgc3Ryb2tlLXdpZHRoPSIxLjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjxwYXRoIGQ9Ik01IDQuNiBIMTEgTDkuOCA5LjQgSDYuMiBaIiBmaWxsPSIjMzM0MTU1Ii8+PHBhdGggZD0iTTAuNSAxNC41IFE3LjUgOS42IDE0LjUgMTQuNSBaIiBmaWxsPSIjMzM0MTU1Ii8+PC9nPjwvc3ZnPg==",
+    reservatorio: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHBvbHlnb24gcG9pbnRzPSIxNiwyIDI4LjEsOSAyOC4xLDIzIDE2LDMwIDMuOSwyMyAzLjksOSIgZmlsbD0iIzMzNDE1NSIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSg4LjUsOC41KSI+PHBhdGggZD0iTTEgMi41IEwzLjIgMTMgSDExLjggTDE0IDIuNSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjEuNiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PHBhdGggZD0iTTIuNCA3LjIgcTEuMjc1IC0xLjQgMi41NSAwIHQyLjU1IDAgdDIuNTUgMCB0Mi41NSAwIEwxMS40IDEyIEgzLjYgWiIgZmlsbD0iI2ZmZiIvPjwvZz48L3N2Zz4=",
+    reservatorio_licitacao: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHBvbHlnb24gcG9pbnRzPSIxNiwyIDI4LjEsOSAyOC4xLDIzIDE2LDMwIDMuOSwyMyAzLjksOSIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjMzM0MTU1IiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSg4LjUsOC41KSI+PHBhdGggZD0iTTEgMi41IEwzLjIgMTMgSDExLjggTDE0IDIuNSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMzM0MTU1IiBzdHJva2Utd2lkdGg9IjEuNiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PHBhdGggZD0iTTIuNCA3LjIgcTEuMjc1IC0xLjQgMi41NSAwIHQyLjU1IDAgdDIuNTUgMCB0Mi41NSAwIEwxMS40IDEyIEgzLjYgWiIgZmlsbD0iIzMzNDE1NSIvPjwvZz48L3N2Zz4=",
+    dique: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHBvbHlnb24gcG9pbnRzPSIxNiwyIDI4LjEsOSAyOC4xLDIzIDE2LDMwIDMuOSwyMyAzLjksOSIgZmlsbD0iIzMzNDE1NSIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSg4LjUsOC41KSI+PHBhdGggZD0iTTMuNiAxMy41IEw2LjMgMy41IEg4LjcgTDExLjQgMTMuNSBaIiBmaWxsPSIjZmZmIi8+PHBhdGggZD0iTTAuNiA2LjUgcTAuNzUgLTEgMS41IDAgdDEuNSAwIE0wLjYgOS41IHEwLjc1IC0xIDEuNSAwIHQxLjUgMCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjEuMyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PHBhdGggZD0iTTExLjggMTEgcTAuNyAtMSAxLjQgMCB0MS40IDAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSIxLjMiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjxwYXRoIGQ9Ik0wLjUgMTMuOCBIMTQuNSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjEuNiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PC9nPjwvc3ZnPg==",
+    dique_licitacao: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHBvbHlnb24gcG9pbnRzPSIxNiwyIDI4LjEsOSAyOC4xLDIzIDE2LDMwIDMuOSwyMyAzLjksOSIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjMzM0MTU1IiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSg4LjUsOC41KSI+PHBhdGggZD0iTTMuNiAxMy41IEw2LjMgMy41IEg4LjcgTDExLjQgMTMuNSBaIiBmaWxsPSIjMzM0MTU1Ii8+PHBhdGggZD0iTTAuNiA2LjUgcTAuNzUgLTEgMS41IDAgdDEuNSAwIE0wLjYgOS41IHEwLjc1IC0xIDEuNSAwIHQxLjUgMCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMzM0MTU1IiBzdHJva2Utd2lkdGg9IjEuMyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PHBhdGggZD0iTTExLjggMTEgcTAuNyAtMSAxLjQgMCB0MS40IDAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzMzNDE1NSIgc3Ryb2tlLXdpZHRoPSIxLjMiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjxwYXRoIGQ9Ik0wLjUgMTMuOCBIMTQuNSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMzM0MTU1IiBzdHJva2Utd2lkdGg9IjEuNiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PC9nPjwvc3ZnPg==",
+    parque: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHBvbHlnb24gcG9pbnRzPSIxNiwyIDI4LjEsOSAyOC4xLDIzIDE2LDMwIDMuOSwyMyAzLjksOSIgZmlsbD0iIzMzNDE1NSIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSg4LjUsOC41KSI+PGNpcmNsZSBjeD0iNy41IiBjeT0iNC42IiByPSIzLjkiIGZpbGw9IiNmZmYiLz48cGF0aCBkPSJNNy41IDcuNSBWMTAuNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjEuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PHBhdGggZD0iTTIgMTMuMiBxMS4zNzUgLTEuNiAyLjc1IDAgdDIuNzUgMCB0Mi43NSAwIHQyLjc1IDAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSIxLjYiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjwvZz48L3N2Zz4=",
+    parque_licitacao: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHBvbHlnb24gcG9pbnRzPSIxNiwyIDI4LjEsOSAyOC4xLDIzIDE2LDMwIDMuOSwyMyAzLjksOSIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjMzM0MTU1IiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSg4LjUsOC41KSI+PGNpcmNsZSBjeD0iNy41IiBjeT0iNC42IiByPSIzLjkiIGZpbGw9IiMzMzQxNTUiLz48cGF0aCBkPSJNNy41IDcuNSBWMTAuNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMzM0MTU1IiBzdHJva2Utd2lkdGg9IjEuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PHBhdGggZD0iTTIgMTMuMiBxMS4zNzUgLTEuNiAyLjc1IDAgdDIuNzUgMCB0Mi43NSAwIHQyLjc1IDAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzMzNDE1NSIgc3Ryb2tlLXdpZHRoPSIxLjYiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjwvZz48L3N2Zz4=",
+    rede: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHBvbHlnb24gcG9pbnRzPSIxNiwyIDI4LjEsOSAyOC4xLDIzIDE2LDMwIDMuOSwyMyAzLjksOSIgZmlsbD0iIzMzNDE1NSIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSg4LjUsOC41KSI+PHBhdGggZD0iTTAuNSAxLjUgSDE0LjUiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSIxLjYiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjxjaXJjbGUgY3g9IjcuNSIgY3k9IjkiIHI9IjUiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSIxLjYiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjxwYXRoIGQ9Ik0zLjYgMTAgSDExLjQgQTMuOSAzLjkgMCAwIDEgMy42IDEwIFoiIGZpbGw9IiNmZmYiLz48L2c+PC9zdmc+",
+    rede_licitacao: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHBvbHlnb24gcG9pbnRzPSIxNiwyIDI4LjEsOSAyOC4xLDIzIDE2LDMwIDMuOSwyMyAzLjksOSIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjMzM0MTU1IiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSg4LjUsOC41KSI+PHBhdGggZD0iTTAuNSAxLjUgSDE0LjUiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzMzNDE1NSIgc3Ryb2tlLXdpZHRoPSIxLjYiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjxjaXJjbGUgY3g9IjcuNSIgY3k9IjkiIHI9IjUiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzMzNDE1NSIgc3Ryb2tlLXdpZHRoPSIxLjYiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjxwYXRoIGQ9Ik0zLjYgMTAgSDExLjQgQTMuOSAzLjkgMCAwIDEgMy42IDEwIFoiIGZpbGw9IiMzMzQxNTUiLz48L2c+PC9zdmc+",
+    generica: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHBvbHlnb24gcG9pbnRzPSIxNiwyIDI4LjEsOSAyOC4xLDIzIDE2LDMwIDMuOSwyMyAzLjksOSIgZmlsbD0iIzMzNDE1NSIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSg4LjUsOC41KSI+PHBhdGggZD0iTTYuNTAgMS41IEg4LjUwIEw5LjM5IDQuMyBINS42MSBaIiBmaWxsPSIjZmZmIi8+PHBhdGggZD0iTTUuMTMgNS44IEg5Ljg3IEwxMC43MyA4LjUgSDQuMjcgWiIgZmlsbD0iI2ZmZiIvPjxwYXRoIGQ9Ik0zLjgwIDEwIEgxMS4yMCBMMTIuMDAgMTIuNSBIMy4wMCBaIiBmaWxsPSIjZmZmIi8+PHJlY3QgeD0iMSIgeT0iMTIuNSIgd2lkdGg9IjEzIiBoZWlnaHQ9IjEuOCIgcng9IjAuNiIgZmlsbD0iI2ZmZiIvPjwvZz48L3N2Zz4=",
+    generica_licitacao: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHBvbHlnb24gcG9pbnRzPSIxNiwyIDI4LjEsOSAyOC4xLDIzIDE2LDMwIDMuOSwyMyAzLjksOSIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjMzM0MTU1IiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSg4LjUsOC41KSI+PHBhdGggZD0iTTYuNTAgMS41IEg4LjUwIEw5LjM5IDQuMyBINS42MSBaIiBmaWxsPSIjMzM0MTU1Ii8+PHBhdGggZD0iTTUuMTMgNS44IEg5Ljg3IEwxMC43MyA4LjUgSDQuMjcgWiIgZmlsbD0iIzMzNDE1NSIvPjxwYXRoIGQ9Ik0zLjgwIDEwIEgxMS4yMCBMMTIuMDAgMTIuNSBIMy4wMCBaIiBmaWxsPSIjMzM0MTU1Ii8+PHJlY3QgeD0iMSIgeT0iMTIuNSIgd2lkdGg9IjEzIiBoZWlnaHQ9IjEuOCIgcng9IjAuNiIgZmlsbD0iIzMzNDE1NSIvPjwvZz48L3N2Zz4="
+  };
+  // Coluna "tipo" da aba "Obras" -> categoria do ícone (mesma tabela de scripts/gerar_pontos_obras.py).
+  var CATEGORIA_OBRA = {
+    "canal":"canal", "perfilamento do rio tejipio":"canal", "dragagem":"dragagem",
+    "reservatorios de detencao":"reservatorio", "microrreservatorio":"reservatorio",
+    "diques e comportas":"dique", "parques alagaveis":"parque", "requalificacoes na rede":"rede"
+  };
+  function iconeObra(tipo, status){
+    var cat = CATEGORIA_OBRA[semAcento(tipo).replace(/\s+/g, " ")] || "generica";
+    return ICONES_OBRA[cat + (status === "licitacao" ? "_licitacao" : "")];
+  }
+  // "-8.08, -34.93" -> [lat, lon]; null se vazio, ilegível ou fora do Recife.
+  function coordObra(texto){
+    var m = String(texto == null ? "" : texto).split(",");
+    if(m.length !== 2) return null;
+    var lat = +m[0].trim(), lon = +m[1].trim();
+    if(isNaN(lat) || isNaN(lon) || !m[0].trim() || !m[1].trim()) return null;
+    if(lat < -8.16 || lat > -7.92 || lon < -35.02 || lon > -34.85) return null;
+    return [lat, lon];
+  }
+
   // Gráfico em memória de cada obra (não vai para o mapa: a camada de obras do WebMap já desenha as áreas).
   function criarGraficoObra(p){
     var geometry = p.kind === "canal" ? { type:"polyline", paths:[p.path] } : { type:"point", longitude:p.pos[0], latitude:p.pos[1] };
@@ -1775,6 +1817,7 @@ require([
   // Só entram no painel as obras que existem na aba "Obras" da planilha (decisão de Pedro, 05/10/2026).
   // Polígono do mapa sem linha correspondente na planilha fica de fora.
   function aplicarPlanilha(res){
+    obrasPontosLayer.removeAll();
     if(!res){ PROJECTS.forEach(function(p){ if(p._graphic) graphicsLayer.remove(p._graphic); }); PROJECTS = []; OBRAS_ESTADO = "sem-planilha"; return; }
     var naPlanilha = {};
     res.obras.forEach(function(o){ naPlanilha["obra-" + String(o.obra_id)] = true; });
@@ -1815,6 +1858,18 @@ require([
         valorMedido: med, entraves: { licenca:o.licenca, desapropriacao:o.desapropriacao, concessionarias:o.concessionarias }
       };
       p.etapas = o.etapas || [];
+      // Ponto da obra: a coordenada da planilha passa a ser o local da obra (centro do zoom ao selecionar).
+      var xy = coordObra(o.coordenadas);
+      p._ponto = null;
+      if(xy){
+        p.pos = [xy[1], xy[0]];
+        p._ponto = new Graphic({
+          geometry: { type:"point", longitude:xy[1], latitude:xy[0] },
+          symbol: { type:"picture-marker", url: iconeObra(o.tipo, p.status), width:"26px", height:"26px" },
+          attributes: { id:p.id }
+        });
+        obrasPontosLayer.add(p._ponto);
+      }
     });
   }
   function carregarObras(){
@@ -1881,7 +1936,7 @@ require([
         if(pc){ abrirCartao(pc, hitPonto.graphic.geometry); return; }
       }
       fecharCartao();
-      var hitProject = res.results.find(function(r){ return r.graphic && r.graphic.layer === graphicsLayer; });
+      var hitProject = res.results.find(function(r){ return r.graphic && (r.graphic.layer === obrasPontosLayer || r.graphic.layer === graphicsLayer); });
       if(hitProject){
         var p = PROJECTS.find(function(pr){ return pr.id === hitProject.graphic.attributes.id; });
         selectProject(p, true);
@@ -1906,6 +1961,9 @@ require([
     if(title && title.indexOf("Pontos críticos") === 0){
       return '<img src="' + ICONE_PONTO + '" width="11" height="11" alt="" style="vertical-align:middle">' +
              '<img src="' + ICONE_PONTO + '" width="17" height="17" alt="" style="vertical-align:middle;margin-left:3px">';
+    }
+    if(title === OBRAS_PONTOS_TITULO){
+      return '<img src="' + ICONES_OBRA.generica + '" width="16" height="16" alt="" style="vertical-align:middle">';
     }
     if(title === RAIO_TITULO){
       return '<svg width="14" height="14" viewBox="0 0 14 14"><circle cx="7" cy="7" r="6" fill="rgba(227,26,28,.08)" stroke="rgba(227,26,28,.7)" stroke-width="1.2" stroke-dasharray="2.5 2"/></svg>';
@@ -2117,7 +2175,11 @@ require([
 
   function renderProjectList(){
     var visible = filteredProjects();
-    PROJECTS.forEach(function(p){ p._graphic.visible = visible.indexOf(p) > -1; });
+    PROJECTS.forEach(function(p){
+      var vis = visible.indexOf(p) > -1;
+      p._graphic.visible = vis;
+      if(p._ponto) p._ponto.visible = vis;
+    });
     countEl.textContent = visible.length + (visible.length===1 ? " item" : " itens");
     listEl.innerHTML = "";
     if(OBRAS_ESTADO !== "ok"){

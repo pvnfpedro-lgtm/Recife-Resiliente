@@ -103,6 +103,14 @@ não conectado.
   e abre o cartão do ponto; clicar no ponto do mapa marca o cartão na lista. A busca do topo também
   filtra a lista (trecho ou bairro). Botões de zoom e legenda passaram para a esquerda da lista.
 
+- 07/10/2026 (código; push após aprovação): **pontos das obras com ícone por tipo**. O painel lê a
+  coluna "coordenadas (lat, lon)" da aba "Obras" e desenha cada obra na camada "Obras (pontos da
+  planilha)", com o ícone do tipo (canal, dragagem, reservatório, dique, parque alagável, rede;
+  vazado quando em licitação; cone genérico quando o tipo está vazio). Coordenada vazia, ilegível ou
+  fora do Recife não desenha ponto. Clicar no ponto seleciona a obra na lista; os filtros e a busca
+  valem também para os pontos. A coordenada passa a ser o centro do zoom ao selecionar a obra.
+  Ícones embutidos no código com `python3 scripts/gerar_icones_obras_tipo.py --js`.
+
 ## Estado em 02/10/2026 (aprovado por Pedro)
 - Paleta: #0869A6 · #2685BF · #5496BF · #FFFFFF · #F2F2F2 (painel inteiro).
 - Pontos críticos lidos da planilha Google Sheets, cor pelo índice de risco.

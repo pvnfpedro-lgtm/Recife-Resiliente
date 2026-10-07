@@ -16,7 +16,9 @@ Categorias (aba "Obras", coluna tipo):
   rede           Requalificações na rede
 
 Uso: python3 scripts/gerar_icones_obras_tipo.py   (requer cairosvg)
+     python3 scripts/gerar_icones_obras_tipo.py --js   (objeto ICONES_OBRA do painel)
 """
+import sys
 from pathlib import Path
 
 RAIZ = Path(__file__).resolve().parent.parent
@@ -98,7 +100,25 @@ def icones():
     return saida
 
 
+def js():
+    """Objeto JavaScript com os ícones em data URI, para colar no painel
+    (appscript/Index.html.html, ICONES_OBRA)."""
+    import base64
+    linhas = []
+    todos = dict(icones())
+    # Obra sem tipo reconhecido: ícone genérico (cone), de scripts/gerar_icones_obras.py.
+    todos["obra_generica"] = (PASTA / "obra_em_obra.svg").read_text(encoding="utf-8")
+    todos["obra_generica_licitacao"] = (PASTA / "obra_em_licitacao.svg").read_text(encoding="utf-8")
+    for nome, texto in todos.items():
+        b64 = base64.b64encode(texto.strip().encode("utf-8")).decode("ascii")
+        linhas.append(f'    {nome[len("obra_"):]}: "data:image/svg+xml;base64,{b64}"')
+    return "  var ICONES_OBRA = {\n" + ",\n".join(linhas) + "\n  };"
+
+
 def main():
+    if "--js" in sys.argv:
+        print(js())
+        return
     import cairosvg
 
     (PASTA / "png").mkdir(parents=True, exist_ok=True)
