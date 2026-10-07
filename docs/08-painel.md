@@ -53,6 +53,15 @@ O painel em Google Apps Script já existente é a base. Muita coisa vai mudar.
 - 03/10/2026: coluna "Fonte de medição" (E) criada na aba "Checklist
   variáveis", ao lado de "Como medir", vazia (a preencher). As colunas a
   preencher passaram a ser O, P e Q; fórmulas e listas se ajustaram.
+- 07/10/2026 (ainda sem `clasp push`): CSS apagado por engano no commit
+  `2982a35` (02/10) restaurado: Street View, legenda e camadas, botões de
+  zoom, aviso de dados, páginas 02 e 03. Lista de cartões dos pontos
+  críticos à direita do mapa (pedido de Pedro), no estilo da lista de
+  intervenções: ordem do ranking, posição, índice de risco (cor na borda),
+  trecho, bairro · tipo e aviso "Local aproximado". Clicar no cartão
+  aproxima o mapa e abre o cartão do ponto; clicar no ponto do mapa marca
+  o cartão na lista. A busca do topo também filtra a lista (trecho ou
+  bairro). Botões de zoom e legenda passaram para a esquerda da lista.
 
 ## Estado em 02/10/2026 (aprovado por Pedro)
 - Paleta: #0869A6 · #2685BF · #5496BF · #FFFFFF · #F2F2F2 (painel inteiro).

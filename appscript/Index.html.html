@@ -41,6 +41,7 @@
     --shadow:0 1px 2px rgba(15,23,42,.04), 0 2px 8px rgba(15,23,42,.06);
     --shadow-lg:0 8px 24px rgba(15,23,42,.14);
     --radius:8px;
+    --pc-lista-w:340px;   /* largura da lista de pontos críticos (direita) */
 
     /* saúde de cronograma (Página 2/3) — reaproveita as mesmas cores semânticas já definidas acima */
     --saudavel:var(--status-concl);
@@ -157,7 +158,7 @@
   .overlay-grid{
     position:absolute;inset:16px;z-index:15;
     display:grid;
-    grid-template-columns:380px 1fr;
+    grid-template-columns:380px 1fr var(--pc-lista-w);
     grid-template-rows:auto 1fr;
     gap:10px;
     pointer-events:none;
@@ -197,6 +198,24 @@
   .list-panel-header h3{margin:0;font-size:13px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:.05em;white-space:nowrap;}
   .list-count{font-size:12px;color:var(--text-faint);font-variant-numeric:tabular-nums;white-space:nowrap;}
 
+  /* Lista de pontos críticos (direita), no mesmo estilo da lista de intervenções */
+  .list-panel.pc-panel{grid-column:3;}
+  .pc-card{
+    border:1px solid rgba(255,255,255,.50);border-radius:var(--radius);padding:10px 12px;
+    background:rgba(255,255,255,.12);cursor:pointer;transition:border-color .15s, box-shadow .15s, background .15s;
+    display:flex;flex-direction:column;gap:5px;
+  }
+  .pc-card:hover{background:rgba(255,255,255,.28);border-color:rgba(255,255,255,.75);box-shadow:var(--shadow);}
+  .pc-card.active{background:rgba(255,255,255,.32);border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);}
+  .pc-card.sem-coord{cursor:default;opacity:.75;}
+  .pc-card-top{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+  .pc-pos{font-size:11px;font-weight:700;color:#fff;background:#334155;border-radius:999px;padding:2px 8px;font-variant-numeric:tabular-nums;white-space:nowrap;}
+  .pc-indice{font-size:12px;color:var(--text-dim);white-space:nowrap;}
+  .pc-indice b{font-size:15px;color:#1a1a1a;font-variant-numeric:tabular-nums;}
+  .pc-trecho{font-size:13.5px;font-weight:600;color:#1a1a1a;line-height:1.3;}
+  .pc-meta{font-size:12px;color:var(--text-dim);display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;}
+  .pc-tag{font-size:10.5px;font-weight:700;color:#334155;background:rgba(51,65,85,.10);border-radius:999px;padding:1px 7px;white-space:nowrap;}
+  .pc-msg{color:var(--text-faint);font-size:12.5px;padding:10px 12px;}
   .project-list{display:flex;flex-direction:column;gap:8px;min-height:0;overflow-y:auto;padding-right:2px;scroll-behavior:smooth;}
   .project-card{
     border:1px solid rgba(255,255,255,.50);border-radius:var(--radius);padding:11px 12px;
@@ -353,9 +372,9 @@
   .google-map-missing-key a:hover{text-decoration:underline;}
   .google-map-missing-key code{background:var(--panel);border:1px solid var(--border);border-radius:5px;padding:1px 6px;font-size:12px;}
 
-  .map-br-stack{position:absolute;right:16px;bottom:16px;display:flex;flex-direction:column;align-items:flex-end;gap:10px;z-index:15;}
+  .map-br-stack{position:absolute;right:calc(26px + var(--pc-lista-w));bottom:16px;display:flex;flex-direction:column;align-items:flex-end;gap:10px;z-index:15;}
 
-  .map-center-controls{position:absolute;right:16px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;
+  .map-center-controls{position:absolute;right:calc(26px + var(--pc-lista-w));top:50%;transform:translateY(-50%);display:flex;flex-direction:column;
     background:var(--panel);border:1px solid var(--border);border-radius:7px;box-shadow:var(--shadow);overflow:hidden;z-index:15;}
   .map-center-controls button{width:34px;height:34px;border:none;background:transparent;color:var(--text-dim);font-size:17px;
     font-family:inherit;cursor:pointer;line-height:1;}
@@ -714,10 +733,11 @@
 
   @media (max-width: 760px){
     .navbar-inst{display:none;}
-    .overlay-grid{inset:10px;grid-template-columns:1fr;grid-template-rows:auto auto;gap:8px;}
+    .overlay-grid{inset:10px;grid-template-columns:1fr;grid-template-rows:auto auto auto;gap:8px;}
     .filter-float{align-items:flex-start;width:100%;}
     .search-box{width:100%;}
     .list-panel{grid-column:1;grid-row:2;max-height:38vh;}
+    .list-panel.pc-panel{grid-column:1;grid-row:3;max-height:30vh;}
     .map-br-stack{right:10px;bottom:10px;}
     .map-center-controls{right:10px;}
     .legend{min-width:0;max-width:60vw;}
@@ -796,6 +816,14 @@
               <span class="list-count" id="listCount"></span>
             </div>
             <div class="project-list" id="projectList"></div>
+          </div>
+
+          <div class="floating-panel list-panel pc-panel">
+            <div class="list-panel-header">
+              <h3>Pontos críticos</h3>
+              <span class="list-count" id="pcCount"></span>
+            </div>
+            <div class="project-list" id="pcList"><div class="pc-msg">Carregando pontos da planilha…</div></div>
           </div>
         </div>
 
@@ -1364,6 +1392,12 @@ require([
     var pt = view.toScreen(cartaoGeom);
     if(!pt) return;
     var W = view.width, H = view.height, gap = 36, m = 8;  // gap = distância entre o ponto e o cartão (px)
+    // A lista de pontos críticos ocupa a direita do mapa: o cartão não passa por cima dela.
+    var lista = document.querySelector(".pc-panel");
+    if(lista && lista.offsetWidth){
+      var esq = lista.getBoundingClientRect().left - view.container.getBoundingClientRect().left;
+      if(esq > W / 2) W = esq - 10;
+    }
     cartao.querySelector(".rr-card-in").style.maxHeight = Math.floor(H * 0.85) + "px";
     var w = cartao.offsetWidth, h = cartao.offsetHeight;
     var direita = (pt.x + gap + w <= W - m) || (pt.x - gap - w < m);
@@ -1384,10 +1418,12 @@ require([
     corpo.scrollTop = 0;
     cartao.style.display = "block";
     posicionarCartao();
+    marcarPontoNaLista(p.id);
   }
   function fecharCartao(){
     if(cartao) cartao.style.display = "none";
     cartaoPonto = null; cartaoGeom = null;
+    marcarPontoNaLista(null);
   }
   reactiveUtils.watch(function(){ return view.extent; }, posicionarCartao);
   window.addEventListener("resize", posicionarCartao);
@@ -1397,6 +1433,9 @@ require([
     if(!res || res.erro){
       console.error("Pontos críticos: ", res && res.erro);
       pontosLayer.title = PONTOS_TITULO + " — erro ao ler a planilha";
+      PONTOS_LISTA = null;
+      document.getElementById("pcList").innerHTML = '<div class="pc-msg">Não foi possível ler os pontos da planilha.</div>';
+      document.getElementById("pcCount").textContent = "";
       buildLayerToggle();
       return;
     }
@@ -1415,9 +1454,65 @@ require([
       }));
       PONTOS_POR_ID[p.id] = p;
     });
+    PONTOS_LISTA = res.pontos.slice().sort(function(a, b){
+      var pa = a.posicao == null ? Infinity : a.posicao, pb = b.posicao == null ? Infinity : b.posicao;
+      return pa - pb || a.id - b.id;
+    });
+    renderPontosLista();
     console.log("Pontos críticos carregados da planilha: " + res.pontos.length + " (" + res.lidoEm + ")");
     buildLayerToggle();
   }
+
+  /* ---------------------------------------------------------------------
+     LISTA DE PONTOS CRÍTICOS (direita): um cartão por ponto, na ordem do
+     ranking. Clicar aproxima o mapa e abre o cartão do ponto. A busca do
+     topo também filtra esta lista (trecho ou bairro).
+     --------------------------------------------------------------------- */
+  var PONTOS_LISTA = null;   // null = ainda carregando (ou erro)
+  function renderPontosLista(){
+    if(!PONTOS_LISTA) return;
+    var box = document.getElementById("pcList");
+    var q = document.getElementById("searchInput").value.trim().toLowerCase();
+    var lista = PONTOS_LISTA.filter(function(p){
+      return !q || p.trecho.toLowerCase().indexOf(q) > -1 || p.bairro.toLowerCase().indexOf(q) > -1;
+    });
+    document.getElementById("pcCount").textContent = lista.length + (lista.length === 1 ? " ponto" : " pontos");
+    if(!lista.length){
+      box.innerHTML = '<div class="pc-msg">Nenhum ponto crítico encontrado para a busca.</div>';
+      return;
+    }
+    box.innerHTML = lista.map(function(p){
+      var semCoord = p.lat == null || p.lon == null;
+      return '<div class="pc-card' + (semCoord ? ' sem-coord' : '') + (cartaoPonto && cartaoPonto.id === p.id ? ' active' : '') +
+          '" data-id="' + p.id + '" style="border-left:4px solid ' + corIndice(p.indice) + '"' +
+          (semCoord ? ' title="Ponto sem coordenada na planilha"' : '') + '>' +
+        '<div class="pc-card-top"><span class="pc-pos">' + (p.posicao != null ? p.posicao + 'º' : '—') + '</span>' +
+          '<span class="pc-indice">Índice de risco <b>' + fmtN(p.indice, 3) + '</b></span></div>' +
+        '<div class="pc-trecho">' + escHtml(p.trecho) + '</div>' +
+        '<div class="pc-meta"><span>' + escHtml(p.bairro) + (p.tipo ? ' · ' + escHtml(p.tipo) : '') + '</span>' +
+          (semCoord ? '<span class="pc-tag">Sem coordenada</span>' :
+           /aproximad/i.test(p.precisao) ? '<span class="pc-tag">Local aproximado</span>' : '') + '</div>' +
+      '</div>';
+    }).join("");
+  }
+  function marcarPontoNaLista(id){
+    document.querySelectorAll("#pcList .pc-card").forEach(function(el){
+      var ativo = id != null && el.getAttribute("data-id") === String(id);
+      el.classList.toggle("active", ativo);
+      if(ativo) el.scrollIntoView({ block:"nearest", behavior:"smooth" });
+    });
+  }
+  document.getElementById("pcList").addEventListener("click", function(e){
+    var el = e.target.closest(".pc-card");
+    if(!el) return;
+    var p = PONTOS_POR_ID[el.getAttribute("data-id")];
+    if(!p) return;  // sem coordenada: não está no mapa
+    var g = pontosLayer.graphics.find(function(gr){ return gr.attributes.id === p.id; });
+    if(!g) return;
+    view.goTo({ target: g.geometry, zoom: Math.max(view.zoom, 16) }, { duration: 600 })
+      .then(function(){ abrirCartao(p, g.geometry); })
+      .catch(function(){ abrirCartao(p, g.geometry); });
+  });
   if(typeof google !== "undefined" && google.script && google.script.run){
     google.script.run
       .withSuccessHandler(desenharPontos)
@@ -2243,6 +2338,7 @@ require([
     elCount.textContent = filteredProjects().length + " de " + PROJECTS.length + " intervenções";
     renderKpiStrip();
     renderProjectList();
+    renderPontosLista();
     renderPage2();
   }
 
