@@ -24,6 +24,14 @@ dimensão e variável ainda serão definidos pelo grupo (pendência 1).
 multiplica a Consequência. Sem nota de Probabilidade, o ponto não entra no
 ranking.
 
+**Decisão de Pedro (13/10/2026), já no fluxograma:** a dimensão passa a se
+chamar **Frequência** e os códigos passam de P para **F**. Ficam as seis
+variáveis abaixo, com a P1 renomeada para não repetir o nome da dimensão:
+F1 Recorrência de alagamentos, F2 Severidade, F3 Influência da maré,
+F4 Proximidade de rio ou canal, F5 Impermeabilização, F6 Relevo (baixio).
+A Frequência inclui também a gravidade de cada alagamento (F2). As seções
+abaixo, a planilha e o painel ainda usam "Probabilidade" e P1 a P6.
+
 ### P1 — Frequência e recorrência histórica
 - **O que é:** quantas vezes o ponto alaga.
 - **Por que importa:** é a prova mais direta de que o problema se repete.
@@ -77,6 +85,14 @@ ranking.
 do círculo de 300 m em volta do ponto (exceção: E3 usa 1 km). O que é
 contado aqui não é contado de novo no Impacto.
 
+**Decisão de Pedro (13/10/2026), já no fluxograma:** a Exposição fica com
+duas variáveis, no círculo de 300 m. O comércio (E3) sai da Exposição e vira
+o **I3 Comércio e perda econômica**, com a mesma medida (IPTU não residencial
+no círculo de 1 km, notas por quintis), para não contar duas vezes.
+1. **E1 População residente**
+2. **E2 Equipamentos públicos** (escolas, creches e unidades de saúde; creches
+   continuam na mesma contagem das escolas)
+
 ### E1 — População
 - **O que é:** quantas pessoas moram perto do ponto.
 - **Por que importa:** quanto mais moradores, mais gente afetada por cada
@@ -121,6 +137,20 @@ contado aqui não é contado de novo no Impacto.
 **Pergunta:** quem está ali consegue lidar com o alagamento? Duas comunidades
 com o mesmo número de moradores sofrem de forma diferente se uma tem casas
 térreas em área precária e a outra, prédios com infraestrutura.
+
+**Decisão de Pedro (13/10/2026), já no fluxograma
+(`docs/fluxograma/fluxograma-notas-rpa6.html`):** a Vulnerabilidade fica com
+quatro variáveis, todas no círculo de 300 m. As seções abaixo ainda usam a
+numeração anterior e serão reescritas.
+1. **V1 População vulnerável** (idosos e crianças; antigo V2)
+2. **V2 % da área coberta por CIS** (pendência 21; antigo V3)
+3. **V3 % de domicílios sem rede de esgoto** (antigo I2 Risco sanitário,
+   pendência 19). Conferir se não repete o V2 nos 21 pontos.
+4. **V4 Tipo de moradia** (% de casas; antigo V4)
+- **Plano B:** IVS do Ipea (Censo 2010). Fica fora porque repete renda e
+  infraestrutura, já medidas no V2 e no V3.
+- **Fora:** V5 Dificuldade de evacuação (sem definição; sair na hora do
+  evento é resposta, do COP).
 
 ### V2 — População vulnerável
 - **O que é:** idosos (60 anos ou mais) e crianças pequenas (0 a 4 anos).
