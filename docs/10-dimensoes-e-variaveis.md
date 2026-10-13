@@ -122,6 +122,20 @@ contado aqui não é contado de novo no Impacto.
 com o mesmo número de moradores sofrem de forma diferente se uma tem casas
 térreas em área precária e a outra, prédios com infraestrutura.
 
+**Decisão de Pedro (13/10/2026), já no fluxograma
+(`docs/fluxograma/fluxograma-notas-rpa6.html`):** a Vulnerabilidade fica com
+quatro variáveis, todas no círculo de 300 m. As seções abaixo ainda usam a
+numeração anterior e serão reescritas.
+1. **V1 População vulnerável** (idosos e crianças; antigo V2)
+2. **V2 % da área coberta por CIS** (pendência 21; antigo V3)
+3. **V3 % de domicílios sem rede de esgoto** (antigo I2 Risco sanitário,
+   pendência 19). Conferir se não repete o V2 nos 21 pontos.
+4. **V4 Tipo de moradia** (% de casas; antigo V4)
+- **Plano B:** IVS do Ipea (Censo 2010). Fica fora porque repete renda e
+  infraestrutura, já medidas no V2 e no V3.
+- **Fora:** V5 Dificuldade de evacuação (sem definição; sair na hora do
+  evento é resposta, do COP).
+
 ### V2 — População vulnerável
 - **O que é:** idosos (60 anos ou mais) e crianças pequenas (0 a 4 anos).
 - **Por que importa:** têm mais dificuldade de sair de casa, se proteger e se
