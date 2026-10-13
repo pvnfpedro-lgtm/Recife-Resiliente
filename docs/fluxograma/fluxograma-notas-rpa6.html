@@ -1,0 +1,439 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Fluxograma das Notas RPA 6</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,500;0,700;1,300&family=Roboto+Mono:wght@400&display=swap">
+<script>window.MathJax = { tex: { inlineMath: [["\\(", "\\)"]] }, svg: { fontCache: "global" } };</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg-full.js" async></script>
+<style>
+/* Layout: coluna única de leitura; o fluxograma é a peça central, de cima para baixo, seguindo as colunas da aba "Notas dos pontos". */
+:root {
+  --bg: #FFFFFF;
+  --surface: #F2F2F2;
+  --fg: #142B3B;
+  --muted: #5A6B78;
+  --line: #C9D4DC;
+  --azul: #0869A6;
+  --azul2: #2685BF;
+  --azul3: #5496BF;
+  --on-azul: #FFFFFF;
+  --amarelo: #FFF2CC;
+  --resultado: #B42318;
+  --font-body: "Roboto", "Segoe UI", system-ui, sans-serif;
+  color-scheme: light;
+  --font-mono: "Roboto Mono", ui-monospace, Menlo, monospace;
+}
+body { background: var(--bg); color: var(--fg); font-family: var(--font-body); font-weight: 300; font-size: 15px; line-height: 1.55; }
+.wrap { max-width: 1000px; margin: 0 auto; padding-inline: 16px; padding-block: 32px 56px; display: grid; gap: 28px; }
+header { display: grid; gap: 6px; }
+.eyebrow { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--azul); font-weight: 600; }
+h1 { font-size: 28px; line-height: 1.2; margin: 0; text-wrap: balance; }
+h2 { font-size: 18px; margin: 0 0 10px; text-wrap: balance; }
+p { margin: 0; max-width: 68ch; }
+.lead { color: var(--muted); }
+figure { margin: 0; display: grid; gap: 10px; }
+.scroll { overflow-x: auto; background: var(--surface); border-radius: 6px; padding: 16px; }
+svg.flow { display: block; width: 100%; min-width: 820px; height: auto; color: var(--fg); font-family: var(--font-body); }
+figcaption { font-size: 13px; color: var(--muted); max-width: 80ch; }
+
+/* SVG */
+.box { fill: var(--bg); stroke: var(--line); stroke-width: 1.2; }
+.box-calc { fill: var(--surface); stroke: var(--muted); stroke-width: 1.2; }
+.box-res { fill: var(--bg); stroke: var(--resultado); stroke-width: 2; }
+.box-out { fill: var(--bg); stroke: var(--muted); stroke-width: 1.2; stroke-dasharray: 5 4; }
+.hd-p { fill: var(--azul); } .hd-e { fill: var(--azul2); } .hd-v { fill: var(--azul3); } .hd-i { fill: var(--muted); }
+.t { fill: currentColor; font-size: 13px; }
+.tb { fill: currentColor; font-size: 14px; font-weight: 700; }
+.th { fill: var(--on-azul); font-size: 14px; font-weight: 700; }
+.ts { fill: var(--muted); font-size: 12px; }
+.tv { fill: currentColor; font-size: 12.5px; }
+.tc { fill: var(--muted); font-size: 12px; font-style: italic; }
+.tm { fill: currentColor; font-family: var(--font-mono); font-size: 13px; font-weight: 500; }
+.tr { fill: var(--resultado); font-size: 14px; font-weight: 700; }
+.lbl { fill: var(--azul); font-size: 12px; font-weight: 600; }
+.ln { stroke: currentColor; stroke-width: 1.4; fill: none; }
+.ln-out { stroke: var(--muted); stroke-width: 1.4; fill: none; stroke-dasharray: 5 4; }
+.dia { fill: var(--amarelo); stroke: var(--fg); stroke-width: 1.2; }
+
+/* Legenda das cores da planilha */
+.cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+.col { border: 1px solid var(--line); border-radius: 6px; padding: 14px; display: grid; gap: 6px; align-content: start; }
+.chip { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; font-size: 14px; }
+.sw { width: 16px; height: 16px; border-radius: 3px; border: 1px solid var(--line); }
+.col p { font-size: 14px; color: var(--muted); }
+code { font-family: var(--font-mono); font-size: 13px; background: var(--surface); padding: 1px 5px; border-radius: 3px; }
+ul.regras { margin: 0; padding-left: 20px; display: grid; gap: 6px; max-width: 72ch; }
+.aviso { border-left: 3px solid var(--resultado); padding: 10px 14px; background: var(--surface); font-size: 14px; }
+
+/* Origem dos dados */
+.rotas { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-bottom: 18px; }
+.rota { background: var(--surface); border-radius: 6px; padding: 14px; display: grid; gap: 4px; align-content: start; }
+.rota strong { font-size: 15px; }
+.rota span { font-size: 13px; color: var(--muted); }
+.rota .vars { font-family: var(--font-mono); font-size: 12px; color: var(--azul); }
+.tabwrap { overflow-x: auto; }
+table.origem { border-collapse: collapse; width: 100%; min-width: 860px; font-size: 14px; }
+table.origem th { text-align: left; font-size: 12px; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); padding: 8px 10px; border-bottom: 2px solid var(--line); }
+table.origem td { padding: 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+table.origem td:first-child { white-space: nowrap; }
+table.origem tr.dim td { background: var(--surface); font-weight: 700; color: var(--azul); padding-block: 6px; border-bottom: 0; }
+.cod { font-family: var(--font-mono); font-weight: 500; }
+.nome { display: block; font-size: 13px; color: var(--muted); white-space: normal; max-width: 18ch; }
+.pill { display: inline-block; font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 999px; border: 1px solid currentColor; white-space: nowrap; }
+.pill.aguarda { color: var(--fg); background: var(--amarelo); border-color: var(--line); }
+.pill.base { color: var(--azul); }
+.pill.def { color: var(--resultado); }
+.obs { display: block; font-size: 12.5px; color: var(--muted); margin-top: 4px; }
+
+/* Metodologia de cálculo */
+.passos { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; counter-reset: passo; }
+.passo { position: relative; display: grid; gap: 6px; border: 1px solid var(--line); border-radius: 6px; padding: 14px 14px 14px 60px; min-width: 0; }
+.passo::before { counter-increment: passo; content: counter(passo); position: absolute; left: 14px; top: 12px; width: 30px; height: 30px; border-radius: 50%; background: var(--azul); color: var(--on-azul); font-weight: 700; display: grid; place-items: center; }
+.passo h3 { margin: 0; font-size: 16px; }
+.formula { font-size: 15px; background: var(--surface); padding: 4px 12px; border-radius: 4px; overflow-x: auto; color: var(--fg); }
+.formula mjx-container[display="true"] { margin: 6px 0 !important; }
+.passo p { font-size: 14px; color: var(--muted); }
+.ex { font-variant-numeric: tabular-nums; color: var(--fg) !important; }
+.ex b { color: var(--resultado); }
+table.cmp { border-collapse: collapse; font-size: 14px; font-variant-numeric: tabular-nums; min-width: 520px; }
+table.cmp th, table.cmp td { padding: 8px 12px; border-bottom: 1px solid var(--line); text-align: center; }
+table.cmp th:first-child, table.cmp td:first-child { text-align: left; }
+table.cmp th { font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+.sub { display: grid; gap: 10px; margin-top: 22px; }
+.sub h3 { margin: 0; font-size: 16px; }
+.refs { margin: 0; padding-left: 20px; display: grid; gap: 6px; font-size: 14px; max-width: 80ch; }
+.refs a { color: var(--azul); }
+
+/* Matriz P × C */
+.teste { display: inline-block; font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--on-azul); background: var(--resultado); padding: 2px 8px; border-radius: 3px; }
+.matriz { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+@media (max-width: 760px) { .matriz { grid-template-columns: 1fr; } }
+.chartbox { position: relative; }
+svg.pc { display: block; width: 100%; height: auto; font-family: var(--font-body); }
+.pc .grid { stroke: var(--line); stroke-width: 1; }
+.pc .eixo { stroke: var(--muted); stroke-width: 1; }
+.pc .tick { fill: var(--muted); font-size: 12px; }
+.pc .titulo { fill: var(--fg); font-size: 13px; font-weight: 500; }
+.pc .zona { fill: var(--resultado); fill-opacity: .08; }
+.pc .corte { stroke: var(--resultado); stroke-width: 2; fill: none; stroke-dasharray: 6 4; }
+.pc .corte-lbl { fill: var(--resultado); font-size: 12px; font-weight: 500; }
+.pc .dot { fill: var(--azul); stroke: var(--bg); stroke-width: 2; cursor: pointer; }
+.pc .dot.on { fill: var(--resultado); }
+.pc .rot { fill: var(--fg); font-size: 11px; pointer-events: none; }
+.pc .hit { fill: transparent; cursor: pointer; }
+.tip { position: absolute; pointer-events: none; background: var(--fg); color: var(--bg); font-size: 12.5px; line-height: 1.4; padding: 6px 9px; border-radius: 4px; white-space: nowrap; transform: translate(-50%, calc(-100% - 10px)); font-variant-numeric: tabular-nums; }
+table.rank { border-collapse: collapse; width: 100%; font-size: 13.5px; font-variant-numeric: tabular-nums; }
+table.rank th { text-align: right; font-size: 11.5px; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); padding: 6px 8px; border-bottom: 2px solid var(--line); font-weight: 500; }
+table.rank td { text-align: right; padding: 5px 8px; border-bottom: 1px solid var(--line); }
+table.rank th:nth-child(2), table.rank td:nth-child(2), table.rank th:nth-child(3), table.rank td:nth-child(3) { text-align: left; }
+table.rank tr.acima td:nth-child(6) { color: var(--resultado); font-weight: 500; }
+table.rank tbody tr { cursor: default; }
+table.rank tbody tr.on td { background: var(--surface); }
+</style>
+
+<div class="wrap">
+  <header>
+    <span class="eyebrow">Recife Resiliente · RPA 6</span>
+    <h1>Fluxo de rankeamento dos pontos críticos</h1>
+    <p class="lead">Caminho de uma nota, da variável até a posição no ranking, seguindo as colunas da aba "Notas dos pontos" da planilha Recife_Resiliente_Checklist_Variaveis.</p>
+  </header>
+
+  <figure>
+    <div class="scroll">
+      <svg class="flow" viewBox="0 0 1040 850" role="img" aria-label="Fluxograma: cada um dos 21 pontos recebe notas de 1 a 5 nas variáveis de quatro dimensões; as notas viram uma nota por dimensão; Exposição, Vulnerabilidade e Impacto formam a Consequência; o Risco é Probabilidade vezes Consequência, de 1 a 25, que gera o índice de 0 a 1 e a posição no ranking.">
+        <defs>
+          <marker id="seta" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/>
+          </marker>
+        </defs>
+
+        <!-- 1. Título -->
+        <rect class="box" x="190" y="16" width="660" height="58" rx="6"/>
+        <text class="tb" x="520" y="40" text-anchor="middle">Critério de hierarquização dos pontos críticos de alagamento na RPA 6</text>
+        <text class="ts" x="520" y="60" text-anchor="middle">21 trechos da EMLURB · dados medidos no círculo de 300 m (E3: 1 km)</text>
+        <line class="ln" x1="520" y1="74" x2="520" y2="94"/>
+        <path class="ln" d="M145,94 H895"/>
+        <line class="ln" x1="145" y1="94" x2="145" y2="118" marker-end="url(#seta)"/><line class="ln" x1="395" y1="94" x2="395" y2="118" marker-end="url(#seta)"/><line class="ln" x1="645" y1="94" x2="645" y2="118" marker-end="url(#seta)"/><line class="ln" x1="895" y1="94" x2="895" y2="118" marker-end="url(#seta)"/>
+        <text class="lbl" x="540" y="88">nota de 1 a 5 em cada variável (5 = mais crítico)</text>
+
+        <!-- 2. Variáveis por dimensão -->
+        <rect class="box" x="30" y="120" width="230" height="210" rx="6"/>
+        <path class="hd-p" d="M36,120 H254 a6,6 0 0 1 6,6 V150 H30 V126 a6,6 0 0 1 6,-6 z"/>
+        <text class="th" x="145" y="140" text-anchor="middle">Probabilidade</text>
+        <text class="tv" x="44" y="172"><tspan font-weight="700">P1</tspan> Frequência que alaga</text>
+        <text class="tv" x="44" y="189"><tspan font-weight="700">P2</tspan> Severidade</text>
+        <text class="tv" x="44" y="206"><tspan font-weight="700">P3</tspan> Grau de influência da maré</text>
+        <text class="tv" x="44" y="223"><tspan font-weight="700">P4</tspan> Distância em relação ao</text>
+        <text class="tv" x="66" y="240">rio ou canal</text>
+        <text class="tv" x="44" y="257"><tspan font-weight="700">P5</tspan> Capacidade de absorção</text>
+        <text class="tv" x="66" y="274">do solo</text>
+        <text class="tv" x="44" y="291"><tspan font-weight="700">P6</tspan> Cota em relação ao nível</text>
+        <text class="tv" x="66" y="308">do mar</text>
+        <rect class="box" x="280" y="120" width="230" height="210" rx="6"/>
+        <path class="hd-e" d="M286,120 H504 a6,6 0 0 1 6,6 V150 H280 V126 a6,6 0 0 1 6,-6 z"/>
+        <text class="th" x="395" y="140" text-anchor="middle">Exposição</text>
+        <text class="tv" x="294" y="172"><tspan font-weight="700">E1</tspan> Quantidade de residentes</text>
+        <text class="tv" x="316" y="189">no entorno</text>
+        <text class="tv" x="294" y="206"><tspan font-weight="700">E2</tspan> Quantidade de equipamentos</text>
+        <text class="tv" x="316" y="223">públicos da PCR</text>
+        <text class="tv" x="294" y="240"><tspan font-weight="700">E3</tspan> Quantidade de comércio</text>
+        <text class="tv" x="316" y="257">no entorno</text>
+        <rect class="box" x="530" y="120" width="230" height="210" rx="6"/>
+        <path class="hd-v" d="M536,120 H754 a6,6 0 0 1 6,6 V150 H530 V126 a6,6 0 0 1 6,-6 z"/>
+        <text class="th" x="645" y="140" text-anchor="middle">Vulnerabilidade</text>
+        <text class="tv" x="544" y="172"><tspan font-weight="700">V1</tspan> População vulnerável</text>
+        <text class="tv" x="544" y="189"><tspan font-weight="700">V2</tspan> Proximidade de ZEI/CIS</text>
+        <text class="tv" x="544" y="206"><tspan font-weight="700">V3</tspan> Qualidade da moradia</text>
+        <text class="tv" x="566" y="223">no entorno</text>
+        <text class="tc" x="544" y="250">+ novas variáveis · a criar</text>
+        <rect class="box" x="780" y="120" width="230" height="210" rx="6"/>
+        <path class="hd-i" d="M786,120 H1004 a6,6 0 0 1 6,6 V150 H780 V126 a6,6 0 0 1 6,-6 z"/>
+        <text class="th" x="895" y="140" text-anchor="middle">Impacto</text>
+        <text class="tv" x="794" y="172"><tspan font-weight="700">I1</tspan> Grau de importância da</text>
+        <text class="tv" x="816" y="189">via interditada</text>
+        <text class="tv" x="794" y="206"><tspan font-weight="700">I2</tspan> Proximidade aeroporto e</text>
+        <text class="tv" x="816" y="223">terminais integrados</text>
+        <text class="tc" x="794" y="250">+ novas variáveis · a criar</text>
+
+        <!-- 3. Nota da dimensão -->
+        <line class="ln" x1="145" y1="330" x2="145" y2="356" marker-end="url(#seta)"/><line class="ln" x1="395" y1="330" x2="395" y2="356" marker-end="url(#seta)"/><line class="ln" x1="645" y1="330" x2="645" y2="356" marker-end="url(#seta)"/><line class="ln" x1="895" y1="330" x2="895" y2="356" marker-end="url(#seta)"/>
+        <rect class="box-calc" x="65" y="358" width="160" height="48" rx="6"/>
+        <text class="tb" x="145" y="378" text-anchor="middle">Nota P</text>
+        <text class="ts" x="145" y="396" text-anchor="middle">média ponderada</text>
+        <rect class="box-calc" x="315" y="358" width="160" height="48" rx="6"/>
+        <text class="tb" x="395" y="378" text-anchor="middle">Nota E</text>
+        <text class="ts" x="395" y="396" text-anchor="middle">média ponderada</text>
+        <rect class="box-calc" x="565" y="358" width="160" height="48" rx="6"/>
+        <text class="tb" x="645" y="378" text-anchor="middle">Nota V</text>
+        <text class="ts" x="645" y="396" text-anchor="middle">média ponderada</text>
+        <rect class="box-calc" x="815" y="358" width="160" height="48" rx="6"/>
+        <text class="tb" x="895" y="378" text-anchor="middle">Nota I</text>
+        <text class="ts" x="895" y="396" text-anchor="middle">média ponderada</text>
+
+        <!-- 4. Consequência -->
+        <path class="ln" d="M395,406 V434 H590 V464" marker-end="url(#seta)"/>
+        <line class="ln" x1="645" y1="406" x2="645" y2="464" marker-end="url(#seta)"/>
+        <path class="ln" d="M895,406 V434 H700 V464" marker-end="url(#seta)"/>
+        <rect class="box-calc" x="520" y="466" width="250" height="56" rx="6"/>
+        <text class="tb" x="645" y="490" text-anchor="middle">Consequência (1 a 5)</text>
+        <text class="ts" x="645" y="510" text-anchor="middle">média ponderada de E, V e I</text>
+
+        <!-- 5. Probabilidade vai direto ao Risco -->
+        <path class="ln" d="M145,406 V609 H458" marker-end="url(#seta)"/>
+        <text class="lbl" x="155" y="600">P</text>
+
+        <!-- 6. Risco -->
+        <line class="ln" x1="645" y1="522" x2="645" y2="578" marker-end="url(#seta)"/>
+        <rect class="box-res" x="460" y="580" width="370" height="58" rx="6"/>
+        <text class="tr" x="645" y="604" text-anchor="middle">Risco = P × Consequência</text>
+        <text class="ts" x="645" y="624" text-anchor="middle">escala de 1 a 25</text>
+
+        <!-- 7. Índice e posição -->
+        <line class="ln" x1="550" y1="638" x2="550" y2="676" marker-end="url(#seta)"/>
+        <line class="ln" x1="740" y1="638" x2="740" y2="676" marker-end="url(#seta)"/>
+        <rect class="box-res" x="460" y="678" width="180" height="62" rx="6"/>
+        <text class="tb" x="550" y="700" text-anchor="middle">Índice de risco</text>
+        <text class="tm" x="550" y="720" text-anchor="middle">(Risco − 1) ÷ 24</text>
+        <text class="ts" x="550" y="734" text-anchor="middle">0 a 1</text>
+        <rect class="box-res" x="650" y="678" width="180" height="62" rx="6"/>
+        <text class="tb" x="740" y="700" text-anchor="middle">Posição</text>
+        <text class="ts" x="740" y="718" text-anchor="middle">1 = maior risco</text>
+        <text class="ts" x="740" y="734" text-anchor="middle">empate = mesma posição</text>
+
+        <!-- 8. Fora da tabela -->
+        <path class="ln-out" d="M830,609 H960 V791 H862"/>
+        <polygon points="854,791 864,786 864,796" fill="var(--muted)"/>
+        <rect class="box-out" x="460" y="762" width="400" height="58" rx="6"/>
+        <text class="tb" x="660" y="786" text-anchor="middle">Matriz risco × tratabilidade</text>
+        <text class="ts" x="660" y="806" text-anchor="middle">próxima etapa, fora desta aba · corte em risco 9</text>
+      </svg>
+    </div>
+    <figcaption>Variáveis com os nomes revisados por Pedro em 06/10/2026. A planilha e o documento das variáveis ainda usam a numeração anterior.</figcaption>
+  </figure>
+
+  <section>
+    <h2>Metodologia de cálculo</h2>
+    <p class="lead" style="margin-bottom:14px">Quatro passos, do dado à posição no ranking. O exemplo usa notas inventadas só para mostrar a conta, com todos os pesos iguais (os pesos reais ainda serão definidos pelo grupo).</p>
+    <ol class="passos">
+      <li class="passo">
+        <h3>Dar nota de 1 a 5 a cada variável</h3>
+        <div class="formula">\[ x_i \in \{1, 2, 3, 4, 5\} \qquad (5 = \text{mais crítico}) \]</div>
+        <p>Cada variável tem sua escala. Todos os pontos recebem nota em todas as variáveis.</p>
+        <p class="ex">Exemplo: P1 = 4, P2 = 3, P3 = 5, P4 = 4, P5 = 3, P6 = 2 · E1 = 4, E2 = 2, E3 = 3 · V1 = 3, V2 = 5, V3 = 4 · I1 = 4, I2 = 2</p>
+      </li>
+      <li class="passo">
+        <h3>Calcular a nota de cada dimensão</h3>
+        <div class="formula">\[ D = \frac{\sum_{i=1}^{n} w_i \, x_i}{\sum_{i=1}^{n} w_i}, \qquad D \in \{P, E, V, I\} \]</div>
+        <p>\(x_i\) é a nota da variável \(i\), \(w_i\) é o seu peso e \(n\) é o número de variáveis da dimensão. Com pesos iguais, é a média simples.</p>
+        <div class="formula ex">\[ P = \tfrac{4+3+5+4+3+2}{6} = 3{,}5 \quad E = \tfrac{4+2+3}{3} = 3{,}0 \quad V = \tfrac{3+5+4}{3} = 4{,}0 \quad I = \tfrac{4+2}{2} = 3{,}0 \]</div>
+      </li>
+      <li class="passo">
+        <h3>Juntar Exposição, Vulnerabilidade e Impacto na Consequência</h3>
+        <div class="formula">\[ C = \frac{w_E \, E + w_V \, V + w_I \, I}{w_E + w_V + w_I} \]</div>
+        <p>\(w_E\), \(w_V\) e \(w_I\) são os pesos das dimensões, ainda a definir pelo grupo.</p>
+        <div class="formula ex">\[ C = \frac{3{,}0 + 4{,}0 + 3{,}0}{3} = 3{,}33 \]</div>
+      </li>
+      <li class="passo">
+        <h3>Multiplicar Probabilidade por Consequência</h3>
+        <div class="formula">\[ R = P \times C, \quad 1 \le R \le 25 \qquad\qquad \text{Índice} = \frac{R - 1}{24}, \quad 0 \le \text{Índice} \le 1 \]</div>
+        <p>O índice só leva o Risco para a escala de 0 a 1 e não muda o ranking. O corte da matriz (\(R = 9 = 3 \times 3\)) equivale a 0,333.</p>
+        <div class="formula ex">\[ R = 3{,}5 \times 3{,}33 = \mathbf{11{,}7} \qquad \text{Índice} = \frac{11{,}7 - 1}{24} = \mathbf{0{,}44} \]</div>
+        <p class="ex">Acima do corte 9: entra como risco alto na matriz.</p>
+      </li>
+    </ol>
+
+    <div class="sub">
+      <h3>Base da fórmula</h3>
+      <ul class="refs">
+        <li>TCU. <em>Referencial básico de gestão de riscos</em>, 2018, p. 26: em métodos semiquantitativos, "a função 'Risco' será essencialmente um produto dessas variáveis": Risco = Probabilidade × Impacto.</li>
+        <li>Ministério das Cidades / IPT. <em>Mapeamento de riscos em encostas e margens de rios</em>, 2007: R = P × C. Página ainda não conferida.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <h2>Matriz de risco P × C <span class="teste">dados de teste</span></h2>
+    <p class="lead" style="margin-bottom:14px">Os 21 pontos posicionados pela Probabilidade e pela Consequência. A área sombreada é onde P × C passa do corte 9. Passe o mouse sobre um ponto para ver os números.</p>
+    <div class="matriz">
+      <figure class="chartbox" id="chartbox">
+        <svg class="pc" id="pc" viewBox="0 0 560 520" role="img" aria-label="Gráfico de dispersão dos 21 pontos críticos, Consequência no eixo horizontal e Probabilidade no vertical, de 1 a 5, com a área acima do corte de risco 9 sombreada. Dados de teste."></svg>
+        <div class="tip" id="tip" hidden></div>
+        <figcaption>Notas sorteadas na planilha (snapshot de 06/10/2026), com os pesos de teste da linha "Peso". Mostram o formato do produto final, não o risco real dos pontos.</figcaption>
+      </figure>
+      <div class="tabwrap">
+        <table class="rank" id="rank">
+          <thead><tr><th>Pos.</th><th>Ponto</th><th>Bairro</th><th>P</th><th>C</th><th>Risco</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Como cada dado será obtido</h2>
+    <p class="lead" style="margin-bottom:14px">Situação em 06/10/2026. Parte das variáveis Pedro obtém direto no mapa; o restante depende de conversa com EMLURB, SEPLAN e CTTU.</p>
+    <div class="rotas">
+      <div class="rota"><strong>Pedro, no mapa e no ESIG</strong><span>Medido no SIG em volta de cada ponto.</span><span class="vars">P4 · P5 · P6 · I2</span></div>
+      <div class="rota"><strong>Reunião com a EMLURB</strong><span>Definir com eles como medir cada uma; hoje só há proposta.</span><span class="vars">P1 · P2 · P3</span></div>
+      <div class="rota"><strong>SEPLAN (Mayres; Taty no E2)</strong><span>Onde estão as bases e qual o raio de abrangência.</span><span class="vars">E1 · E2 · E3 · V1 · V2 · V3</span></div>
+      <div class="rota"><strong>CTTU</strong><span>Validar a classificação das vias.</span><span class="vars">I1</span></div>
+    </div>
+    <div class="tabwrap">
+      <table class="origem">
+        <thead><tr><th>Variável</th><th>O que medir</th><th>De onde vem</th><th>Com quem</th><th>Situação</th></tr></thead>
+        <tbody>
+        <tr class="dim"><td colspan="5">Probabilidade</td></tr>
+        <tr><td><span class="cod">P1</span><span class="nome">Frequência que alaga</span></td><td>A definir com a EMLURB. Proposta: média de alagamentos por ano nas 3 últimas estações chuvosas.</td><td>EMLURB; confirmação com COP e Defesa Civil.</td><td>EMLURB</td><td><span class="pill def">Método a definir</span></td></tr>
+        <tr><td><span class="cod">P2</span><span class="nome">Severidade</span></td><td>A definir com a EMLURB. Proposta: altura que a água costuma atingir e tempo para baixar.</td><td>EMLURB; Defesa Civil e moradores.</td><td>EMLURB</td><td><span class="pill def">Método a definir</span></td></tr>
+        <tr><td><span class="cod">P3</span><span class="nome">Grau de influência da maré</span></td><td>A definir com a EMLURB. Proposta: o escoamento trava com a maré alta? Não, às vezes ou sempre.</td><td>EMLURB; APAC e tábua de marés.</td><td>EMLURB</td><td><span class="pill def">Método a definir</span></td></tr>
+        <tr><td><span class="cod">P4</span><span class="nome">Distância em relação ao rio ou canal</span></td><td>Distância do ponto ao rio ou canal mais próximo.</td><td>Mapa: bases de drenagem do ESIG.</td><td>Pedro</td><td><span class="pill base">Obtenível no mapa</span></td></tr>
+        <tr><td><span class="cod">P5</span><span class="nome">Capacidade de absorção do solo</span></td><td>% do entorno com vegetação ou solo permeável.</td><td>Mapa.</td><td>Pedro</td><td><span class="pill base">Obtenível no mapa</span></td></tr>
+        <tr><td><span class="cod">P6</span><span class="nome">Cota em relação ao nível do mar</span></td><td>Altitude do ponto.</td><td>ESIG.</td><td>Pedro</td><td><span class="pill base">Obtenível no ESIG</span></td></tr>
+        <tr class="dim"><td colspan="5">Exposição</td></tr>
+        <tr><td><span class="cod">E1</span><span class="nome">Quantidade de residentes no entorno</span></td><td>Moradores no entorno do ponto.</td><td>Base a definir. Opção já localizada: Grade Estatística do IBGE, Censo 2022.</td><td>SEPLAN (Mayres)</td><td><span class="pill def">Base a definir</span></td></tr>
+        <tr><td><span class="cod">E2</span><span class="nome">Quantidade de equipamentos públicos da PCR</span></td><td>Equipamentos públicos no entorno do ponto.</td><td>Dados da SEPLAN (Taty).</td><td>SEPLAN (Mayres): raio de abrangência</td><td><span class="pill base">Dado disponível</span><span class="obs">Falta o critério de abrangência.</span></td></tr>
+        <tr><td><span class="cod">E3</span><span class="nome">Quantidade de comércio no entorno</span></td><td>Comércio no entorno do ponto.</td><td>Base a definir. Opção já pesquisada: IPTU dos imóveis não residenciais.</td><td>SEPLAN (Mayres)</td><td><span class="pill def">Base a definir</span></td></tr>
+        <tr class="dim"><td colspan="5">Vulnerabilidade</td></tr>
+        <tr><td><span class="cod">V1</span><span class="nome">População vulnerável</span></td><td>Pessoas em situação de vulnerabilidade no entorno.</td><td>CadÚnico (a confirmar).</td><td>SEPLAN (Mayres)</td><td><span class="pill aguarda">Fonte a confirmar</span><span class="obs">Dado pessoal: pedir já agregado por área.</span></td></tr>
+        <tr><td><span class="cod">V2</span><span class="nome">Proximidade de ZEI/CIS</span></td><td>Quantidade ou área de ZEIS no raio do ponto.</td><td>ZEIS do Plano Diretor (dados abertos e ESIG).</td><td>SEPLAN (Mayres): raio de abrangência</td><td><span class="pill base">Base localizada</span><span class="obs">Falta o critério de abrangência.</span></td></tr>
+        <tr><td><span class="cod">V3</span><span class="nome">Qualidade da moradia no entorno</span></td><td>A definir. Opção hoje: % de domicílios do tipo casa (Censo 2022).</td><td>A definir.</td><td>SEPLAN (Mayres)</td><td><span class="pill def">Método a definir</span></td></tr>
+        <tr><td><span class="cod">V…</span><span class="nome">Novas variáveis</span></td><td>A criar.</td><td>—</td><td>Pedro e grupo</td><td><span class="pill def">A criar</span></td></tr>
+        <tr class="dim"><td colspan="5">Impacto</td></tr>
+        <tr><td><span class="cod">I1</span><span class="nome">Grau de importância da via interditada</span></td><td>Classe da via na classificação viária: de rua (1) a corredor metropolitano (5).</td><td>Classificação das vias da CTTU.</td><td>CTTU: validar</td><td><span class="pill aguarda">Validar</span></td></tr>
+        <tr><td><span class="cod">I2</span><span class="nome">Proximidade aeroporto e terminais integrados</span></td><td>Distância ao aeroporto ou terminal integrado mais próximo.</td><td>Mapa.</td><td>Pedro</td><td><span class="pill base">Obtenível no mapa</span></td></tr>
+        <tr><td><span class="cod">I…</span><span class="nome">Novas variáveis</span></td><td>A criar.</td><td>—</td><td>Pedro e grupo</td><td><span class="pill def">A criar</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Como ler as cores da aba</h2>
+    <div class="cols">
+      <div class="col">
+        <span class="chip"><span class="sw" style="background: var(--amarelo)"></span>Amarelo: preencher</span>
+        <p>Notas de 1 a 5 de cada variável, e a linha "Peso" no topo. Peso vazio conta como 1, ou seja, todos iguais.</p>
+      </div>
+      <div class="col">
+        <span class="chip"><span class="sw" style="background: var(--surface)"></span>Cinza: calculado</span>
+        <p>Nota de cada dimensão e Consequência. São fórmulas: não editar.</p>
+      </div>
+      <div class="col">
+        <span class="chip"><span class="sw" style="background: var(--resultado)"></span>Vermelho: resultado</span>
+        <p>Risco, Índice de risco, Posição e "Notas preenchidas", que conta quantas variáveis do ponto têm nota.</p>
+      </div>
+    </div>
+  </section>
+
+  <p class="aviso">As notas atuais da planilha são de teste (sorteadas de 1 a 5 a cada recálculo) e os pesos ainda não foram definidos pelo grupo (pendência 1). O fluxo acima vale; os números ainda não.</p>
+</div>
+<script>
+(function () {
+  var D = [{"id": 5, "b": "Boa Viagem", "p": 3.0, "c": 3.01, "r": 9.04, "i": 0.335, "pos": 11}, {"id": 6, "b": "Boa Viagem", "p": 4.35, "c": 2.86, "r": 12.45, "i": 0.477, "pos": 1}, {"id": 7, "b": "Boa Viagem", "p": 2.35, "c": 2.77, "r": 6.51, "i": 0.23, "pos": 19}, {"id": 8, "b": "Boa Viagem", "p": 2.88, "c": 1.94, "r": 5.59, "i": 0.191, "pos": 20}, {"id": 9, "b": "Imbiribeira", "p": 3.06, "c": 3.47, "r": 10.62, "i": 0.401, "pos": 6}, {"id": 11, "b": "Boa Viagem", "p": 3.24, "c": 3.33, "r": 10.77, "i": 0.407, "pos": 5}, {"id": 12, "b": "Boa Viagem", "p": 3.06, "c": 3.24, "r": 9.92, "i": 0.372, "pos": 9}, {"id": 18, "b": "Boa Viagem", "p": 1.94, "c": 3.83, "r": 7.43, "i": 0.268, "pos": 17}, {"id": 19, "b": "Pina", "p": 2.59, "c": 3.23, "r": 8.36, "i": 0.307, "pos": 15}, {"id": 22, "b": "Jordão", "p": 2.06, "c": 2.63, "r": 5.42, "i": 0.184, "pos": 21}, {"id": 24, "b": "Ipsep", "p": 2.71, "c": 3.29, "r": 8.91, "i": 0.33, "pos": 12}, {"id": 25, "b": "Ipsep", "p": 3.71, "c": 2.87, "r": 10.62, "i": 0.401, "pos": 7}, {"id": 26, "b": "Boa Viagem", "p": 3.12, "c": 2.79, "r": 8.69, "i": 0.32, "pos": 13}, {"id": 33, "b": "Ibura", "p": 3.59, "c": 3.02, "r": 10.85, "i": 0.41, "pos": 4}, {"id": 34, "b": "Ibura", "p": 3.47, "c": 3.06, "r": 10.62, "i": 0.401, "pos": 8}, {"id": 35, "b": "Ibura", "p": 2.94, "c": 3.8, "r": 11.19, "i": 0.425, "pos": 3}, {"id": 36, "b": "Imbiribeira", "p": 3.94, "c": 3.08, "r": 12.13, "i": 0.464, "pos": 2}, {"id": 37, "b": "Ipsep", "p": 3.24, "c": 2.43, "r": 7.85, "i": 0.286, "pos": 16}, {"id": 41, "b": "Boa Viagem", "p": 2.59, "c": 2.54, "r": 6.57, "i": 0.232, "pos": 18}, {"id": 51, "b": "Pina", "p": 2.47, "c": 3.39, "r": 8.38, "i": 0.307, "pos": 14}, {"id": 54, "b": "Ibura", "p": 2.82, "c": 3.25, "r": 9.19, "i": 0.341, "pos": 10}];
+  var NS = "http://www.w3.org/2000/svg";
+  var W = 560, H = 520, L = 56, R = 20, T = 16, B = 56;
+  function X(c) { return L + (c - 1) / 4 * (W - L - R); }
+  function Y(p) { return H - B - (p - 1) / 4 * (H - T - B); }
+  function el(n, a, parent) { var e = document.createElementNS(NS, n); for (var k in a) e.setAttribute(k, a[k]); (parent || svg).appendChild(e); return e; }
+  function br(v, d) { return v.toFixed(d).replace(".", ","); }
+  var svg = document.getElementById("pc");
+  // zona acima do corte R = 9
+  var pts = [];
+  for (var c = 1.8; c <= 5.0001; c += 0.05) pts.push(X(c).toFixed(1) + "," + Y(Math.max(1, 9 / c)).toFixed(1));
+  el("path", { "class": "zona", d: "M" + pts.join(" L") + " L" + X(5) + "," + Y(5) + " Z" });
+  for (var v = 1; v <= 5; v++) {
+    el("line", { "class": "grid", x1: X(v), x2: X(v), y1: Y(1), y2: Y(5) });
+    el("line", { "class": "grid", x1: X(1), x2: X(5), y1: Y(v), y2: Y(v) });
+    el("text", { "class": "tick", x: X(v), y: Y(1) + 20, "text-anchor": "middle" }).textContent = v;
+    el("text", { "class": "tick", x: X(1) - 12, y: Y(v) + 4, "text-anchor": "end" }).textContent = v;
+  }
+  el("line", { "class": "eixo", x1: X(1), x2: X(5), y1: Y(1), y2: Y(1) });
+  el("line", { "class": "eixo", x1: X(1), x2: X(1), y1: Y(1), y2: Y(5) });
+  el("path", { "class": "corte", d: "M" + pts.join(" L") });
+  el("text", { "class": "corte-lbl", x: X(4.94), y: Y(5) + 18, "text-anchor": "end" }).textContent = "Acima do corte: P × C ≥ 9";
+  el("text", { "class": "corte-lbl", x: X(1.86) + 8, y: Y(5) + 18 }).textContent = "P × C = 9";
+  el("text", { "class": "titulo", x: (X(1) + X(5)) / 2, y: H - 12, "text-anchor": "middle" }).textContent = "Consequência (média de E, V e I)";
+  el("text", { "class": "titulo", transform: "translate(16," + (Y(1) + Y(5)) / 2 + ") rotate(-90)", "text-anchor": "middle" }).textContent = "Probabilidade";
+  // rótulos com desvio simples de colisão
+  var placed = [], dotG = el("g", {}), labG = el("g", {});
+  D.forEach(function (d) { placed.push({ x: X(d.c) - 6, y: Y(d.p) - 6, w: 12, h: 12 }); });
+  function hits(b) { return placed.some(function (q) { return b.x < q.x + q.w && b.x + b.w > q.x && b.y < q.y + q.h && b.y + b.h > q.y; }); }
+  var tip = document.getElementById("tip"), box = document.getElementById("chartbox");
+  var dots = {}, trs = {};
+  function on(id, ev) {
+    Object.keys(dots).forEach(function (k) { dots[k].classList.toggle("on", +k === id); trs[k].classList.toggle("on", +k === id); });
+    if (id == null) { tip.hidden = true; return; }
+    var d = D.filter(function (q) { return q.id === id; })[0];
+    tip.innerHTML = "<b>Ponto " + d.id + "</b> · " + d.b + "<br>P " + br(d.p, 2) + " × C " + br(d.c, 2) + " = <b>" + br(d.r, 2) + "</b><br>Índice " + br(d.i, 3) + " · " + d.pos + "º lugar";
+    var r = svg.getBoundingClientRect(), s = r.width / W;
+    tip.style.left = (X(d.c) * s) + "px"; tip.style.top = (Y(d.p) * s) + "px"; tip.hidden = false;
+  }
+  D.forEach(function (d) {
+    var cx = X(d.c), cy = Y(d.p);
+    var g = el("g", { tabindex: 0, role: "button", "aria-label": "Ponto " + d.id + ", risco " + br(d.r, 2) }, dotG);
+    dots[d.id] = el("circle", { "class": "dot", cx: cx, cy: cy, r: 5 }, g);
+    el("circle", { "class": "hit", cx: cx, cy: cy, r: 12 }, g);
+    g.addEventListener("mouseenter", function () { on(d.id); });
+    g.addEventListener("mouseleave", function () { on(null); });
+    g.addEventListener("focus", function () { on(d.id); });
+    g.addEventListener("blur", function () { on(null); });
+    var t = String(d.id), w = t.length * 6.4 + 2, h = 12;
+    var opts = [[8, -h / 2], [-8 - w, -h / 2], [-w / 2, -8 - h], [-w / 2, 8], [8, -h - 2], [8, 2], [-8 - w, -h - 2], [-8 - w, 2]];
+    var pick = opts[0];
+    for (var k = 0; k < opts.length; k++) { var b = { x: cx + opts[k][0], y: cy + opts[k][1], w: w, h: h }; if (!hits(b)) { pick = opts[k]; break; } }
+    placed.push({ x: cx + pick[0], y: cy + pick[1], w: w, h: h });
+    el("text", { "class": "rot", x: cx + pick[0] + 1, y: cy + pick[1] + h - 2 }, labG).textContent = t;
+  });
+  var tb = document.querySelector("#rank tbody");
+  D.slice().sort(function (a, b) { return a.pos - b.pos; }).forEach(function (d) {
+    var tr = document.createElement("tr");
+    if (d.r >= 9) tr.className = "acima";
+    tr.innerHTML = "<td>" + d.pos + "</td><td>" + d.id + "</td><td>" + d.b + "</td><td>" + br(d.p, 2) + "</td><td>" + br(d.c, 2) + "</td><td>" + br(d.r, 2) + "</td>";
+    tr.addEventListener("mouseenter", function () { on(d.id); });
+    tr.addEventListener("mouseleave", function () { on(null); });
+    trs[d.id] = tr; tb.appendChild(tr);
+  });
+})();
+</script>
+
+
+</body></html>
