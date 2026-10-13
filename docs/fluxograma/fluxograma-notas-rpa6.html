@@ -122,6 +122,14 @@ svg.pc { display: block; width: 100%; height: auto; font-family: var(--font-body
 .pc .rot { fill: var(--fg); font-size: 11px; pointer-events: none; }
 .pc .hit { fill: transparent; cursor: pointer; }
 .tip { position: absolute; pointer-events: none; background: var(--fg); color: var(--bg); font-size: 12.5px; line-height: 1.4; padding: 6px 9px; border-radius: 4px; white-space: nowrap; transform: translate(-50%, calc(-100% - 10px)); font-variant-numeric: tabular-nums; }
+.hist .lead { max-width: 68ch; }
+.hist .chartbox { max-width: 640px; }
+.pc .bar { fill: var(--azul3); }
+.pc .bar.alto { fill: var(--azul); }
+.pc .bar.on { fill: var(--fg); }
+.pc .meio { stroke: var(--muted); stroke-width: 1.5; stroke-dasharray: 3 3; }
+.pc .meio-lbl { fill: var(--muted); font-size: 12px; font-weight: 500; }
+.pc .leg { fill: var(--muted); font-size: 12px; }
 table.rank { border-collapse: collapse; width: 100%; font-size: 13.5px; font-variant-numeric: tabular-nums; }
 table.rank th { text-align: right; font-size: 11.5px; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); padding: 6px 8px; border-bottom: 2px solid var(--line); font-weight: 500; }
 table.rank td { text-align: right; padding: 5px 8px; border-bottom: 1px solid var(--line); }
@@ -309,6 +317,16 @@ table.rank tbody tr.on td { background: var(--surface); }
         </table>
       </div>
     </div>
+
+    <div class="sub hist">
+      <h3>Por que o corte é 9 e não 13</h3>
+      <p class="lead">Quantas das 25 combinações de notas inteiras (F de 1 a 5 × C de 1 a 5) dão cada valor de risco. A multiplicação concentra os valores na parte baixa: o meio da escala (13) deixa só 6 combinações acima, enquanto o corte 9 divide a matriz quase ao meio.</p>
+      <figure class="chartbox" id="histbox">
+        <svg class="pc" id="hist" viewBox="0 0 560 280" role="img" aria-label="Histograma das 25 combinações de F e C pelo valor do risco, de 1 a 25. 14 combinações ficam abaixo de 9 e 11 ficam em 9 ou mais; só 6 ficam acima de 13."></svg>
+        <div class="tip" id="tip2" hidden></div>
+        <figcaption>Abaixo de 9: 14 combinações (56%). Em 9 ou mais: 11 (44%). Acima do meio da escala (13): 6 (24%). A combinação do meio, em ordem crescente, vale 8.</figcaption>
+      </figure>
+    </div>
   </section>
 
   <section>
@@ -435,6 +453,50 @@ table.rank tbody tr.on td { background: var(--surface); }
     tr.addEventListener("mouseleave", function () { on(null); });
     trs[d.id] = tr; tb.appendChild(tr);
   });
+})();
+(function () {
+  var NS = "http://www.w3.org/2000/svg", svg = document.getElementById("hist");
+  var W = 560, H = 280, L = 44, R = 16, T = 34, B = 40;
+  var cnt = {}, pares = {};
+  for (var f = 1; f <= 5; f++) for (var c = 1; c <= 5; c++) { var r = f * c; cnt[r] = (cnt[r] || 0) + 1; (pares[r] = pares[r] || []).push(f + "×" + c); }
+  var slot = (W - L - R) / 25, bw = slot - 4, ymax = 3;
+  function X(r) { return L + (r - 1) * slot; }
+  function Y(n) { return H - B - n / ymax * (H - T - B); }
+  function el(n, a, parent) { var e = document.createElementNS(NS, n); for (var k in a) e.setAttribute(k, a[k]); (parent || svg).appendChild(e); return e; }
+  for (var n = 0; n <= ymax; n++) {
+    el("line", { "class": n ? "grid" : "eixo", x1: L, x2: W - R, y1: Y(n), y2: Y(n) });
+    el("text", { "class": "tick", x: L - 8, y: Y(n) + 4, "text-anchor": "end" }).textContent = n;
+  }
+  [1, 5, 10, 15, 20, 25].forEach(function (r) { el("text", { "class": "tick", x: X(r) + slot / 2, y: H - B + 18, "text-anchor": "middle" }).textContent = r; });
+  el("text", { "class": "titulo", x: (L + W - R) / 2, y: H - 6, "text-anchor": "middle" }).textContent = "Risco (F × C)";
+  el("text", { "class": "titulo", transform: "translate(12," + (Y(0) + Y(ymax)) / 2 + ") rotate(-90)", "text-anchor": "middle" }).textContent = "Combinações";
+  var tip = document.getElementById("tip2");
+  for (var r = 1; r <= 25; r++) {
+    if (!cnt[r]) continue;
+    (function (r) {
+      var x = X(r) + 2, y = Y(cnt[r]), h = Y(0) - y, rad = 4;
+      var d = "M" + x + "," + Y(0) + " V" + (y + rad) + " Q" + x + "," + y + " " + (x + rad) + "," + y + " H" + (x + bw - rad) + " Q" + (x + bw) + "," + y + " " + (x + bw) + "," + (y + rad) + " V" + Y(0) + " Z";
+      var g = el("g", { tabindex: 0, role: "button", "aria-label": "Risco " + r + ": " + cnt[r] + " combinação(ões)" });
+      var bar = el("path", { "class": "bar" + (r >= 9 ? " alto" : ""), d: d }, g);
+      el("rect", { "class": "hit", x: X(r), y: T, width: slot, height: Y(0) - T }, g);
+      function on() {
+        bar.classList.add("on");
+        tip.innerHTML = "<b>Risco " + r + "</b> · " + cnt[r] + (cnt[r] > 1 ? " combinações" : " combinação") + "<br>F × C: " + pares[r].join(", ");
+        var s = svg.getBoundingClientRect().width / W;
+        tip.style.left = ((x + bw / 2) * s) + "px"; tip.style.top = (y * s) + "px"; tip.hidden = false;
+      }
+      function off() { bar.classList.remove("on"); tip.hidden = true; }
+      g.addEventListener("mouseenter", on); g.addEventListener("mouseleave", off);
+      g.addEventListener("focus", on); g.addEventListener("blur", off);
+    })(r);
+  }
+  var x9 = X(9) - 1, x13 = X(13) + slot / 2;
+  el("line", { "class": "corte", x1: x9, x2: x9, y1: T - 6, y2: Y(0) });
+  el("text", { "class": "corte-lbl", x: x9 + 6, y: T + 4 }).textContent = "Corte 9 (3 × 3)";
+  el("line", { "class": "meio", x1: x13, x2: x13, y1: T + 14, y2: Y(0) });
+  el("text", { "class": "meio-lbl", x: x13 + 6, y: T + 22 }).textContent = "Meio da escala (13)";
+  el("text", { "class": "leg", x: L + 4, y: T - 18 }).textContent = "14 combinações abaixo de 9";
+  el("text", { "class": "leg", x: W - R, y: T - 18, "text-anchor": "end" }).textContent = "11 em 9 ou mais";
 })();
 </script>
 
