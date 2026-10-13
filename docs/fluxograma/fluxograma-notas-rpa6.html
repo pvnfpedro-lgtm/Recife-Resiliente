@@ -103,7 +103,7 @@ table.cmp th { font-size: 12px; text-transform: uppercase; letter-spacing: .05em
 .refs { margin: 0; padding-left: 20px; display: grid; gap: 6px; font-size: 14px; max-width: 80ch; }
 .refs a { color: var(--azul); }
 
-/* Matriz P × C */
+/* Matriz F × C */
 .teste { display: inline-block; font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--on-azul); background: var(--resultado); padding: 2px 8px; border-radius: 3px; }
 .matriz { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 20px; align-items: start; }
 @media (max-width: 760px) { .matriz { grid-template-columns: 1fr; } }
@@ -139,7 +139,7 @@ table.rank tbody tr.on td { background: var(--surface); }
 
   <figure>
     <div class="scroll">
-      <svg class="flow" viewBox="0 0 1040 850" role="img" aria-label="Fluxograma: cada um dos 21 pontos recebe notas de 1 a 5 nas variáveis de quatro dimensões; as notas viram uma nota por dimensão; Exposição, Vulnerabilidade e Impacto formam a Consequência; o Risco é Probabilidade vezes Consequência, de 1 a 25, que gera o índice de 0 a 1 e a posição no ranking.">
+      <svg class="flow" viewBox="0 0 1040 850" role="img" aria-label="Fluxograma: cada um dos 21 pontos recebe notas de 1 a 5 nas variáveis de quatro dimensões; as notas viram uma nota por dimensão; Exposição, Vulnerabilidade e Impacto formam a Consequência; o Risco é Frequência vezes Consequência, de 1 a 25, que gera o índice de 0 a 1 e a posição no ranking.">
         <defs>
           <marker id="seta" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
             <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/>
@@ -158,7 +158,7 @@ table.rank tbody tr.on td { background: var(--surface); }
         <!-- 2. Variáveis por dimensão -->
         <rect class="box" x="30" y="120" width="230" height="210" rx="6"/>
         <path class="hd-p" d="M36,120 H254 a6,6 0 0 1 6,6 V150 H30 V126 a6,6 0 0 1 6,-6 z"/>
-        <text class="th" x="145" y="140" text-anchor="middle">Probabilidade</text>
+        <text class="th" x="145" y="140" text-anchor="middle">Frequência</text>
         <text class="tv" x="44" y="172"><tspan font-weight="700">P1</tspan> Frequência que alaga</text>
         <text class="tv" x="44" y="189"><tspan font-weight="700">P2</tspan> Severidade</text>
         <text class="tv" x="44" y="206"><tspan font-weight="700">P3</tspan> Grau de influência da maré</text>
@@ -197,7 +197,7 @@ table.rank tbody tr.on td { background: var(--surface); }
         <!-- 3. Nota da dimensão -->
         <line class="ln" x1="145" y1="330" x2="145" y2="356" marker-end="url(#seta)"/><line class="ln" x1="395" y1="330" x2="395" y2="356" marker-end="url(#seta)"/><line class="ln" x1="645" y1="330" x2="645" y2="356" marker-end="url(#seta)"/><line class="ln" x1="895" y1="330" x2="895" y2="356" marker-end="url(#seta)"/>
         <rect class="box-calc" x="65" y="358" width="160" height="48" rx="6"/>
-        <text class="tb" x="145" y="378" text-anchor="middle">Nota P</text>
+        <text class="tb" x="145" y="378" text-anchor="middle">Nota F</text>
         <text class="ts" x="145" y="396" text-anchor="middle">média ponderada</text>
         <rect class="box-calc" x="315" y="358" width="160" height="48" rx="6"/>
         <text class="tb" x="395" y="378" text-anchor="middle">Nota E</text>
@@ -217,14 +217,14 @@ table.rank tbody tr.on td { background: var(--surface); }
         <text class="tb" x="645" y="490" text-anchor="middle">Consequência (1 a 5)</text>
         <text class="ts" x="645" y="510" text-anchor="middle">média ponderada de E, V e I</text>
 
-        <!-- 5. Probabilidade vai direto ao Risco -->
+        <!-- 5. Frequência vai direto ao Risco -->
         <path class="ln" d="M145,406 V609 H458" marker-end="url(#seta)"/>
-        <text class="lbl" x="155" y="600">P</text>
+        <text class="lbl" x="155" y="600">F</text>
 
         <!-- 6. Risco -->
         <line class="ln" x1="645" y1="522" x2="645" y2="578" marker-end="url(#seta)"/>
         <rect class="box-res" x="460" y="580" width="370" height="58" rx="6"/>
-        <text class="tr" x="645" y="604" text-anchor="middle">Risco = P × Consequência</text>
+        <text class="tr" x="645" y="604" text-anchor="middle">Risco = F × Consequência</text>
         <text class="ts" x="645" y="624" text-anchor="middle">escala de 1 a 25</text>
 
         <!-- 7. Índice e posição -->
@@ -262,9 +262,9 @@ table.rank tbody tr.on td { background: var(--surface); }
       </li>
       <li class="passo">
         <h3>Calcular a nota de cada dimensão</h3>
-        <div class="formula">\[ D = \frac{\sum_{i=1}^{n} w_i \, x_i}{\sum_{i=1}^{n} w_i}, \qquad D \in \{P, E, V, I\} \]</div>
+        <div class="formula">\[ D = \frac{\sum_{i=1}^{n} w_i \, x_i}{\sum_{i=1}^{n} w_i}, \qquad D \in \{F, E, V, I\} \]</div>
         <p>\(x_i\) é a nota da variável \(i\), \(w_i\) é o seu peso e \(n\) é o número de variáveis da dimensão. Com pesos iguais, é a média simples.</p>
-        <div class="formula ex">\[ P = \tfrac{4+3+5+4+3+2}{6} = 3{,}5 \quad E = \tfrac{4+2+3}{3} = 3{,}0 \quad V = \tfrac{3+5+4}{3} = 4{,}0 \quad I = \tfrac{4+2}{2} = 3{,}0 \]</div>
+        <div class="formula ex">\[ F = \tfrac{4+3+5+4+3+2}{6} = 3{,}5 \quad E = \tfrac{4+2+3}{3} = 3{,}0 \quad V = \tfrac{3+5+4}{3} = 4{,}0 \quad I = \tfrac{4+2}{2} = 3{,}0 \]</div>
       </li>
       <li class="passo">
         <h3>Juntar Exposição, Vulnerabilidade e Impacto na Consequência</h3>
@@ -273,8 +273,8 @@ table.rank tbody tr.on td { background: var(--surface); }
         <div class="formula ex">\[ C = \frac{3{,}0 + 4{,}0 + 3{,}0}{3} = 3{,}33 \]</div>
       </li>
       <li class="passo">
-        <h3>Multiplicar Probabilidade por Consequência</h3>
-        <div class="formula">\[ R = P \times C, \quad 1 \le R \le 25 \qquad\qquad \text{Índice} = \frac{R - 1}{24}, \quad 0 \le \text{Índice} \le 1 \]</div>
+        <h3>Multiplicar Frequência por Consequência</h3>
+        <div class="formula">\[ R = F \times C, \quad 1 \le R \le 25 \qquad\qquad \text{Índice} = \frac{R - 1}{24}, \quad 0 \le \text{Índice} \le 1 \]</div>
         <p>O índice só leva o Risco para a escala de 0 a 1 e não muda o ranking. O corte da matriz (\(R = 9 = 3 \times 3\)) equivale a 0,333.</p>
         <div class="formula ex">\[ R = 3{,}5 \times 3{,}33 = \mathbf{11{,}7} \qquad \text{Índice} = \frac{11{,}7 - 1}{24} = \mathbf{0{,}44} \]</div>
         <p class="ex">Acima do corte 9: entra como risco alto na matriz.</p>
@@ -291,17 +291,17 @@ table.rank tbody tr.on td { background: var(--surface); }
   </section>
 
   <section>
-    <h2>Matriz de risco P × C <span class="teste">dados de teste</span></h2>
-    <p class="lead" style="margin-bottom:14px">Os 21 pontos posicionados pela Probabilidade e pela Consequência. A área sombreada é onde P × C passa do corte 9. Passe o mouse sobre um ponto para ver os números.</p>
+    <h2>Matriz de risco F × C <span class="teste">dados de teste</span></h2>
+    <p class="lead" style="margin-bottom:14px">Os 21 pontos posicionados pela Frequência e pela Consequência. A área sombreada é onde F × C passa do corte 9. Passe o mouse sobre um ponto para ver os números.</p>
     <div class="matriz">
       <figure class="chartbox" id="chartbox">
-        <svg class="pc" id="pc" viewBox="0 0 560 520" role="img" aria-label="Gráfico de dispersão dos 21 pontos críticos, Consequência no eixo horizontal e Probabilidade no vertical, de 1 a 5, com a área acima do corte de risco 9 sombreada. Dados de teste."></svg>
+        <svg class="pc" id="pc" viewBox="0 0 560 520" role="img" aria-label="Gráfico de dispersão dos 21 pontos críticos, Consequência no eixo horizontal e Frequência no vertical, de 1 a 5, com a área acima do corte de risco 9 sombreada. Dados de teste."></svg>
         <div class="tip" id="tip" hidden></div>
         <figcaption>Notas sorteadas na planilha (snapshot de 06/10/2026), com os pesos de teste da linha "Peso". Mostram o formato do produto final, não o risco real dos pontos.</figcaption>
       </figure>
       <div class="tabwrap">
         <table class="rank" id="rank">
-          <thead><tr><th>Pos.</th><th>Ponto</th><th>Bairro</th><th>P</th><th>C</th><th>Risco</th></tr></thead>
+          <thead><tr><th>Pos.</th><th>Ponto</th><th>Bairro</th><th>F</th><th>C</th><th>Risco</th></tr></thead>
           <tbody></tbody>
         </table>
       </div>
@@ -321,7 +321,7 @@ table.rank tbody tr.on td { background: var(--surface); }
       <table class="origem">
         <thead><tr><th>Variável</th><th>O que medir</th><th>De onde vem</th><th>Com quem</th><th>Situação</th></tr></thead>
         <tbody>
-        <tr class="dim"><td colspan="5">Probabilidade</td></tr>
+        <tr class="dim"><td colspan="5">Frequência</td></tr>
         <tr><td><span class="cod">P1</span><span class="nome">Frequência que alaga</span></td><td>A definir com a EMLURB. Proposta: média de alagamentos por ano nas 3 últimas estações chuvosas.</td><td>EMLURB; confirmação com COP e Defesa Civil.</td><td>EMLURB</td><td><span class="pill def">Método a definir</span></td></tr>
         <tr><td><span class="cod">P2</span><span class="nome">Severidade</span></td><td>A definir com a EMLURB. Proposta: altura que a água costuma atingir e tempo para baixar.</td><td>EMLURB; Defesa Civil e moradores.</td><td>EMLURB</td><td><span class="pill def">Método a definir</span></td></tr>
         <tr><td><span class="cod">P3</span><span class="nome">Grau de influência da maré</span></td><td>A definir com a EMLURB. Proposta: o escoamento trava com a maré alta? Não, às vezes ou sempre.</td><td>EMLURB; APAC e tábua de marés.</td><td>EMLURB</td><td><span class="pill def">Método a definir</span></td></tr>
@@ -389,10 +389,10 @@ table.rank tbody tr.on td { background: var(--surface); }
   el("line", { "class": "eixo", x1: X(1), x2: X(5), y1: Y(1), y2: Y(1) });
   el("line", { "class": "eixo", x1: X(1), x2: X(1), y1: Y(1), y2: Y(5) });
   el("path", { "class": "corte", d: "M" + pts.join(" L") });
-  el("text", { "class": "corte-lbl", x: X(4.94), y: Y(5) + 18, "text-anchor": "end" }).textContent = "Acima do corte: P × C ≥ 9";
-  el("text", { "class": "corte-lbl", x: X(1.86) + 8, y: Y(5) + 18 }).textContent = "P × C = 9";
+  el("text", { "class": "corte-lbl", x: X(4.94), y: Y(5) + 18, "text-anchor": "end" }).textContent = "Acima do corte: F × C ≥ 9";
+  el("text", { "class": "corte-lbl", x: X(1.86) + 8, y: Y(5) + 18 }).textContent = "F × C = 9";
   el("text", { "class": "titulo", x: (X(1) + X(5)) / 2, y: H - 12, "text-anchor": "middle" }).textContent = "Consequência (média de E, V e I)";
-  el("text", { "class": "titulo", transform: "translate(16," + (Y(1) + Y(5)) / 2 + ") rotate(-90)", "text-anchor": "middle" }).textContent = "Probabilidade";
+  el("text", { "class": "titulo", transform: "translate(16," + (Y(1) + Y(5)) / 2 + ") rotate(-90)", "text-anchor": "middle" }).textContent = "Frequência";
   // rótulos com desvio simples de colisão
   var placed = [], dotG = el("g", {}), labG = el("g", {});
   D.forEach(function (d) { placed.push({ x: X(d.c) - 6, y: Y(d.p) - 6, w: 12, h: 12 }); });
@@ -403,7 +403,7 @@ table.rank tbody tr.on td { background: var(--surface); }
     Object.keys(dots).forEach(function (k) { dots[k].classList.toggle("on", +k === id); trs[k].classList.toggle("on", +k === id); });
     if (id == null) { tip.hidden = true; return; }
     var d = D.filter(function (q) { return q.id === id; })[0];
-    tip.innerHTML = "<b>Ponto " + d.id + "</b> · " + d.b + "<br>P " + br(d.p, 2) + " × C " + br(d.c, 2) + " = <b>" + br(d.r, 2) + "</b><br>Índice " + br(d.i, 3) + " · " + d.pos + "º lugar";
+    tip.innerHTML = "<b>Ponto " + d.id + "</b> · " + d.b + "<br>F " + br(d.p, 2) + " × C " + br(d.c, 2) + " = <b>" + br(d.r, 2) + "</b><br>Índice " + br(d.i, 3) + " · " + d.pos + "º lugar";
     var r = svg.getBoundingClientRect(), s = r.width / W;
     tip.style.left = (X(d.c) * s) + "px"; tip.style.top = (Y(d.p) * s) + "px"; tip.hidden = false;
   }
