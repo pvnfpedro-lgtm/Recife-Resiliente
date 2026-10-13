@@ -77,6 +77,14 @@ ranking.
 do círculo de 300 m em volta do ponto (exceção: E3 usa 1 km). O que é
 contado aqui não é contado de novo no Impacto.
 
+**Decisão de Pedro (13/10/2026), já no fluxograma:** a Exposição fica com
+duas variáveis, no círculo de 300 m. O comércio (E3) sai da Exposição e vira
+o **I3 Comércio e perda econômica**, com a mesma medida (IPTU não residencial
+no círculo de 1 km, notas por quintis), para não contar duas vezes.
+1. **E1 População residente**
+2. **E2 Equipamentos públicos** (escolas, creches e unidades de saúde; creches
+   continuam na mesma contagem das escolas)
+
 ### E1 — População
 - **O que é:** quantas pessoas moram perto do ponto.
 - **Por que importa:** quanto mais moradores, mais gente afetada por cada
