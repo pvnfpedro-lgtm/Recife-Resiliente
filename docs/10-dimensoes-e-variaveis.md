@@ -24,6 +24,14 @@ dimensão e variável ainda serão definidos pelo grupo (pendência 1).
 multiplica a Consequência. Sem nota de Probabilidade, o ponto não entra no
 ranking.
 
+**Decisão de Pedro (13/10/2026), já no fluxograma:** a dimensão passa a se
+chamar **Frequência** e os códigos passam de P para **F**. Ficam as seis
+variáveis abaixo, com a P1 renomeada para não repetir o nome da dimensão:
+F1 Recorrência de alagamentos, F2 Severidade, F3 Influência da maré,
+F4 Proximidade de rio ou canal, F5 Impermeabilização, F6 Relevo (baixio).
+A Frequência inclui também a gravidade de cada alagamento (F2). As seções
+abaixo, a planilha e o painel ainda usam "Probabilidade" e P1 a P6.
+
 ### P1 — Frequência e recorrência histórica
 - **O que é:** quantas vezes o ponto alaga.
 - **Por que importa:** é a prova mais direta de que o problema se repete.
