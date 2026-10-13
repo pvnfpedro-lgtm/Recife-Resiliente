@@ -23,6 +23,7 @@
   --font-mono: "Roboto Mono", ui-monospace, Menlo, monospace;
 }
 body { background: var(--bg); color: var(--fg); font-family: var(--font-body); font-weight: 300; font-size: 15px; line-height: 1.55; }
+.wrap > * { min-width: 0; }
 .wrap { max-width: 1000px; margin: 0 auto; padding-inline: 16px; padding-block: 32px 56px; display: grid; gap: 28px; }
 header { display: grid; gap: 6px; }
 .eyebrow { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--azul); font-weight: 600; }
@@ -303,7 +304,7 @@ table.rank tbody tr.on td { background: var(--surface); }
       </figure>
       <div class="tabwrap">
         <table class="rank" id="rank">
-          <thead><tr><th>Pos.</th><th>Ponto</th><th>Bairro</th><th>F</th><th>C</th><th>Risco</th></tr></thead>
+          <thead><tr><th>Pos.</th><th>Ponto</th><th>Bairro</th><th>F</th><th>C</th><th>Risco</th><th>Índice</th></tr></thead>
           <tbody></tbody>
         </table>
       </div>
@@ -429,7 +430,7 @@ table.rank tbody tr.on td { background: var(--surface); }
   D.slice().sort(function (a, b) { return a.pos - b.pos; }).forEach(function (d) {
     var tr = document.createElement("tr");
     if (d.r >= 9) tr.className = "acima";
-    tr.innerHTML = "<td>" + d.pos + "</td><td>" + d.id + "</td><td>" + d.b + "</td><td>" + br(d.p, 2) + "</td><td>" + br(d.c, 2) + "</td><td>" + br(d.r, 2) + "</td>";
+    tr.innerHTML = "<td>" + d.pos + "</td><td>" + d.id + "</td><td>" + d.b + "</td><td>" + br(d.p, 2) + "</td><td>" + br(d.c, 2) + "</td><td>" + br(d.r, 2) + "</td><td>" + br(d.i, 3) + "</td>";
     tr.addEventListener("mouseenter", function () { on(d.id); });
     tr.addEventListener("mouseleave", function () { on(null); });
     trs[d.id] = tr; tb.appendChild(tr);
