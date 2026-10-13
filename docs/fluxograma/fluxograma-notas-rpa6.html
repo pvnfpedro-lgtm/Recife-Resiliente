@@ -260,13 +260,13 @@ table.rank tbody tr.on td { background: var(--surface); }
         <h3>Dar nota de 1 a 5 a cada variável</h3>
         <div class="formula">\[ x_i \in \{1, 2, 3, 4, 5\} \qquad (5 = \text{mais crítico}) \]</div>
         <p>Cada variável tem sua escala. Todos os pontos recebem nota em todas as variáveis.</p>
-        <p class="ex">Exemplo: P1 = 4, P2 = 3, P3 = 5, P4 = 4, P5 = 3, P6 = 2 · E1 = 4, E2 = 2, E3 = 3 · V1 = 3, V2 = 5, V3 = 4 · I1 = 4, I2 = 2</p>
+        <p class="ex">Exemplo: F1 = 4, F2 = 3, F3 = 5, F4 = 4, F5 = 3, F6 = 2 · E1 = 4, E2 = 2 · V1 = 3, V2 = 5, V3 = 4, V4 = 4 · I1 = 4, I2 = 2, I3 = 3</p>
       </li>
       <li class="passo">
         <h3>Calcular a nota de cada dimensão</h3>
         <div class="formula">\[ D = \frac{\sum_{i=1}^{n} w_i \, x_i}{\sum_{i=1}^{n} w_i}, \qquad D \in \{F, E, V, I\} \]</div>
         <p>\(x_i\) é a nota da variável \(i\), \(w_i\) é o seu peso e \(n\) é o número de variáveis da dimensão. Com pesos iguais, é a média simples.</p>
-        <div class="formula ex">\[ F = \tfrac{4+3+5+4+3+2}{6} = 3{,}5 \quad E = \tfrac{4+2+3}{3} = 3{,}0 \quad V = \tfrac{3+5+4}{3} = 4{,}0 \quad I = \tfrac{4+2}{2} = 3{,}0 \]</div>
+        <div class="formula ex">\[ F = \tfrac{4+3+5+4+3+2}{6} = 3{,}5 \quad E = \tfrac{4+2}{2} = 3{,}0 \quad V = \tfrac{3+5+4+4}{4} = 4{,}0 \quad I = \tfrac{4+2+3}{3} = 3{,}0 \]</div>
       </li>
       <li class="passo">
         <h3>Juntar Exposição, Vulnerabilidade e Impacto na Consequência</h3>
@@ -312,37 +312,37 @@ table.rank tbody tr.on td { background: var(--surface); }
 
   <section>
     <h2>Como cada dado será obtido</h2>
-    <p class="lead" style="margin-bottom:14px">Situação em 06/10/2026. Parte das variáveis Pedro obtém direto no mapa; o restante depende de conversa com EMLURB, SEPLAN e CTTU.</p>
+    <p class="lead" style="margin-bottom:14px">Situação em 13/10/2026. Todas as variáveis são medidas no círculo de 300 m em volta do ponto, exceto o I3 (1 km). Parte Pedro obtém direto no mapa; o restante depende de EMLURB, SEPLAN e CTTU.</p>
     <div class="rotas">
-      <div class="rota"><strong>Pedro, no mapa e no ESIG</strong><span>Medido no SIG em volta de cada ponto.</span><span class="vars">P4 · P5 · P6 · I2</span></div>
-      <div class="rota"><strong>Reunião com a EMLURB</strong><span>Definir com eles como medir cada uma; hoje só há proposta.</span><span class="vars">P1 · P2 · P3</span></div>
-      <div class="rota"><strong>SEPLAN (Mayres; Taty no E2)</strong><span>Onde estão as bases e qual o raio de abrangência.</span><span class="vars">E1 · E2 · E3 · V1 · V2 · V3</span></div>
-      <div class="rota"><strong>CTTU</strong><span>Validar a classificação das vias.</span><span class="vars">I1</span></div>
+      <div class="rota"><strong>Pedro, no mapa e no ESIG</strong><span>Medido no SIG em volta de cada ponto.</span><span class="vars">F4 · F5 · F6 · V2 · I2 · I3</span></div>
+      <div class="rota"><strong>Reunião com a EMLURB</strong><span>Confirmar com eles como medir cada uma; hoje só há proposta.</span><span class="vars">F1 · F2 · F3</span></div>
+      <div class="rota"><strong>SEPLAN (Mayres; Taty no E2)</strong><span>Bases do Censo 2022 por setor e equipamentos públicos.</span><span class="vars">E1 · E2 · V1 · V3 · V4</span></div>
+      <div class="rota"><strong>CTTU (Antônio)</strong><span>Lista das vias por classe da hierarquia viária.</span><span class="vars">I1</span></div>
     </div>
     <div class="tabwrap">
       <table class="origem">
         <thead><tr><th>Variável</th><th>O que medir</th><th>De onde vem</th><th>Com quem</th><th>Situação</th></tr></thead>
         <tbody>
         <tr class="dim"><td colspan="5">Frequência</td></tr>
-        <tr><td><span class="cod">P1</span><span class="nome">Frequência que alaga</span></td><td>A definir com a EMLURB. Proposta: média de alagamentos por ano nas 3 últimas estações chuvosas.</td><td>EMLURB; confirmação com COP e Defesa Civil.</td><td>EMLURB</td><td><span class="pill def">Método a definir</span></td></tr>
-        <tr><td><span class="cod">P2</span><span class="nome">Severidade</span></td><td>A definir com a EMLURB. Proposta: altura que a água costuma atingir e tempo para baixar.</td><td>EMLURB; Defesa Civil e moradores.</td><td>EMLURB</td><td><span class="pill def">Método a definir</span></td></tr>
-        <tr><td><span class="cod">P3</span><span class="nome">Grau de influência da maré</span></td><td>A definir com a EMLURB. Proposta: o escoamento trava com a maré alta? Não, às vezes ou sempre.</td><td>EMLURB; APAC e tábua de marés.</td><td>EMLURB</td><td><span class="pill def">Método a definir</span></td></tr>
-        <tr><td><span class="cod">P4</span><span class="nome">Distância em relação ao rio ou canal</span></td><td>Distância do ponto ao rio ou canal mais próximo.</td><td>Mapa: bases de drenagem do ESIG.</td><td>Pedro</td><td><span class="pill base">Obtenível no mapa</span></td></tr>
-        <tr><td><span class="cod">P5</span><span class="nome">Capacidade de absorção do solo</span></td><td>% do entorno com vegetação ou solo permeável.</td><td>Mapa.</td><td>Pedro</td><td><span class="pill base">Obtenível no mapa</span></td></tr>
-        <tr><td><span class="cod">P6</span><span class="nome">Cota em relação ao nível do mar</span></td><td>Altitude do ponto.</td><td>ESIG.</td><td>Pedro</td><td><span class="pill base">Obtenível no ESIG</span></td></tr>
+        <tr><td><span class="cod">F1</span><span class="nome">Recorrência de alagamentos</span></td><td>Proposta: média de alagamentos por ano nas 3 últimas estações chuvosas.</td><td>EMLURB; confirmação com COP e Defesa Civil.</td><td>EMLURB</td><td><span class="pill def">Método a confirmar</span></td></tr>
+        <tr><td><span class="cod">F2</span><span class="nome">Severidade</span></td><td>Proposta: altura máxima da água e tempo para escoar.</td><td>EMLURB; Defesa Civil e moradores.</td><td>EMLURB</td><td><span class="pill def">Método a confirmar</span></td></tr>
+        <tr><td><span class="cod">F3</span><span class="nome">Influência da maré</span></td><td>Proposta: a maré não influencia (1), agrava às vezes (3) ou o ponto alaga conforme a maré (5).</td><td>EMLURB; APAC e tábua de marés.</td><td>EMLURB</td><td><span class="pill def">Método a confirmar</span></td></tr>
+        <tr><td><span class="cod">F4</span><span class="nome">Proximidade de rio ou canal</span></td><td>Distância ao rio ou canal mais próximo; notas por quintis.</td><td>Bases de drenagem e recursos hídricos do ESIG.</td><td>Pedro</td><td><span class="pill base">Obtenível no mapa</span></td></tr>
+        <tr><td><span class="cod">F5</span><span class="nome">Impermeabilização</span></td><td>% do círculo com vegetação ou solo permeável.</td><td>MapBiomas ou edificações do ESIG.</td><td>Pedro</td><td><span class="pill base">Obtenível no mapa</span></td></tr>
+        <tr><td><span class="cod">F6</span><span class="nome">Relevo (baixio)</span></td><td>Quanto o ponto fica abaixo da altura média do círculo.</td><td>Curvas de nível da Condepe/Fidem.</td><td>Pedro</td><td><span class="pill aguarda">Dado a conferir</span><span class="obs">Só entra no cálculo se o dado servir.</span></td></tr>
         <tr class="dim"><td colspan="5">Exposição</td></tr>
-        <tr><td><span class="cod">E1</span><span class="nome">Quantidade de residentes no entorno</span></td><td>Moradores no entorno do ponto.</td><td>Base a definir. Opção já localizada: Grade Estatística do IBGE, Censo 2022.</td><td>SEPLAN (Mayres)</td><td><span class="pill def">Base a definir</span></td></tr>
-        <tr><td><span class="cod">E2</span><span class="nome">Quantidade de equipamentos públicos da PCR</span></td><td>Equipamentos públicos no entorno do ponto.</td><td>Dados da SEPLAN (Taty).</td><td>SEPLAN (Mayres): raio de abrangência</td><td><span class="pill base">Dado disponível</span><span class="obs">Falta o critério de abrangência.</span></td></tr>
-        <tr><td><span class="cod">E3</span><span class="nome">Quantidade de comércio no entorno</span></td><td>Comércio no entorno do ponto.</td><td>Base a definir. Opção já pesquisada: IPTU dos imóveis não residenciais.</td><td>SEPLAN (Mayres)</td><td><span class="pill def">Base a definir</span></td></tr>
+        <tr><td><span class="cod">E1</span><span class="nome">População residente</span></td><td>Moradores no círculo; mais moradores, nota maior.</td><td>IBGE, Grade Estatística do Censo 2022 (quadrados de 200 × 200 m).</td><td>Pedro; SEPLAN (Mayres)</td><td><span class="pill base">Base localizada</span></td></tr>
+        <tr><td><span class="cod">E2</span><span class="nome">Equipamentos públicos</span></td><td>Escolas, creches e unidades de saúde no círculo. Nota 1 sem nenhum; nota 5 com 5 ou mais, ou com hospital ou UPA.</td><td>Dados abertos da Prefeitura; CNES.</td><td>SEPLAN (Taty)</td><td><span class="pill base">Dado disponível</span></td></tr>
         <tr class="dim"><td colspan="5">Vulnerabilidade</td></tr>
-        <tr><td><span class="cod">V1</span><span class="nome">População vulnerável</span></td><td>Pessoas em situação de vulnerabilidade no entorno.</td><td>CadÚnico (a confirmar).</td><td>SEPLAN (Mayres)</td><td><span class="pill aguarda">Fonte a confirmar</span><span class="obs">Dado pessoal: pedir já agregado por área.</span></td></tr>
-        <tr><td><span class="cod">V2</span><span class="nome">Proximidade de ZEI/CIS</span></td><td>Quantidade ou área de ZEIS no raio do ponto.</td><td>ZEIS do Plano Diretor (dados abertos e ESIG).</td><td>SEPLAN (Mayres): raio de abrangência</td><td><span class="pill base">Base localizada</span><span class="obs">Falta o critério de abrangência.</span></td></tr>
-        <tr><td><span class="cod">V3</span><span class="nome">Qualidade da moradia no entorno</span></td><td>A definir. Opção hoje: % de domicílios do tipo casa (Censo 2022).</td><td>A definir.</td><td>SEPLAN (Mayres)</td><td><span class="pill def">Método a definir</span></td></tr>
-        <tr><td><span class="cod">V…</span><span class="nome">Novas variáveis</span></td><td>A criar.</td><td>—</td><td>Pedro e grupo</td><td><span class="pill def">A criar</span></td></tr>
+        <tr><td><span class="cod">V1</span><span class="nome">População vulnerável</span></td><td>% de idosos (60 anos ou mais) e crianças (0 a 4 anos) no círculo.</td><td>IBGE, Censo 2022 por setor censitário.</td><td>SEPLAN (Mayres)</td><td><span class="pill aguarda">Base a conferir</span></td></tr>
+        <tr><td><span class="cod">V2</span><span class="nome">% da área coberta por CIS</span></td><td>% da área do círculo em CIS (comunidades de interesse social).</td><td>Camada de CIS; ZEIS do Plano Diretor e favelas do IBGE 2022.</td><td>Pedro</td><td><span class="pill aguarda">Em teste</span><span class="obs">Teste em cis_buffer_300m.csv; conferir os campos da camada (pendência 21).</span></td></tr>
+        <tr><td><span class="cod">V3</span><span class="nome">% de domicílios sem rede de esgoto</span></td><td>% de domicílios do círculo sem ligação à rede de esgoto.</td><td>IBGE, Censo 2022 por setor; Compesa.</td><td>SEPLAN (Mayres)</td><td><span class="pill aguarda">Base a conferir</span><span class="obs">Conferir se não repete o V2 nos 21 pontos.</span></td></tr>
+        <tr><td><span class="cod">V4</span><span class="nome">Tipo de moradia (casas)</span></td><td>% de domicílios do tipo casa no círculo.</td><td>IBGE, Censo 2022 por setor censitário.</td><td>SEPLAN (Mayres)</td><td><span class="pill aguarda">Base a conferir</span></td></tr>
+        <tr><td><span class="cod">IVS</span><span class="nome">Plano B</span></td><td>Índice de Vulnerabilidade Social, só se faltar dado do V2 ou do V3.</td><td>Ipea, Atlas da Vulnerabilidade Social (Censo 2010).</td><td>Pedro</td><td><span class="pill base">Plano B</span></td></tr>
         <tr class="dim"><td colspan="5">Impacto</td></tr>
-        <tr><td><span class="cod">I1</span><span class="nome">Grau de importância da via interditada</span></td><td>Classe da via na classificação viária: de rua (1) a corredor metropolitano (5).</td><td>Classificação das vias da CTTU.</td><td>CTTU: validar</td><td><span class="pill aguarda">Validar</span></td></tr>
-        <tr><td><span class="cod">I2</span><span class="nome">Proximidade aeroporto e terminais integrados</span></td><td>Distância ao aeroporto ou terminal integrado mais próximo.</td><td>Mapa.</td><td>Pedro</td><td><span class="pill base">Obtenível no mapa</span></td></tr>
-        <tr><td><span class="cod">I…</span><span class="nome">Novas variáveis</span></td><td>A criar.</td><td>—</td><td>Pedro e grupo</td><td><span class="pill def">A criar</span></td></tr>
+        <tr><td><span class="cod">I1</span><span class="nome">Hierarquia de vias</span></td><td>Classe da via na hierarquia da CTTU: ruas (1) a corredor de transporte metropolitano (5).</td><td>Hierarquia viária da CTTU.</td><td>CTTU (Antônio)</td><td><span class="pill aguarda">Lista a obter</span><span class="obs">Pendência 17.</span></td></tr>
+        <tr><td><span class="cod">I2</span><span class="nome">Proximidade a infraestrutura crítica</span></td><td>Distância à estrutura mais próxima (metrô, delegacia, bombeiros, SAMU, aeroporto, subestação). Nota 5 até 500 m; nota 1 acima de 2 km.</td><td>CBTU, Polícia Civil, Corpo de Bombeiros, SAMU, aeroporto e Neoenergia.</td><td>Pedro</td><td><span class="pill aguarda">Camada a montar</span></td></tr>
+        <tr><td><span class="cod">I3</span><span class="nome">Comércio e perda econômica</span></td><td>Soma do IPTU dos imóveis não residenciais no círculo de 1 km; notas por quintis.</td><td>IPTU 2026, dados abertos da Prefeitura.</td><td>Pedro</td><td><span class="pill base">Base localizada</span><span class="obs">Colunas de uso e de valor lançado não conferidas (pendência 20).</span></td></tr>
         </tbody>
       </table>
     </div>
