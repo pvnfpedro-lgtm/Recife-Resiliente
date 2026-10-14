@@ -113,6 +113,9 @@ O painel em Google Apps Script já existente é a base. Muita coisa vai mudar.
     ponto, na cor da classe do índice (verde < 0,200; amarelo 0,200–0,333; laranja 0,333–0,500;
     vermelho ≥ 0,500, as mesmas classes de `CLASSES_INDICE`). Liga e desliga na legenda. Com as notas de
     teste, as cores mudam a cada recálculo da planilha.
+  - Ajuste no mesmo dia (Pedro preferiu o círculo em volta da figura): o anel saiu da camada separada e
+    passou a fazer parte do próprio ícone (borda de 3 px na cor da classe, colada na gota). A camada
+    "Grau de criticidade" foi removida; a legenda dos pontos mostra os 4 ícones. Gota de 22 a 38 pt.
 
 ## Estado em 02/10/2026 (aprovado por Pedro)
 - Paleta: #0869A6 · #2685BF · #5496BF · #FFFFFF · #F2F2F2 (painel inteiro).
