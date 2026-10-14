@@ -625,6 +625,14 @@
 
   /* Lista de pontos críticos (direita), no mesmo estilo da lista de intervenções */
   .list-panel.pc-panel{grid-column:3;}
+  /* Recolher a lista de pontos críticos (14/10/2026): fica só o título */
+  .pc-recolher{margin-left:auto;display:flex;align-items:center;justify-content:center;width:24px;height:24px;border:none;border-radius:6px;
+               background:rgba(255,255,255,.55);color:#0869A6;cursor:pointer;padding:0;}
+  .pc-recolher:hover{background:#fff;}
+  .pc-recolher svg{transition:transform .2s;}
+  .list-panel.pc-panel.recolhida{align-self:start;padding-bottom:12px;}
+  .list-panel.pc-panel.recolhida #pcList{display:none;}
+  .list-panel.pc-panel.recolhida .pc-recolher svg{transform:rotate(180deg);}
   .pc-card{
     border:1px solid rgba(255,255,255,.50);border-radius:var(--radius);padding:10px 12px;
     background:rgba(255,255,255,.12);cursor:pointer;transition:border-color .15s, box-shadow .15s, background .15s;
@@ -893,6 +901,9 @@
             <div class="list-panel-header">
               <h3>Pontos críticos</h3>
               <span class="list-count" id="pcCount"></span>
+              <button type="button" class="pc-recolher" id="pcRecolher" title="Recolher a lista" aria-expanded="true">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 15l6-6 6 6"/></svg>
+              </button>
             </div>
             <div class="project-list" id="pcList"><div class="pc-msg">Carregando pontos da planilha…</div></div>
           </div>
@@ -1347,7 +1358,11 @@ require([
   var RAIO_TITULO = "Área de análise — 300 m";
   var RAIO_M = 300;
   var raioLayer = new GraphicsLayer({ title: RAIO_TITULO });
+  /* Anel em volta de cada ponto, na cor da classe do índice de risco (14/10/2026). Fica sob o ícone. */
+  var ANEL_TITULO = "Grau de criticidade (índice de risco)";
+  var anelLayer = new GraphicsLayer({ title: ANEL_TITULO });
   map.add(raioLayer);
+  map.add(anelLayer);
   map.add(pontosLayer);
   // Polígono do círculo (64 vértices) calculado na esfera a partir de lon/lat.
   function circuloGeo(lon, lat, raioM){
@@ -1370,13 +1385,19 @@ require([
     { max: Infinity, cor: "#d73027", rotulo: "≥ 0,500" }
   ];
   /* Símbolo do ponto crítico (mapa/icones/ponto_critico.svg): gota com onda, cor única.
-     O risco aparece pelo tamanho: 14 pt (índice 0) a 26 pt (índice 1). */
+     O risco aparece pelo tamanho: 20 pt (índice 0) a 34 pt (índice 1) (aumentado em 14/10/2026). */
   var ICONE_PONTO = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PGNpcmNsZSBjeD0iMTYiIGN5PSIxNiIgcj0iMTQiIGZpbGw9IiNlMzFhMWMiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSIyIi8+PGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoNy41LDcuNSkgc2NhbGUoMS4xMzMzMzMzMzMzMzMzMzMzKSIgZmlsbD0iI2ZmZiI+CiAgPHBhdGggZD0iTTcuNSAxNEM5LjU3Njg4IDE0IDEyIDEyLjcxMTcgMTIgOS40MzI0MUMxMiA3LjIwNzI0IDguNTM4NDQgMi4yODgzIDcuNSAxQzYuNTc2OTEgMi4yODgzIDMgNy4wOTAwNyAzIDkuNDMyNDFDMyAxMi43MTE3IDUuNDIzMTIgMTQgNy41IDE0WiIvPgo8cGF0aCBkPSJNNC42IDEwLjJjLjk1LS44IDEuOS0uOCAyLjkgMHMxLjk1LjggMi45IDAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2UzMWExYyIgc3Ryb2tlLXdpZHRoPSIxLjQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjwvZz48L3N2Zz4=";
-  function tamanhoPonto(i){ return i == null ? 12 : 14 + 12 * Math.max(0, Math.min(1, i)); }
+  function tamanhoPonto(i){ return i == null ? 18 : 20 + 14 * Math.max(0, Math.min(1, i)); }
   function simboloPonto(i){
     var t = tamanhoPonto(i);
     return { type:"picture-marker", url: ICONE_PONTO, width: t, height: t };
   }
+  function simboloAnel(i){
+    var cor = corIndice(i);
+    return { type:"simple-marker", style:"circle", size: tamanhoPonto(i) + 12,
+             color: hexRgba(cor, 0.30), outline:{ color: cor, width: 3.5 } };
+  }
+  function hexRgba(h, a){ return [parseInt(h.substr(1,2),16), parseInt(h.substr(3,2),16), parseInt(h.substr(5,2),16), a]; }
   function corIndice(i){
     if(i == null) return "#9ca3af";
     for(var k=0;k<CLASSES_INDICE.length;k++){ if(i < CLASSES_INDICE[k].max) return CLASSES_INDICE[k].cor; }
@@ -1472,7 +1493,7 @@ require([
     var W = view.width, H = view.height, gap = 36, m = 8;  // gap = distância entre o ponto e o cartão (px)
     // A lista de pontos críticos ocupa a direita do mapa: o cartão não passa por cima dela.
     var lista = document.querySelector(".pc-panel");
-    if(lista && lista.offsetWidth){
+    if(lista && lista.offsetWidth && !lista.classList.contains("recolhida")){
       var esq = lista.getBoundingClientRect().left - view.container.getBoundingClientRect().left;
       if(esq > W / 2) W = esq - 10;
     }
@@ -1519,12 +1540,14 @@ require([
     }
     pontosLayer.removeAll();
     raioLayer.removeAll();
+    anelLayer.removeAll();
     fecharCartao();
     NOMES_PLANILHA = res.nomes || {};
     PONTOS_POR_ID = {};
     res.pontos.forEach(function(p){
       if(p.lat == null || p.lon == null) return;
       raioLayer.add(new Graphic({ geometry: circuloGeo(p.lon, p.lat, RAIO_M), symbol: SIMBOLO_RAIO, attributes: { id: p.id } }));
+      anelLayer.add(new Graphic({ geometry: { type:"point", longitude:p.lon, latitude:p.lat }, symbol: simboloAnel(p.indice), attributes: { id: p.id } }));
       pontosLayer.add(new Graphic({
         geometry: { type:"point", longitude:p.lon, latitude:p.lat },
         symbol: simboloPonto(p.indice),
@@ -1586,6 +1609,15 @@ require([
       if(ativo) el.scrollIntoView({ block:"nearest", behavior:"smooth" });
     });
   }
+  (function(){
+    var painel = document.querySelector(".pc-panel"), btn = document.getElementById("pcRecolher");
+    btn.addEventListener("click", function(){
+      var recolhida = painel.classList.toggle("recolhida");
+      btn.setAttribute("aria-expanded", String(!recolhida));
+      btn.title = recolhida ? "Abrir a lista" : "Recolher a lista";
+      posicionarCartao();
+    });
+  })();
   document.getElementById("pcList").addEventListener("click", function(e){
     var el = e.target.closest(".pc-card");
     if(!el) return;
@@ -1827,6 +1859,37 @@ require([
       p.etapas = o.etapas || [];
     });
   }
+  /* Ícones de obra maiores (14/10/2026): o símbolo vem do WebMap; aqui só multiplica o tamanho
+     dos marcadores de ponto (imagem, marcador simples ou símbolo CIM do ArcGIS Pro). Áreas e linhas não mudam. */
+  var ESCALA_ICONE_OBRA = 1.6;
+  function escalarSimbolo(sym, f){
+    if(!sym) return sym;
+    sym = sym.clone();
+    if(sym.type === "picture-marker"){ sym.width *= f; sym.height *= f; }
+    else if(sym.type === "simple-marker"){ sym.size *= f; }
+    else if(sym.type === "cim" && sym.data && sym.data.symbol && sym.data.symbol.type === "CIMPointSymbol"){
+      var d = JSON.parse(JSON.stringify(sym.data));
+      (d.symbol.symbolLayers || []).forEach(function(l){ if(typeof l.size === "number") l.size *= f; });
+      sym.data = d;
+    }
+    return sym;
+  }
+  function aumentarIconesObras(){
+    map.allLayers.filter(function(l){ return l.type === "feature" && /obra/i.test(l.title || ""); }).forEach(function(camada){
+      camada.load().then(function(){
+        var r = camada.renderer && camada.renderer.clone();
+        if(!r) return;
+        if(r.symbol) r.symbol = escalarSimbolo(r.symbol, ESCALA_ICONE_OBRA);
+        if(r.defaultSymbol) r.defaultSymbol = escalarSimbolo(r.defaultSymbol, ESCALA_ICONE_OBRA);
+        (r.uniqueValueInfos || []).forEach(function(i){ i.symbol = escalarSimbolo(i.symbol, ESCALA_ICONE_OBRA); });
+        (r.classBreakInfos || []).forEach(function(i){ i.symbol = escalarSimbolo(i.symbol, ESCALA_ICONE_OBRA); });
+        (r.uniqueValueGroups || []).forEach(function(g){ (g.classes || []).forEach(function(c){ c.symbol = escalarSimbolo(c.symbol, ESCALA_ICONE_OBRA); }); });
+        camada.renderer = r;
+      }).catch(function(e){ console.warn("Ícones de obra: ", e); });
+    });
+  }
+  map.when(aumentarIconesObras);
+
   function carregarObras(){
     var camada = map.allLayers.find(function(l){ return l.type === "feature" && /obra/i.test(l.title || ""); });
     var planilha = lerPlanilhaObras();
@@ -1885,7 +1948,7 @@ require([
 
   view.on("click", function(evt){
     view.hitTest(evt).then(function(res){
-      var hitPonto = res.results.find(function(r){ return r.graphic && r.graphic.layer === pontosLayer; });
+      var hitPonto = res.results.find(function(r){ return r.graphic && (r.graphic.layer === pontosLayer || r.graphic.layer === anelLayer); });
       if(hitPonto){
         var pc = PONTOS_POR_ID[hitPonto.graphic.attributes.id];
         if(pc){ abrirCartao(pc, hitPonto.graphic.geometry); return; }
@@ -1916,6 +1979,11 @@ require([
     if(title && title.indexOf("Pontos críticos") === 0){
       return '<img src="' + ICONE_PONTO + '" width="11" height="11" alt="" style="vertical-align:middle">' +
              '<img src="' + ICONE_PONTO + '" width="17" height="17" alt="" style="vertical-align:middle;margin-left:3px">';
+    }
+    if(title === ANEL_TITULO){
+      return CLASSES_INDICE.map(function(c){
+        return '<svg width="12" height="12" viewBox="0 0 12 12" style="vertical-align:middle;margin-right:1px"><circle cx="6" cy="6" r="4.5" fill="' + c.cor + '" fill-opacity=".3" stroke="' + c.cor + '" stroke-width="2"/><title>' + c.rotulo + '</title></svg>';
+      }).join("");
     }
     if(title === RAIO_TITULO){
       return '<svg width="14" height="14" viewBox="0 0 14 14"><circle cx="7" cy="7" r="6" fill="rgba(227,26,28,.08)" stroke="rgba(227,26,28,.7)" stroke-width="1.2" stroke-dasharray="2.5 2"/></svg>';

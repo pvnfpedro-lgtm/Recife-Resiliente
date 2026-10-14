@@ -103,6 +103,17 @@ O painel em Google Apps Script já existente é a base. Muita coisa vai mudar.
   (coordenada aproximada ou ausente). Seguem a busca do topo. "Risco alto" leva a etiqueta
   "notas de teste" enquanto a planilha usar `RANDBETWEEN`; tirar a etiqueta quando entrarem as notas reais.
 
+- 14/10/2026 (código; `clasp push` após aprovação de Pedro), pedidos de Pedro:
+  - **Ícones maiores.** Gota do ponto crítico: de 14–26 pt para 20–34 pt (o tamanho ainda cresce com o
+    índice). Ícones de obra: os marcadores de ponto das camadas do WebMap com "obra" no nome ficam 1,6 vez
+    maiores (`ESCALA_ICONE_OBRA`). Áreas e linhas não mudam. Não testado: depende de como o símbolo foi
+    publicado no WebMap.
+  - **Lista de pontos críticos recolhível.** Botão ▴ no título da lista; recolhida, fica só o título.
+  - **Anel de criticidade.** Camada nova "Grau de criticidade (índice de risco)": anel em volta de cada
+    ponto, na cor da classe do índice (verde < 0,200; amarelo 0,200–0,333; laranja 0,333–0,500;
+    vermelho ≥ 0,500, as mesmas classes de `CLASSES_INDICE`). Liga e desliga na legenda. Com as notas de
+    teste, as cores mudam a cada recálculo da planilha.
+
 ## Estado em 02/10/2026 (aprovado por Pedro)
 - Paleta: #0869A6 · #2685BF · #5496BF · #FFFFFF · #F2F2F2 (painel inteiro).
 - Pontos críticos lidos da planilha Google Sheets, cor pelo índice de risco.
