@@ -97,6 +97,12 @@ O painel em Google Apps Script já existente é a base. Muita coisa vai mudar.
   e abre o cartão do ponto; clicar no ponto do mapa marca o cartão na lista. A busca do topo também
   filtra a lista (trecho ou bairro). Botões de zoom e legenda passaram para a esquerda da lista.
 
+- 14/10/2026 (código; `clasp push` após aprovação de Pedro): **indicadores dos pontos críticos** no
+  topo da aba 01, ao lado dos de obras e separados por um traço: "Pontos críticos" (21), "Risco alto"
+  (risco ≥ 9, o corte 3 × 3 da matriz em `02-metodologia-hierarquizacao.md`) e "Local a conferir"
+  (coordenada aproximada ou ausente). Seguem a busca do topo. "Risco alto" leva a etiqueta
+  "notas de teste" enquanto a planilha usar `RANDBETWEEN`; tirar a etiqueta quando entrarem as notas reais.
+
 ## Estado em 02/10/2026 (aprovado por Pedro)
 - Paleta: #0869A6 · #2685BF · #5496BF · #FFFFFF · #F2F2F2 (painel inteiro).
 - Pontos críticos lidos da planilha Google Sheets, cor pelo índice de risco.
