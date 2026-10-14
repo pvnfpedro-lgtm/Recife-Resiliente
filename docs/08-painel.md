@@ -118,7 +118,7 @@ O painel em Google Apps Script já existente é a base. Muita coisa vai mudar.
   - Ajuste no mesmo dia (Pedro preferiu o círculo em volta da figura; `clasp push` feito com aprovação): o anel saiu da camada separada e
     passou a fazer parte do próprio ícone (borda de 3 px na cor da classe, colada na gota). A camada
     "Grau de criticidade" foi removida; a legenda dos pontos mostra os 4 ícones. Gota de 22 a 38 pt.
-  - Segundo ajuste (pedido de Pedro): **raio de 300 m na cor da prioridade** (contorno tracejado e
+  - Segundo ajuste (pedido de Pedro; `clasp push` feito com aprovação, junto com a retirada do aumento dos ícones de obra): **raio de 300 m na cor da prioridade** (contorno tracejado e
     preenchimento claro na cor da classe do índice), com botão **"Raio 300 m"** no título da lista de pontos
     para ligar e desligar (sincronizado com o olho da legenda). Cores mais fortes: amarelo `#f2b705` e
     laranja `#f46d43` no lugar de `#fee08b` e `#fc8d59` (verde e vermelho iguais). Anel do ícone mais
