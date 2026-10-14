@@ -108,6 +108,8 @@ O painel em Google Apps Script já existente é a base. Muita coisa vai mudar.
     índice). Ícones de obra: os marcadores de ponto das camadas do WebMap com "obra" no nome ficam 1,6 vez
     maiores (`ESCALA_ICONE_OBRA`). Áreas e linhas não mudam. Não testado: depende de como o símbolo foi
     publicado no WebMap.
+    **Retirado no mesmo dia:** com a troca do renderer, os pontos das obras sumiram do mapa. A camada de
+    obras volta a usar o símbolo do WebMap sem mudança; para aumentar, mudar o tamanho no próprio WebMap.
   - **Lista de pontos críticos recolhível.** Botão ▴ no título da lista; recolhida, fica só o título.
   - **Anel de criticidade.** Camada nova "Grau de criticidade (índice de risco)": anel em volta de cada
     ponto, na cor da classe do índice (verde < 0,200; amarelo 0,200–0,333; laranja 0,333–0,500;

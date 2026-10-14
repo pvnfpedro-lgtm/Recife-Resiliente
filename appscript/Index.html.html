@@ -1880,37 +1880,6 @@ require([
       p.etapas = o.etapas || [];
     });
   }
-  /* Ícones de obra maiores (14/10/2026): o símbolo vem do WebMap; aqui só multiplica o tamanho
-     dos marcadores de ponto (imagem, marcador simples ou símbolo CIM do ArcGIS Pro). Áreas e linhas não mudam. */
-  var ESCALA_ICONE_OBRA = 1.6;
-  function escalarSimbolo(sym, f){
-    if(!sym) return sym;
-    sym = sym.clone();
-    if(sym.type === "picture-marker"){ sym.width *= f; sym.height *= f; }
-    else if(sym.type === "simple-marker"){ sym.size *= f; }
-    else if(sym.type === "cim" && sym.data && sym.data.symbol && sym.data.symbol.type === "CIMPointSymbol"){
-      var d = JSON.parse(JSON.stringify(sym.data));
-      (d.symbol.symbolLayers || []).forEach(function(l){ if(typeof l.size === "number") l.size *= f; });
-      sym.data = d;
-    }
-    return sym;
-  }
-  function aumentarIconesObras(){
-    map.allLayers.filter(function(l){ return l.type === "feature" && /obra/i.test(l.title || ""); }).forEach(function(camada){
-      camada.load().then(function(){
-        var r = camada.renderer && camada.renderer.clone();
-        if(!r) return;
-        if(r.symbol) r.symbol = escalarSimbolo(r.symbol, ESCALA_ICONE_OBRA);
-        if(r.defaultSymbol) r.defaultSymbol = escalarSimbolo(r.defaultSymbol, ESCALA_ICONE_OBRA);
-        (r.uniqueValueInfos || []).forEach(function(i){ i.symbol = escalarSimbolo(i.symbol, ESCALA_ICONE_OBRA); });
-        (r.classBreakInfos || []).forEach(function(i){ i.symbol = escalarSimbolo(i.symbol, ESCALA_ICONE_OBRA); });
-        (r.uniqueValueGroups || []).forEach(function(g){ (g.classes || []).forEach(function(c){ c.symbol = escalarSimbolo(c.symbol, ESCALA_ICONE_OBRA); }); });
-        camada.renderer = r;
-      }).catch(function(e){ console.warn("Ícones de obra: ", e); });
-    });
-  }
-  map.when(aumentarIconesObras);
-
   function carregarObras(){
     var camada = map.allLayers.find(function(l){ return l.type === "feature" && /obra/i.test(l.title || ""); });
     var planilha = lerPlanilhaObras();
