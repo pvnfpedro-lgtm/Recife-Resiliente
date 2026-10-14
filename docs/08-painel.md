@@ -11,6 +11,12 @@ O painel em Google Apps Script já existente é a base. Muita coisa vai mudar.
 - Abas atuais: 01 Panorama · 02 Físico-Financeiro · 03 Ficha do Ponto.
 - Os dados atuais são ilustrativos (8 obras fictícias), escritos no código.
 
+## Fluxo de dados
+![Fluxo de dados do painel](img/fluxo_painel.png)
+
+Gerado por `scripts/gerar_fluxo_painel.py` (06/10/2026). Tracejado = a fazer ou
+não conectado.
+
 ## Decisões
 | Tema | Decisão |
 |---|---|
@@ -97,6 +103,14 @@ O painel em Google Apps Script já existente é a base. Muita coisa vai mudar.
   e abre o cartão do ponto; clicar no ponto do mapa marca o cartão na lista. A busca do topo também
   filtra a lista (trecho ou bairro). Botões de zoom e legenda passaram para a esquerda da lista.
 
+- 07/10/2026 (`clasp push` com aprovação de Pedro): **pontos das obras com ícone por tipo**. O painel lê a
+  coluna "coordenadas (lat, lon)" da aba "Obras" e desenha cada obra na camada "Obras (pontos da
+  planilha)", com o ícone do tipo (canal, dragagem, reservatório, dique, parque alagável, rede;
+  vazado quando em licitação; cone genérico quando o tipo está vazio). Coordenada vazia, ilegível ou
+  fora do Recife não desenha ponto. Clicar no ponto seleciona a obra na lista; os filtros e a busca
+  valem também para os pontos. A coordenada passa a ser o centro do zoom ao selecionar a obra.
+  Ícones embutidos no código com `python3 scripts/gerar_icones_obras_tipo.py --js`.
+
 - 14/10/2026 (`clasp push` feito com aprovação de Pedro): **indicadores dos pontos críticos** no
   topo da aba 01, ao lado dos de obras e separados por um traço: "Pontos críticos" (21), "Risco alto"
   (risco ≥ 9, o corte 3 × 3 da matriz em `02-metodologia-hierarquizacao.md`) e "Local a conferir"
@@ -123,6 +137,12 @@ O painel em Google Apps Script já existente é a base. Muita coisa vai mudar.
     para ligar e desligar (sincronizado com o olho da legenda). Cores mais fortes: amarelo `#f2b705` e
     laranja `#f46d43` no lugar de `#fee08b` e `#fc8d59` (verde e vermelho iguais). Anel do ícone mais
     largo (5 de 32), com contorno branco.
+
+- 14/10/2026: o `clasp push` das 18:45 sobrescreveu os pontos das obras de 07/10 (o commit estava só no
+  branch `claude/nifty-curie-ozwq8s`, fora do `main`). O branch foi juntado de volta e os pontos voltaram.
+  Antes de cada `clasp push`, conferir se o branch tem tudo o que já foi enviado.
+- 14/10/2026: ícones da camada "Obras (pontos da planilha)" de 26 para 36 px (pedido de Pedro de ícones
+  de obra maiores).
 
 ## Estado em 02/10/2026 (aprovado por Pedro)
 - Paleta: #0869A6 · #2685BF · #5496BF · #FFFFFF · #F2F2F2 (painel inteiro).

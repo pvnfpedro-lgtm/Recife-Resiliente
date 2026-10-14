@@ -60,6 +60,25 @@ Arquivo de trabalho da equipe: a planilha Google
   o aspecto econômico: soma do IPTU não residencial no círculo de 1 km
   (exceção aos 300 m), notas por quintis. ZEC descartada.
 
+## Em andamento (06/10/2026, branch `claude/nice-hopper-7xi6qn`)
+- Ícones do mapa: Drenagem (quadrado) e Obras (hexágono; em obra, em
+  licitação, concluído) em `mapa/icones/`, propostas a aprovar
+  (`docs/09-identidade-visual-mapa.md`). Mínimo de 32 px no ArcGIS.
+- Aba "Obras" da planilha do painel: obra_id 1 e 2 (canais) + 3 a 28 (Tabela
+  84, documento de origem a identificar; pendência 22). Colunas novas Z
+  "coordenadas (lat, lon)" e AA "coord_precisao" para Pedro colar do Google
+  Maps. **Próximo passo:** quando Pedro avisar, ler Z/AA e gerar um CSV de
+  pontos (lat e lon separados, ponto decimal, obra_id, nome, status) para
+  "Tabela XY para Ponto" no ArcGIS Pro (WGS 1984).
+- Camadas no ArcGIS: polígonos (camada "2. Obras") + pontos (do CSV). O
+  campo `obra` da camada = obra_id da planilha (Dique da Av. Recife = 13).
+- Outra sessão (branch `claude/admiring-johnson-th56xx`, já com `clasp push`)
+  trocou o WebMap do painel para `d19385d68f1b4303b5f94ddc5ce58ff6` e passou a
+  ler a aba "Obras". O diagrama `docs/img/fluxo_painel.png` deste branch está
+  desatualizado nesse ponto (ainda mostra df725 e obras fictícias).
+- Em aberto com Pedro: tirar da aba "Obras" os programas sem local (4, 5,
+  26, 27, 28); valores de status iguais na camada e na planilha.
+
 ## Próximos passos (escolha de Pedro)
 1. Indicadores e ranking dos pontos críticos na aba 01 do painel.
 2. Lista de conferência das coordenadas (11 "Aproximado").
