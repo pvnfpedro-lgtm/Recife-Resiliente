@@ -259,4 +259,4 @@ não conectado.
   e Mapa base/Camadas passam a ir até a borda direita. `clasp push` feito com aprovação de Pedro.
 - 16/10/2026 (pedido de Pedro): Mapa base e controles do mapa **de volta à vertical**. Mapa base com título,
   botões e Google Maps em linhas separadas (o "–" de recolher fica no título); controles em coluna no meio da
-  direita do mapa.
+  direita do mapa. `clasp push` feito com aprovação de Pedro.
