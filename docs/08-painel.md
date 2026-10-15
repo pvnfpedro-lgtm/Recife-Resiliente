@@ -236,4 +236,4 @@ não conectado.
   abre para cima, com rolagem (até 45% da altura). Em tela estreita continuam empilhados à direita. `clasp push` feito com aprovação de Pedro.
 - 16/10/2026: legenda **Camadas na horizontal**: cada grupo do WebMap vira uma coluna (as camadas soltas
   ficam juntas na primeira), com rolagem lateral quando não cabe. Recolher a lista de intervenções ou a de
-  pontos libera a faixa de baixo daquele lado para Mapa base e Camadas.
+  pontos libera a faixa de baixo daquele lado para Mapa base e Camadas. `clasp push` feito com aprovação de Pedro.
