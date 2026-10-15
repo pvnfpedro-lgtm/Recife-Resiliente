@@ -800,6 +800,7 @@
   /* Mapa base: de novo em várias linhas (16/10/2026, pedido de Pedro), recolhível pelo "–" do título */
   #mapTools .map-tools-head{gap:6px;}
   #mapTools .map-tools-head h4{margin-right:auto;}
+  #mapTools .map-source-toggle{margin-top:2px;}
   #mapTools.min .map-tools-head{margin-bottom:0;}
   #mapTools .mt-min{border:none;background:transparent;color:var(--text-dim);font-size:13px;line-height:1;cursor:pointer;padding:2px 4px;border-radius:6px;}
   #mapTools .mt-min:hover{background:var(--bg);color:var(--text);}
@@ -971,20 +972,12 @@
         <div class="map-br-stack">
           <div class="legend" id="mapTools">
             <div class="map-tools-head">
-              <h4>Mapa base</h4>
+              <h4>Mapa</h4>
               <div class="data-info" tabindex="0" role="note" aria-label="Aviso sobre a origem dos dados do mapa">
                 <div class="data-info-icon">i</div>
                 <div class="data-info-tip">Mapa: WebMap real da Prefeitura (ArcGIS Enterprise) · Pontos críticos: lidos da planilha de notas (teste, coordenadas não verificadas) · Lista de intervenções ao lado: dados de exemplo, ainda não conectados ao FeatureServer real</div>
               </div>
               <button class="mt-min" id="mapToolsMin" type="button" title="Recolher">–</button>
-            </div>
-            <div id="basemapBox">
-              <div class="bm-seg" id="basemapSeg">
-                <button type="button" data-bm="gray-vector">Cinza</button>
-                <button type="button" data-bm="streets-vector">Ruas</button>
-                <button type="button" data-bm="satellite">Satélite</button>
-                <button type="button" data-bm="original" class="on" title="Mapa base salvo no WebMap da Prefeitura">Original</button>
-              </div>
             </div>
             <button class="map-source-toggle" id="btnMapSource" type="button"><span id="mapSourceLabel">Ver no Google Maps</span></button>
           </div>
@@ -2384,7 +2377,7 @@ require([
   document.querySelectorAll("#basemapSeg button").forEach(function(b){
     b.addEventListener("click", function(){ setBasemap(b.getAttribute("data-bm")); });
   });
-  // Mapa base: sempre o Original (o salvo no WebMap) ao abrir o painel (pedido de Pedro, 16/10/2026).
+  // Mapa base: só o Original (o salvo no WebMap); os botões Cinza/Ruas/Satélite saíram em 16/10/2026 (pedido de Pedro).
   map.when(function(){ originalBasemap = map.basemap; setBasemap("original"); });
 
   var TECH_FIELD_RE = /^(objectid|fid|globalid|shape.*|source\s*_?id|id\s*_?do\s*_?agrup.*|id\s*_?da\s*_?cor|created_.*|last_edited_.*)$/i;
