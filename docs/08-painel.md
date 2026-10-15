@@ -250,4 +250,4 @@ não conectado.
   azul #0869A6, grafite #1E293B). Na legenda, "Obras (pontos da planilha)" virou grupo com uma camada por
   etapa; o filtro "Status" tem as 6 etapas. Na planilha, coluna `status` da aba "Obras" com lista suspensa
   das 6 etapas (aviso, sem bloquear); "obra" → "Em obra" e "Concluído" → "Concluída" reescritos. Vazio =
-  Não planejado. O painel ainda aceita textos antigos ("prevista" → Conceitual, "execução" → Em obra).
+  Não planejado. O painel ainda aceita textos antigos ("prevista" → Conceitual, "execução" → Em obra). `clasp push` feito com aprovação de Pedro (22:13).
