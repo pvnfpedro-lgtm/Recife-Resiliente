@@ -233,4 +233,4 @@ não conectado.
   camada "Área de análise — 300 m" da legenda. O raio de 300 m continua sendo a área do score. `clasp push` feito com aprovação de Pedro.
 - 16/10/2026: mapa base **Original** (o do WebMap) ao abrir o painel, no lugar do Cinza. Quadros "Mapa base" e
   "Camadas" lado a lado, embaixo, entre a lista de intervenções e a de pontos críticos; a lista de camadas
-  abre para cima, com rolagem (até 45% da altura). Em tela estreita continuam empilhados à direita.
+  abre para cima, com rolagem (até 45% da altura). Em tela estreita continuam empilhados à direita. `clasp push` feito com aprovação de Pedro.
