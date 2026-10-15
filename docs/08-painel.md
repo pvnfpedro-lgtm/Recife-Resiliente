@@ -1,5 +1,28 @@
 # 8. Painel
 
+## Resumo: o que o painel entrega (15/10/2026)
+Um mapa único da RPA 6 que mostra, lado a lado, **onde o risco de alagamento é maior** e
+**o que já está sendo feito ali**, para orientar a prevenção priorizada por risco entre os órgãos
+(COP, EMLURB, Defesa Civil, URB, CTTU, Compesa, ProMorar, SEPLAG).
+
+- **Pontos críticos priorizados:** os 21 trechos da EMLURB no mapa, com cor pelo índice de risco
+  (0–1), círculo de 300 m (área do score) e lista ordenada do maior para o menor risco. Cada ponto
+  abre um cartão com as notas por dimensão (Probabilidade, Exposição, Vulnerabilidade, Impacto) e
+  por variável.
+- **Indicadores:** pontos críticos, pontos de risco alto (risco ≥ 9) e pontos com local a conferir;
+  investimento total, obras concluídas e bairros com obras.
+- **Obras de drenagem:** as obras da aba "Obras" da planilha, com ícone por tipo no mapa e a área
+  desenhada no ArcGIS; lista com filtros por bacia, sub-bacia e status, e ficha de cada obra com
+  dados e macroetapas (aba 03).
+- **Contexto territorial:** as camadas do WebMap "Recife Resiliente v2" (rios, bacias e demais
+  camadas), com legenda e liga/desliga, mapa base e Street View.
+- **Uma fonte só:** o painel lê a planilha Google da equipe; quem atualiza a planilha atualiza o painel.
+
+**Limites atuais:** as notas dos pontos são de **teste** (`RANDBETWEEN`), então o ranking ainda não
+vale para decisão; 11 pontos têm coordenada aproximada; as obras ainda não têm andamento físico,
+prazos nem medições (aba 02 sem dados de acompanhamento); infraestrutura crítica (hospitais,
+aeroporto, metrô) ainda fora do mapa (pendência 18).
+
 ## Base (decidido por Pedro em 02/10/2026)
 O painel em Google Apps Script já existente é a base. Muita coisa vai mudar.
 
@@ -9,7 +32,7 @@ O painel em Google Apps Script já existente é a base. Muita coisa vai mudar.
   ESIG (`esigportal2.recife.pe.gov.br`). Desde 05/10/2026, item `d19385d68f1b4303b5f94ddc5ce58ff6`
   ("Recife Resiliente v2", publicado por Pedro; antes `df725ec964b840a1afbc348ae4555c20`).
 - Abas atuais: 01 Panorama · 02 Físico-Financeiro · 03 Ficha do Ponto.
-- Os dados atuais são ilustrativos (8 obras fictícias), escritos no código.
+- Até 05/10/2026 os dados de obras eram ilustrativos (8 obras fictícias), escritos no código.
 
 ## Fluxo de dados
 ![Fluxo de dados do painel](img/fluxo_painel.png)
