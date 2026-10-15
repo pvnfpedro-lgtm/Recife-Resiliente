@@ -78,6 +78,13 @@
 - Pendente: obras 26, 32 e 33 sem `tipo` na planilha; status quase todo
   vazio (só 1, 2 e 6), então quase todas aparecem cheias.
 
+## Infraestrutura crítica (proposta de 16/10/2026, a aprovar)
+- Forma nova para o grupo: **octógono** grafite (#334155), contorno e desenho brancos, no Estilo C.
+  As formas já usadas ficam livres: círculo = risco, quadrado = drenagem, losango = equipamentos sensíveis.
+- Primeiro ícone: **aeroporto** (avião da Maki, CC0): `mapa/icones/infra_aeroporto.svg` e
+  `png/infra_aeroporto_64.png`, `_128.png`. Para a pendência 18 (I4, infraestrutura crítica).
+- A seguir, no mesmo octógono: metrô, hospital/UPA (se não ficar no losango), subestação, bombeiros.
+
 ## Origem dos desenhos
 - **Maki** (Mapbox), versão 8.2.0, licença CC0 (domínio público).
 - **Temaki** (Rapid), versão 5.13.0, licença CC0 (domínio público).
