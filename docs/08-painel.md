@@ -224,4 +224,4 @@ não conectado.
   `docs/prototipos/animacao_ligacao.html`): zoom que enquadra o ponto e as obras ligadas na área livre do
   mapa (700 ms), salto da gota (450 ms), linha correndo do ponto até a obra (600 ms) e pulso na obra
   (700 ms). Ponto sem obra: zoom, salto e pulso na cor do risco. Fechar o cartão apaga as linhas e não mexe
-  no zoom. Quem usa "reduzir movimento" no sistema vê tudo sem animação.
+  no zoom. Quem usa "reduzir movimento" no sistema vê tudo sem animação. `clasp push` feito com aprovação de Pedro (15:50).
