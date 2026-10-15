@@ -239,4 +239,4 @@ não conectado.
   pontos libera a faixa de baixo daquele lado para Mapa base e Camadas. `clasp push` feito com aprovação de Pedro.
 - 16/10/2026: legenda dos pontos críticos com um ícone só (antes, um por classe do índice). `clasp push` feito com aprovação de Pedro.
 - 16/10/2026: quadro **Mapa base** em uma linha só (título, botões, Google Maps) e recolhível pelo "–" no fim
-  da linha; recolhido, fica só o título.
+  da linha; recolhido, fica só o título. `clasp push` feito com aprovação de Pedro.
