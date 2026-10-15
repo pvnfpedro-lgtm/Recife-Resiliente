@@ -788,6 +788,11 @@
 
   /* ---------- Escala compacta da página 1 (05/10/2026): KPIs, filtros, busca e lista menores ---------- */
   .overlay-grid{inset:12px;grid-template-columns:320px 1fr var(--pc-lista-w);gap:8px;}
+  /* Mapa base e Camadas lado a lado, embaixo, entre a lista de intervenções e a de pontos (16/10/2026).
+     Esquerda = margem 12 + lista 320 + 2 × 8 de folga. A lista de camadas abre para cima, com rolagem. */
+  .map-br-stack{left:348px;right:calc(20px + var(--pc-lista-w));bottom:12px;flex-direction:row;justify-content:center;align-items:flex-end;pointer-events:none;}
+  .map-br-stack > *{pointer-events:auto;}
+  #layerToggleList{max-height:45vh;overflow-y:auto;}
   .filter-float{gap:6px;}
   .filterbar{padding:6px 12px;gap:8px;border-radius:12px;}
   .filterbar label{font-size:10.5px;}
@@ -833,6 +838,7 @@
     .overlay-grid{grid-template-columns:1fr;grid-template-rows:auto auto auto;}
     .list-panel.pc-panel{grid-column:1;grid-row:3;max-height:30vh;}
     .map-br-stack,.map-center-controls{right:10px;}
+    .map-br-stack{left:auto;flex-direction:column;align-items:flex-end;}
   }
 </style>
 </head>
@@ -942,10 +948,10 @@
             </div>
             <div id="basemapBox">
               <div class="bm-seg" id="basemapSeg">
-                <button type="button" data-bm="gray-vector" class="on">Cinza</button>
+                <button type="button" data-bm="gray-vector">Cinza</button>
                 <button type="button" data-bm="streets-vector">Ruas</button>
                 <button type="button" data-bm="satellite">Satélite</button>
-                <button type="button" data-bm="original" title="Mapa base salvo no WebMap da Prefeitura">Original</button>
+                <button type="button" data-bm="original" class="on" title="Mapa base salvo no WebMap da Prefeitura">Original</button>
               </div>
             </div>
             <button class="map-source-toggle" id="btnMapSource" type="button"><span id="mapSourceLabel">Ver no Google Maps</span></button>
@@ -2273,7 +2279,7 @@ require([
     });
   })();
   /* =====================================================================
-     MAPA BASE (cinza por padrão; "Original" restaura o do WebMap)
+     MAPA BASE (Original = o do WebMap, padrão desde 16/10/2026)
      ===================================================================== */
   var originalBasemap = null;
   function markBasemap(id){
@@ -2294,7 +2300,8 @@ require([
   document.querySelectorAll("#basemapSeg button").forEach(function(b){
     b.addEventListener("click", function(){ setBasemap(b.getAttribute("data-bm")); });
   });
-  map.when(function(){ originalBasemap = map.basemap; setBasemap("gray-vector"); });
+  // Mapa base: sempre o Original (o salvo no WebMap) ao abrir o painel (pedido de Pedro, 16/10/2026).
+  map.when(function(){ originalBasemap = map.basemap; setBasemap("original"); });
 
   var TECH_FIELD_RE = /^(objectid|fid|globalid|shape.*|source\s*_?id|id\s*_?do\s*_?agrup.*|id\s*_?da\s*_?cor|created_.*|last_edited_.*)$/i;
   function hideTechFields(list){
