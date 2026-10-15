@@ -207,3 +207,9 @@ não conectado.
 - `access: ANYONE`: se o WebMap do ESIG exigir login, quem não tiver acesso
   pode ver o mapa vazio (não testado).
 - `GOOGLE_MAPS_EMBED_KEY` vazio: Street View e modo Google Maps mostram aviso.
+
+- 15/10/2026: coluna **AJ "Obras relacionadas (obra_id)"** criada na aba "Notas dos pontos" (depois de
+  "Notas preenchidas"), vazia, para Pedro informar os `obra_id` da aba "Obras" ligados a cada ponto,
+  separados por ponto e vírgula (ex.: `1; 13`). Formato texto. O painel ainda não lê a coluna (próximo
+  passo: linha ponto ↔ obra no mapa, "Obras relacionadas" no cartão do ponto e pontos na ficha da obra).
+  A coluna "pontos_criticos (ids)" da aba "Obras" fica sem uso, para não haver duas fontes da mesma ligação.
