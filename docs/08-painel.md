@@ -253,4 +253,4 @@ não conectado.
   Não planejado. O painel ainda aceita textos antigos ("prevista" → Conceitual, "execução" → Em obra). `clasp push` feito com aprovação de Pedro (22:13).
 - 16/10/2026: etapas "Em licitação" em rosa #DB2777 (o ciano se confundia com o azul de "Em obra") e
   "Concluída" em verde #16A34A (pedido de Pedro); ícones das obras de 36 para 44 px; controles do mapa
-  (+, −, início, enquadrar, SV) na horizontal, no alto, à esquerda da lista de pontos.
+  (+, −, início, enquadrar, SV) na horizontal, no alto, à esquerda da lista de pontos. `clasp push` feito com aprovação de Pedro.
