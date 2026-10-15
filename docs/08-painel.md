@@ -220,3 +220,8 @@ não conectado.
   ficha da obra (aba 03), no lugar da coluna "pontos_criticos (ids)" da aba "Obras". Obra sem
   coordenada na aba "Obras" não ganha linha. `clasp push` feito com aprovação de Pedro (15:32).
 - 15/10/2026: as linhas de ligação só aparecem para o ponto clicado (cartão aberto); fechar o cartão apaga as linhas. `clasp push` feito com aprovação de Pedro (15:38).
+- 15/10/2026: **animação ao clicar no ponto crítico** (aprovada por Pedro na prévia
+  `docs/prototipos/animacao_ligacao.html`): zoom que enquadra o ponto e as obras ligadas na área livre do
+  mapa (700 ms), salto da gota (450 ms), linha correndo do ponto até a obra (600 ms) e pulso na obra
+  (700 ms). Ponto sem obra: zoom, salto e pulso na cor do risco. Fechar o cartão apaga as linhas e não mexe
+  no zoom. Quem usa "reduzir movimento" no sistema vê tudo sem animação.
