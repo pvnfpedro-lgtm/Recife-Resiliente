@@ -265,4 +265,4 @@ não conectado.
 - 16/10/2026 (pedido de Pedro): quadro "Mapa" (botão "Ver no Google Maps" e aviso "i") retirado; embaixo fica só Camadas. `clasp push` feito com aprovação de Pedro.
 - 16/10/2026: colunas da legenda Camadas centralizadas no quadro; **cards pintados e translúcidos**:
   intervenções na cor da etapa (a mesma do ícone), pontos críticos na cor da classe do índice de risco
-  (verde, amarelo, laranja, vermelho), com a faixa da esquerda na cor cheia.
+  (verde, amarelo, laranja, vermelho), com a faixa da esquerda na cor cheia. `clasp push` feito com aprovação de Pedro.
