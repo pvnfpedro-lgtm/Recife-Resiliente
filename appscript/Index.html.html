@@ -100,10 +100,7 @@
   .map-center-controls button+button{border-top:1px solid var(--border);}
   .map-center-controls .ctrl-sep{height:0;border-top:1px solid var(--border);}
   .map-center-controls button:hover{background:var(--bg);color:var(--text);}
-  /* Controles do mapa na horizontal, no alto, à esquerda da lista de pontos (16/10/2026) */
-  .map-center-controls{flex-direction:row;top:76px;transform:none;}
-  .map-center-controls button+button{border-top:none;border-left:1px solid var(--border);}
-  .map-center-controls .ctrl-sep{height:auto;width:0;border-top:none;border-left:1px solid var(--border);}
+  /* Controles do mapa: voltaram à vertical em 16/10/2026 (pedido de Pedro), no meio da direita do mapa. */
   .legend{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow-lg);padding:12px 14px;min-width:210px;}
   .legend h4{margin:0 0 8px;font-size:10.5px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:.05em;}
   .legend-row{display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--text);padding:3px 0;}
@@ -800,11 +797,10 @@
   .map-br-stack{flex-wrap:nowrap;}
   .map-br-stack > #layerPanel{flex:0 1 auto;min-width:0;}
   .map-br-stack > #mapTools{flex:none;}
-  /* Mapa base em uma linha só, recolhível (16/10/2026) */
-  #mapTools{display:flex;align-items:center;gap:10px;padding:8px 10px 8px 14px;}
-  #mapTools .map-tools-head{margin-bottom:0;gap:6px;}
-  #mapTools .map-source-toggle{width:auto;margin-top:0;height:28px;}
-  #mapTools .bm-seg button{padding:6px 8px;}
+  /* Mapa base: de novo em várias linhas (16/10/2026, pedido de Pedro), recolhível pelo "–" do título */
+  #mapTools .map-tools-head{gap:6px;}
+  #mapTools .map-tools-head h4{margin-right:auto;}
+  #mapTools.min .map-tools-head{margin-bottom:0;}
   #mapTools .mt-min{border:none;background:transparent;color:var(--text-dim);font-size:13px;line-height:1;cursor:pointer;padding:2px 4px;border-radius:6px;}
   #mapTools .mt-min:hover{background:var(--bg);color:var(--text);}
   #mapTools.min #basemapBox,#mapTools.min .map-source-toggle,#mapTools.min .data-info{display:none;}
@@ -980,6 +976,7 @@
                 <div class="data-info-icon">i</div>
                 <div class="data-info-tip">Mapa: WebMap real da Prefeitura (ArcGIS Enterprise) · Pontos críticos: lidos da planilha de notas (teste, coordenadas não verificadas) · Lista de intervenções ao lado: dados de exemplo, ainda não conectados ao FeatureServer real</div>
               </div>
+              <button class="mt-min" id="mapToolsMin" type="button" title="Recolher">–</button>
             </div>
             <div id="basemapBox">
               <div class="bm-seg" id="basemapSeg">
@@ -990,7 +987,6 @@
               </div>
             </div>
             <button class="map-source-toggle" id="btnMapSource" type="button"><span id="mapSourceLabel">Ver no Google Maps</span></button>
-            <button class="mt-min" id="mapToolsMin" type="button" title="Recolher">–</button>
           </div>
           <div class="legend" id="layerPanel">
             <div class="lg-head" id="layerPanelHead"><h4>Camadas</h4><button class="lg-min" id="layerPanelMin" type="button" title="Recolher">–</button></div>
