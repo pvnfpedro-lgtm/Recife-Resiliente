@@ -100,6 +100,7 @@
   .map-center-controls button+button{border-top:1px solid var(--border);}
   .map-center-controls .ctrl-sep{height:0;border-top:1px solid var(--border);}
   .map-center-controls button:hover{background:var(--bg);color:var(--text);}
+  /* Controles do mapa: voltaram à vertical em 16/10/2026 (pedido de Pedro), no meio da direita do mapa. */
   .legend{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow-lg);padding:12px 14px;min-width:210px;}
   .legend h4{margin:0 0 8px;font-size:10.5px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:.05em;}
   .legend-row{display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--text);padding:3px 0;}
@@ -625,6 +626,15 @@
 
   /* Lista de pontos críticos (direita), no mesmo estilo da lista de intervenções */
   .list-panel.pc-panel{grid-column:3;}
+  /* Recolher a lista de pontos críticos (14/10/2026): fica só o título */
+  .pc-recolher{display:flex;align-items:center;justify-content:center;width:24px;height:24px;border:none;border-radius:6px;
+               background:rgba(255,255,255,.55);color:#0869A6;cursor:pointer;padding:0;}
+  .pc-recolher:hover{background:#fff;}
+  .list-panel-header .pc-recolher{margin-left:auto;}
+  .pc-recolher svg{transition:transform .2s;}
+  .list-panel.recolhida{align-self:start;padding-bottom:12px;}
+  .list-panel.recolhida .project-list{display:none;}
+  .list-panel.recolhida .pc-recolher svg{transform:rotate(180deg);}
   .pc-card{
     border:1px solid rgba(255,255,255,.50);border-radius:var(--radius);padding:10px 12px;
     background:rgba(255,255,255,.12);cursor:pointer;transition:border-color .15s, box-shadow .15s, background .15s;
@@ -653,7 +663,7 @@
   .project-card-top{display:flex;align-items:center;justify-content:space-between;gap:8px;}
   .status-pill{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;padding:3px 8px;border-radius:999px;white-space:nowrap;}
   /* Status das obras em tom neutro (sem cor), para não competir com o risco */
-  .status-pill.obra,.status-pill.licitacao,.status-pill.concluido{background:rgba(51,65,85,.10);color:#334155;}
+  .status-pill.obra,.status-pill.licitacao,.status-pill.concluido,.status-pill.nao_planejado,.status-pill.conceitual,.status-pill.projeto{background:rgba(51,65,85,.10);color:#334155;}
   .status-pill.saudavel{background:var(--saudavel-bg);color:var(--saudavel-text);}
   .status-pill.atencao{background:var(--atencao-bg);color:var(--atencao-text);}
   .status-pill.critico{background:var(--critico-bg);color:var(--critico-text);}
@@ -740,6 +750,14 @@
   .rr-tab tr.rr-dim.aberto .rr-seta{transform:rotate(90deg);}
   .rr-th-n{font-weight:400;font-size:9.5px;opacity:.85;}
   .rr-pe{margin-top:10px;font-size:10.5px;color:#9ca3af;}
+  .rr-obras{margin:10px 0 4px;}
+  .rr-obras-t{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:#64748b;margin-bottom:4px;}
+  .rr-obras-vazio{font-size:11px;color:#9ca3af;}
+  .rr-obra{display:flex;justify-content:space-between;gap:8px;padding:5px 8px;margin-bottom:3px;border-radius:6px;
+           background:rgba(255,255,255,.35);border:1px solid rgba(226,232,240,.9);font-size:12px;cursor:pointer;}
+  .rr-obra:hover{background:rgba(226,232,240,.85);}
+  .rr-obra-n{font-weight:600;color:#1e2430;}
+  .rr-obra-s{color:#64748b;white-space:nowrap;}
   .rr-pe a{color:var(--rr);font-weight:600;}
 
   /* ---------- Legenda e Camadas (05/10/2026) ---------- */
@@ -771,6 +789,55 @@
 
   /* ---------- Escala compacta da página 1 (05/10/2026): KPIs, filtros, busca e lista menores ---------- */
   .overlay-grid{inset:12px;grid-template-columns:320px 1fr var(--pc-lista-w);gap:8px;}
+  /* Mapa base e Camadas lado a lado, embaixo, entre a lista de intervenções e a de pontos (16/10/2026).
+     Esquerda = margem 12 + lista 320 + 2 × 8 de folga. A lista de camadas abre para cima, com rolagem. */
+  .map-br-stack{left:348px;right:calc(20px + var(--pc-lista-w));bottom:12px;flex-direction:row;justify-content:center;align-items:flex-end;pointer-events:none;}
+  .map-br-stack > *{pointer-events:auto;}
+  #layerPanel{width:auto;max-width:100%;min-width:0;}
+  .map-br-stack{flex-wrap:nowrap;}
+  .map-br-stack > #layerPanel{flex:0 1 auto;min-width:0;}
+  .map-br-stack > #mapTools{flex:none;}
+  /* Mapa base: de novo em várias linhas (16/10/2026, pedido de Pedro), recolhível pelo "–" do título */
+  #mapTools .map-tools-head{gap:6px;}
+  #mapTools .map-tools-head h4{margin-right:auto;}
+  #mapTools .map-source-toggle{margin-top:2px;}
+  #mapTools.min .map-tools-head{margin-bottom:0;}
+  #mapTools .mt-min{border:none;background:transparent;color:var(--text-dim);font-size:13px;line-height:1;cursor:pointer;padding:2px 4px;border-radius:6px;}
+  #mapTools .mt-min:hover{background:var(--bg);color:var(--text);}
+  #mapTools.min #basemapBox,#mapTools.min .map-source-toggle,#mapTools.min .data-info{display:none;}
+  #mapTools.min{min-width:0;}
+  #layerToggleList{display:flex;align-items:flex-start;gap:0;overflow-x:auto;max-height:38vh;}
+  #layerToggleList .lg-col{flex:none;width:190px;max-height:38vh;overflow-y:auto;padding:4px 6px;}
+  #layerToggleList .lg-col + .lg-col{border-left:1px solid var(--border);}
+  #layerToggleList .lg-col .lg-name{flex:1;min-width:0;white-space:normal;overflow:visible;text-overflow:clip;line-height:1.25;overflow-wrap:break-word;hyphens:auto;}
+  #layerToggleList .lg-col .lg-kids{margin-left:6px;padding-left:4px;}
+  #layerToggleList .lg-col .lg-chev.empty{display:none;}
+  /* Lista recolhida libera a faixa de baixo daquele lado */
+  .map-br-stack.livre-esq{left:12px;}
+  /* Camadas translúcida com linhas pretas (16/10/2026, pedido de Pedro) */
+  #layerPanel{background:rgba(255,255,255,.38);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border:1px solid #000;}
+  #layerPanel .lg-head{border-bottom:1px solid #000;}
+  #layerToggleList .lg-col + .lg-col{border-left:1px solid #000;}
+  #layerToggleList .lg-kids{border-left-color:#000;}
+  /* Camadas centralizada: colunas no meio do quadro (as margens automáticas não cortam a rolagem) */
+  #layerToggleList .lg-col:first-child{margin-left:auto;}
+  #layerToggleList .lg-col:last-child{margin-right:auto;}
+  /* Cor só nos textos-chave (16/10/2026, no lugar do card inteiro pintado): a etapa nas intervenções e o
+     índice de risco nos pontos, mais uma faixa fina à esquerda. --tinta = cor "r,g,b"; --tinta-txt = a mesma
+     cor escurecida, para o texto ler bem sobre o fundo claro (o amarelo puro não lê). */
+  /* Contorno do card inteiro na cor (pedido de Pedro, 16/10/2026) */
+  .project-card.tinta,.pc-card.tinta{border:2px solid rgba(var(--tinta),.45);}
+  .project-card.tinta.active,.pc-card.tinta.active{box-shadow:0 0 0 3px rgba(var(--tinta),.25);}
+  .project-card.tinta .status-pill{background:rgba(var(--tinta),.16);color:rgb(var(--tinta-txt));}
+  .pc-card.tinta .pc-indice b{color:rgb(var(--tinta-txt));}
+  /* Lista de pontos críticos embaixo da de intervenções, na coluna da esquerda (16/10/2026).
+     A direita do mapa fica livre. Lista recolhida vira só o título e a outra ocupa a altura. */
+  :root{--pc-lista-w:0px;}
+  .overlay-grid{grid-template-columns:320px 1fr;grid-template-rows:auto minmax(0,1fr) minmax(0,1fr);}
+  .list-panel.pc-panel{grid-column:1;grid-row:3;}
+  .overlay-grid.obras-rec{grid-template-rows:auto auto minmax(0,1fr);}
+  .overlay-grid.pc-rec{grid-template-rows:auto minmax(0,1fr) auto;}
+  .overlay-grid.obras-rec.pc-rec{grid-template-rows:auto auto auto;}
   .filter-float{gap:6px;}
   .filterbar{padding:6px 12px;gap:8px;border-radius:12px;}
   .filterbar label{font-size:10.5px;}
@@ -785,6 +852,10 @@
   .kpi-label{font-size:10px;}
   .kpi-value{font-size:20px;}
   .kpi-value small{font-size:11px;}
+  /* KPIs dos pontos críticos (14/10/2026) */
+  .kpi-sep{flex:0 0 1px;align-self:stretch;margin:4px 2px;background:rgba(8,105,166,.35);}
+  .kpi-tile.kpi-pc{border-top:3px solid #0869A6;}
+  .kpi-teste{font-size:9px;font-weight:700;color:#0869A6;background:rgba(255,255,255,.75);border-radius:4px;padding:1px 5px;margin-left:4px;letter-spacing:0;text-transform:none;}
   .list-panel{padding:8px 2px 10px;gap:8px;}
   .list-panel-header{padding:0 10px;}
   .list-panel-header h3{font-size:11px;}
@@ -812,6 +883,7 @@
     .overlay-grid{grid-template-columns:1fr;grid-template-rows:auto auto auto;}
     .list-panel.pc-panel{grid-column:1;grid-row:3;max-height:30vh;}
     .map-br-stack,.map-center-controls{right:10px;}
+    .map-br-stack{left:auto;flex-direction:column;align-items:flex-end;}
   }
 </style>
 </head>
@@ -861,9 +933,12 @@
                 <label>Status</label>
                 <select id="filterStatus">
                   <option value="">Todos os status</option>
-                  <option value="obra">Em Obra</option>
-                  <option value="licitacao">Em Licitação</option>
-                  <option value="concluido">Concluído</option>
+                  <option value="nao_planejado">Não planejado</option>
+                  <option value="conceitual">Conceitual</option>
+                  <option value="projeto">Em projeto</option>
+                  <option value="licitacao">Em licitação</option>
+                  <option value="obra">Em obra</option>
+                  <option value="concluido">Concluída</option>
                 </select>
                 <span class="fcount" id="fcount"></span>
                 <button class="freset" id="freset" type="button">Limpar filtros</button>
@@ -881,6 +956,9 @@
             <div class="list-panel-header">
               <h3>Intervenções</h3>
               <span class="list-count" id="listCount"></span>
+              <button type="button" class="pc-recolher" id="obrasRecolher" title="Recolher a lista" aria-expanded="true">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 15l6-6 6 6"/></svg>
+              </button>
             </div>
             <div class="project-list" id="projectList"></div>
           </div>
@@ -889,6 +967,9 @@
             <div class="list-panel-header">
               <h3>Pontos críticos</h3>
               <span class="list-count" id="pcCount"></span>
+              <button type="button" class="pc-recolher" id="pcRecolher" title="Recolher a lista" aria-expanded="true">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 15l6-6 6 6"/></svg>
+              </button>
             </div>
             <div class="project-list" id="pcList"><div class="pc-msg">Carregando pontos da planilha…</div></div>
           </div>
@@ -905,24 +986,6 @@
         </div>
 
         <div class="map-br-stack">
-          <div class="legend" id="mapTools">
-            <div class="map-tools-head">
-              <h4>Mapa base</h4>
-              <div class="data-info" tabindex="0" role="note" aria-label="Aviso sobre a origem dos dados do mapa">
-                <div class="data-info-icon">i</div>
-                <div class="data-info-tip">Mapa: WebMap real da Prefeitura (ArcGIS Enterprise) · Pontos críticos: lidos da planilha de notas (teste, coordenadas não verificadas) · Lista de intervenções ao lado: dados de exemplo, ainda não conectados ao FeatureServer real</div>
-              </div>
-            </div>
-            <div id="basemapBox">
-              <div class="bm-seg" id="basemapSeg">
-                <button type="button" data-bm="gray-vector" class="on">Cinza</button>
-                <button type="button" data-bm="streets-vector">Ruas</button>
-                <button type="button" data-bm="satellite">Satélite</button>
-                <button type="button" data-bm="original" title="Mapa base salvo no WebMap da Prefeitura">Original</button>
-              </div>
-            </div>
-            <button class="map-source-toggle" id="btnMapSource" type="button"><span id="mapSourceLabel">Ver no Google Maps</span></button>
-          </div>
           <div class="legend" id="layerPanel">
             <div class="lg-head" id="layerPanelHead"><h4>Camadas</h4><button class="lg-min" id="layerPanelMin" type="button" title="Recolher">–</button></div>
             <div id="layerToggleList"><span style="font-size:11px;color:var(--text-faint)">Carregando…</span></div>
@@ -1134,8 +1197,10 @@ require([
   "esri/Map",
   "esri/core/reactiveUtils",
   "esri/widgets/Popup",
-  "esri/symbols/support/symbolUtils"
-], function(WebMap, MapView, GraphicsLayer, Graphic, PopupTemplate, EsriMap, reactiveUtils, Popup, symbolUtils){
+  "esri/symbols/support/symbolUtils",
+  "esri/geometry/Extent",
+  "esri/layers/GroupLayer"
+], function(WebMap, MapView, GraphicsLayer, Graphic, PopupTemplate, EsriMap, reactiveUtils, Popup, symbolUtils, Extent, GroupLayer){
   "use strict";
 
   /* =====================================================================
@@ -1261,10 +1326,13 @@ require([
   }
   function medidoMi(p){ return (p.investNum == null || p.pctFinanceiro == null) ? null : p.investNum * p.pctFinanceiro / 100; }
 
-  var STATUS_LABEL = { obra:"Em Obra", licitacao:"Em Licitação", concluido:"Concluído", indefinido:"Status a informar" };
+  /* Etapas das obras (16/10/2026, decisão de Pedro): ordem do início ao fim. Coluna "status" da aba "Obras". */
+  var ETAPAS_OBRA = ["nao_planejado", "conceitual", "projeto", "licitacao", "obra", "concluido"];
+  var STATUS_LABEL = { nao_planejado:"Não planejado", conceitual:"Conceitual", projeto:"Em projeto",
+                       licitacao:"Em licitação", obra:"Em obra", concluido:"Concluída" };
   var SCHED_LABEL = { saudavel:"Saudável", atencao:"Atenção", critico:"Crítico", neutro:"Sem dados" };
 
-  function statusClass(s){ return s==="obra"?"obra":s==="licitacao"?"licitacao":"concluido"; }
+  function statusClass(s){ return STATUS_LABEL[s] ? s : "nao_planejado"; }
   function schedStatus(p){
     if(p.status==="concluido") return "saudavel";
     if(p.atrasoDias == null) return "neutro";
@@ -1339,45 +1407,74 @@ require([
   var PONTOS_TITULO = "Pontos críticos — RPA 6 (teste)";
   var CORTE_RISCO = 9;
   var pontosLayer = new GraphicsLayer({ title: PONTOS_TITULO });
-  /* Área de análise: círculo de 300 m em volta de cada ponto crítico (o mesmo raio usado no score) */
-  var RAIO_TITULO = "Área de análise — 300 m";
-  var RAIO_M = 300;
-  var raioLayer = new GraphicsLayer({ title: RAIO_TITULO });
-  map.add(raioLayer);
+  /* Círculo de 300 m em volta dos pontos: retirado do mapa em 16/10/2026 (pedido de Pedro).
+     O raio continua sendo a área do score (metodologia); só deixou de ser desenhado. */
+  /* Obras: um ponto por obra, na coordenada da coluna "coordenadas (lat, lon)" da aba "Obras".
+     Desenho pelo tipo e cor pela etapa. Uma camada por etapa dentro do grupo (16/10/2026), para
+     ligar e desligar cada etapa na legenda. */
+  var OBRAS_PONTOS_TITULO = "Obras (pontos da planilha)";
+  var CAMADA_ETAPA = {}, ETAPA_DA_CAMADA = {};
+  // A legenda lista a última camada do grupo primeiro: adiciona do fim para o começo.
+  var obrasPontosLayer = new GroupLayer({ title: OBRAS_PONTOS_TITULO, visibilityMode: "independent",
+    layers: ETAPAS_OBRA.slice().reverse().map(function(et){
+      var l = new GraphicsLayer({ title: STATUS_LABEL[et] });
+      CAMADA_ETAPA[et] = l; ETAPA_DA_CAMADA[l.title] = et;
+      return l;
+    }) });
+  function ehCamadaDeObra(l){ return !!l && ETAPA_DA_CAMADA[l.title] !== undefined && CAMADA_ETAPA[ETAPA_DA_CAMADA[l.title]] === l; }
+  // Ordem de desenho: a última adicionada fica por cima. Obras acima dos pontos críticos (pedido de Pedro, 15/10/2026).
+  /* Ligação ponto crítico ↔ obra: linha tracejada do ponto até o ícone da obra (15/10/2026),
+     só para o ponto clicado (cartão aberto).
+     Vem da coluna "Obras relacionadas (obra_id)" da aba "Notas dos pontos". */
+  var LIGACOES_TITULO = "Ligação pontos críticos ↔ obras";
+  var ligacoesLayer = new GraphicsLayer({ title: LIGACOES_TITULO });
+  map.add(ligacoesLayer);
   map.add(pontosLayer);
-  // Polígono do círculo (64 vértices) calculado na esfera a partir de lon/lat.
-  function circuloGeo(lon, lat, raioM){
-    var R = 6371008.8, d = raioM / R, la1 = lat * Math.PI / 180, lo1 = lon * Math.PI / 180, anel = [];
-    for(var k = 0; k <= 64; k++){
-      var b = 2 * Math.PI * k / 64;
-      var la2 = Math.asin(Math.sin(la1) * Math.cos(d) + Math.cos(la1) * Math.sin(d) * Math.cos(b));
-      var lo2 = lo1 + Math.atan2(Math.sin(b) * Math.sin(d) * Math.cos(la1), Math.cos(d) - Math.sin(la1) * Math.sin(la2));
-      anel.push([lo2 * 180 / Math.PI, la2 * 180 / Math.PI]);
-    }
-    return { type:"polygon", rings:[anel], spatialReference:{ wkid:4326 } };  // sentido horário (anel externo)
-  }
-  var SIMBOLO_RAIO = { type:"simple-fill", color:[227,26,28,0.05],
-                       outline:{ color:[227,26,28,0.55], width:1.2, style:"short-dash" } };
-
+  map.add(obrasPontosLayer);
+  // O WebMap só traz as camadas dele depois de carregar, e elas entram por cima das nossas (os rios
+  // cobriam os ícones das obras). Depois do carregamento, as nossas voltam para o topo, na mesma ordem.
+  map.when(function(){
+    [ligacoesLayer, pontosLayer, obrasPontosLayer].forEach(function(l){ map.reorder(l, map.layers.length - 1); });
+  });
   var CLASSES_INDICE = [
     { max: 0.2,      cor: "#1a9850", rotulo: "< 0,200" },
-    { max: 1/3,      cor: "#fee08b", rotulo: "0,200 – 0,333" },
-    { max: 0.5,      cor: "#fc8d59", rotulo: "0,333 – 0,500" },
+    { max: 1/3,      cor: "#f2b705", rotulo: "0,200 – 0,333" },
+    { max: 0.5,      cor: "#f46d43", rotulo: "0,333 – 0,500" },
     { max: Infinity, cor: "#d73027", rotulo: "≥ 0,500" }
   ];
   /* Símbolo do ponto crítico (mapa/icones/ponto_critico.svg): gota com onda, cor única.
-     O risco aparece pelo tamanho: 14 pt (índice 0) a 26 pt (índice 1). */
-  var ICONE_PONTO = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PGNpcmNsZSBjeD0iMTYiIGN5PSIxNiIgcj0iMTQiIGZpbGw9IiNlMzFhMWMiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSIyIi8+PGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoNy41LDcuNSkgc2NhbGUoMS4xMzMzMzMzMzMzMzMzMzMzKSIgZmlsbD0iI2ZmZiI+CiAgPHBhdGggZD0iTTcuNSAxNEM5LjU3Njg4IDE0IDEyIDEyLjcxMTcgMTIgOS40MzI0MUMxMiA3LjIwNzI0IDguNTM4NDQgMi4yODgzIDcuNSAxQzYuNTc2OTEgMi4yODgzIDMgNy4wOTAwNyAzIDkuNDMyNDFDMyAxMi43MTE3IDUuNDIzMTIgMTQgNy41IDE0WiIvPgo8cGF0aCBkPSJNNC42IDEwLjJjLjk1LS44IDEuOS0uOCAyLjkgMHMxLjk1LjggMi45IDAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2UzMWExYyIgc3Ryb2tlLXdpZHRoPSIxLjQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjwvZz48L3N2Zz4=";
-  function tamanhoPonto(i){ return i == null ? 12 : 14 + 12 * Math.max(0, Math.min(1, i)); }
+     O risco aparece pelo tamanho: 22 pt (índice 0) a 38 pt (índice 1) (aumentado em 14/10/2026)
+     e pela cor do anel colado na figura (classe do índice, CLASSES_INDICE). */
+  function tamanhoPonto(i){ return i == null ? 20 : 22 + 16 * Math.max(0, Math.min(1, i)); }
+  // Mesma gota com onda, menor por dentro, e anel largo na cor do grau de criticidade (contorno branco).
+  var ICONES_POR_COR = {};
+  function iconePonto(cor){
+    if(!ICONES_POR_COR[cor]){
+      var svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">' +
+        '<circle cx="16" cy="16" r="15.5" fill="#fff"/>' +
+        '<circle cx="16" cy="16" r="13" fill="none" stroke="' + cor + '" stroke-width="5"/>' +
+        '<circle cx="16" cy="16" r="9.5" fill="#e31a1c"/>' +
+        '<g transform="translate(10.4,10.4) scale(0.7467)" fill="#fff">' +
+          '<path d="M7.5 14C9.57688 14 12 12.7117 12 9.43241C12 7.20724 8.53844 2.2883 7.5 1C6.57691 2.2883 3 7.09007 3 9.43241C3 12.7117 5.42312 14 7.5 14Z"/>' +
+          '<path d="M4.6 10.2c.95-.8 1.9-.8 2.9 0s1.95.8 2.9 0" fill="none" stroke="#e31a1c" stroke-width="1.4" stroke-linecap="round"/>' +
+        '</g></svg>';
+      ICONES_POR_COR[cor] = "data:image/svg+xml;base64," + btoa(svg);
+    }
+    return ICONES_POR_COR[cor];
+  }
   function simboloPonto(i){
     var t = tamanhoPonto(i);
-    return { type:"picture-marker", url: ICONE_PONTO, width: t, height: t };
+    return { type:"picture-marker", url: iconePonto(corIndice(i)), width: t, height: t };
   }
   function corIndice(i){
     if(i == null) return "#9ca3af";
     for(var k=0;k<CLASSES_INDICE.length;k++){ if(i < CLASSES_INDICE[k].max) return CLASSES_INDICE[k].cor; }
     return CLASSES_INDICE[CLASSES_INDICE.length-1].cor;
   }
+  function rgbDeHex(c){ return parseInt(c.substr(1,2),16) + "," + parseInt(c.substr(3,2),16) + "," + parseInt(c.substr(5,2),16); }
+  // Mesma cor 30% mais escura, para texto.
+  function rgbTexto(c){ return [1,3,5].map(function(i){ return Math.round(parseInt(c.substr(i,2),16) * 0.7); }).join(","); }
+  function estiloTinta(c){ return "--tinta:" + rgbDeHex(c) + ";--tinta-txt:" + rgbTexto(c); }
   function fmtN(v, casas){ return v == null ? "—" : v.toFixed(casas).replace(".", ","); }
   function escHtml(t){ return String(t == null ? "" : t).replace(/[&<>"]/g, function(ch){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[ch]; }); }
 
@@ -1395,6 +1492,130 @@ require([
     { nome:"Impacto",         cods:["I1","I2","I3"] }
   ];
 
+  // Obras ligadas ao ponto (coluna "Obras relacionadas" da planilha), com link para a ficha.
+  function obrasDoPontoHtml(p){
+    var ids = p.obras || [];
+    if(!ids.length) return '<div class="rr-obras"><div class="rr-obras-t">Obras relacionadas</div><div class="rr-obras-vazio">Nenhuma obra ligada a este ponto.</div></div>';
+    return '<div class="rr-obras"><div class="rr-obras-t">Obras relacionadas</div>' + ids.map(function(id){
+      var o = PROJECTS.find(function(x){ return x.id === "obra-" + id; });
+      if(!o) return '<div class="rr-obra">Obra ' + escHtml(id) + ' <span class="rr-obras-vazio">(não está na aba "Obras")</span></div>';
+      return '<div class="rr-obra" onclick="openFichaById(\'' + o.id + '\')" title="Abrir a ficha da obra">' +
+        '<span class="rr-obra-n">' + escHtml(o.title) + '</span><span class="rr-obra-s">' + escHtml(STATUS_LABEL[o.status] || "") + ' ›</span></div>';
+    }).join("") + '</div>';
+  }
+  // Pontos críticos ligados a uma obra (inverso da coluna "Obras relacionadas").
+  function pontosDaObra(obraId){
+    var num = String(obraId).replace(/^obra-/, "");
+    return (PONTOS_LISTA || []).filter(function(pc){ return (pc.obras || []).indexOf(num) > -1; });
+  }
+  /* ANIMAÇÃO DO CLIQUE NO PONTO (15/10/2026, prévia em docs/prototipos/animacao_ligacao.html):
+     zoom que enquadra o ponto e as obras ligadas (700 ms) → gota dá um salto (450 ms) e a linha corre
+     do ponto até a obra (600 ms) → pulso na obra (700 ms). Ponto sem obra: zoom, salto e pulso na cor
+     do risco. Quem pede menos movimento no sistema (prefers-reduced-motion) vê tudo direto, sem animação. */
+  var SEM_ANIMACAO = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var animacoes = [];
+  // Interrompe as animações e devolve as gotas ao tamanho normal (um salto cortado no meio não fica grande).
+  function pararAnimacoes(){
+    animacoes.forEach(cancelAnimationFrame); animacoes = [];
+    pontosLayer.graphics.forEach(function(g){ var pc = PONTOS_POR_ID[g.attributes.id]; if(pc) g.symbol = simboloPonto(pc.indice); });
+  }
+  function suave(t){ return 1 - Math.pow(1 - t, 3); }
+  // Chama passo(t) com t de 0 a 1 ao longo de ms milissegundos; depois chama fim().
+  function animar(ms, passo, fim){
+    if(SEM_ANIMACAO){ passo(1); if(fim) fim(); return; }
+    var t0 = null;
+    function quadro(ts){
+      if(t0 === null) t0 = ts;
+      var t = Math.min(1, (ts - t0) / ms);
+      passo(t);
+      if(t < 1) animacoes.push(requestAnimationFrame(quadro)); else if(fim) fim();
+    }
+    animacoes.push(requestAnimationFrame(quadro));
+  }
+  function obrasDoPonto(pc){
+    return (pc.obras || []).map(function(id){ return PROJECTS.find(function(x){ return x.id === "obra-" + id; }); })
+      .filter(function(o){ return o && o._ponto; });  // obra sem coordenada na aba "Obras": sem linha
+  }
+  function pulsoEm(lon, lat, rgb){
+    var g = new Graphic({ geometry:{ type:"point", longitude:lon, latitude:lat },
+      symbol:{ type:"simple-marker", style:"circle", size:30, color:[0,0,0,0], outline:{ color:rgb.concat(1), width:3 } } });
+    ligacoesLayer.add(g);
+    animar(700, function(t){
+      var e = suave(t);
+      g.symbol = { type:"simple-marker", style:"circle", size:30 + 34 * e, color:[0,0,0,0], outline:{ color:rgb.concat(1 - t), width:3 } };
+    }, function(){ ligacoesLayer.remove(g); });
+  }
+  function saltarPonto(pc){
+    var g = pontosLayer.graphics.find(function(gr){ return gr.attributes.id === pc.id; });
+    if(!g) return;
+    var base = simboloPonto(pc.indice);
+    animar(450, function(t){
+      var h = Math.sin(Math.PI * t) * Math.exp(-2 * t);   // sobe e desce, amortecido
+      var s = 1 + 0.35 * h;
+      g.symbol = { type:"picture-marker", url: base.url, width: base.width * s, height: base.height * s, yoffset: 10 * h };
+    }, function(){ g.symbol = base; });
+  }
+  function desenharLigacoes(){
+    pararAnimacoes();
+    ligacoesLayer.removeAll();
+    if(!cartaoPonto) return;
+    var pc = cartaoPonto;
+    if(pc.lat == null || pc.lon == null) return;
+    var obrasPc = obrasDoPonto(pc);
+    saltarPonto(pc);
+    if(!obrasPc.length){ var c = corIndice(pc.indice); pulsoEm(pc.lon, pc.lat, [parseInt(c.substr(1,2),16), parseInt(c.substr(3,2),16), parseInt(c.substr(5,2),16)]); return; }
+    obrasPc.forEach(function(o){
+      var linha = new Graphic({
+        geometry: { type:"polyline", paths:[[[pc.lon, pc.lat], [pc.lon, pc.lat]]], spatialReference:{ wkid:4326 } },
+        symbol: { type:"simple-line", color:[51,65,85,0.85], width:2, style:"dash" },
+        attributes: { ponto: pc.id, obra: o.id }
+      });
+      ligacoesLayer.add(linha);
+      animar(600, function(t){
+        var e = suave(t);
+        linha.geometry = { type:"polyline", spatialReference:{ wkid:4326 },
+          paths:[[[pc.lon, pc.lat], [pc.lon + (o.pos[0] - pc.lon) * e, pc.lat + (o.pos[1] - pc.lat) * e]]] };
+      }, function(){ pulsoEm(o.pos[0], o.pos[1], [51,65,85]); });
+    });
+  }
+  // Área do mapa que não fica atrás dos painéis (lista de intervenções à esquerda, KPIs no topo,
+  // lista de pontos à direita), em pixels.
+  function areaLivre(){
+    var cont = view.container.getBoundingClientRect(), L = 0, R = 0, T = 0;
+    // As duas listas ficam à esquerda (16/10/2026); conta a mais larga que estiver aberta.
+    document.querySelectorAll(".list-panel").forEach(function(el){
+      if(el.offsetWidth && !el.classList.contains("recolhida")) L = Math.max(L, el.getBoundingClientRect().right - cont.left);
+    });
+    var topo = document.getElementById("kpiStrip");
+    if(topo && topo.offsetHeight) T = Math.max(0, topo.getBoundingClientRect().bottom - cont.top);
+    if(view.width - L - R < 200){ L = 0; R = 0; }   // tela estreita: ignora os painéis
+    return { L:L + 30, R:R + 30, T:T + 30, B:30 };
+  }
+  // Zoom que enquadra o ponto e as obras ligadas a ele na área livre (o ponto sozinho: zoom 16).
+  function focarPonto(pc){
+    var lons = [pc.lon], lats = [pc.lat];
+    obrasDoPonto(pc).forEach(function(o){ lons.push(o.pos[0]); lats.push(o.pos[1]); });
+    var x0 = Math.min.apply(null, lons), x1 = Math.max.apply(null, lons), y0 = Math.min.apply(null, lats), y1 = Math.max.apply(null, lats);
+    // Zoom mais aberto (pedido de Pedro, 15/10/2026): folga de 40% em volta e no mínimo ~2 km de largura.
+    var fx = (x1 - x0) * 0.4, fy = (y1 - y0) * 0.4;
+    x0 -= fx; x1 += fx; y0 -= fy; y1 += fy;
+    var MIN = 0.018;   // ~2 km: não aproxima mais que isso
+    if(x1 - x0 < MIN){ var cx = (x0 + x1) / 2; x0 = cx - MIN / 2; x1 = cx + MIN / 2; }
+    if(y1 - y0 < MIN){ var cy = (y0 + y1) / 2; y0 = cy - MIN / 2; y1 = cy + MIN / 2; }
+    var a = areaLivre(), W = view.width, H = view.height;
+    var fw = Math.max(0.2, (W - a.L - a.R) / W), fh = Math.max(0.2, (H - a.T - a.B) / H);
+    var tw = (x1 - x0) / fw, th = (y1 - y0) / fh;
+    var alvo = new Extent({ spatialReference:{ wkid:4326 },
+      xmin: x0 - tw * a.L / W, xmax: x0 - tw * a.L / W + tw,
+      ymax: y1 + th * a.T / H, ymin: y1 + th * a.T / H - th });
+    return view.goTo(alvo, { duration: SEM_ANIMACAO ? 0 : 700, easing: "in-out-cubic" });
+  }
+  // Clique no ponto (mapa ou lista): zoom, depois cartão e animação.
+  function selecionarPonto(pc, geom){
+    fecharCartao();
+    function abrir(){ abrirCartao(pc, geom); }
+    focarPonto(pc).then(abrir, abrir);
+  }
   function popupPonto(p){
     var linhas = "";
     GRUPOS_SUB.forEach(function(g, gi){
@@ -1416,6 +1637,7 @@ require([
         '<div class="rr-kpi"><div class="rr-kpi-v">' + (p.posicao != null ? p.posicao + 'º' : '—') + '</div>' +
           '<div class="rr-kpi-r">Posição no ranking</div><div class="rr-kpi-n">de 21 pontos</div></div>' +
       '</div>' +
+      obrasDoPontoHtml(p) +
       '<table class="rr-tab"><tr><th>Dimensão / variável</th><th>Avaliação<br><span class="rr-th-n">(nota 1–5)</span></th></tr>' + linhas + '</table>' +
       '<div class="rr-pe">Avaliação de 1 a 5 (5 = mais crítico) · Lat ' + fmtN(p.lat, 6) + ' · Lon ' + fmtN(p.lon, 6) +
         ' (' + escHtml(p.precisao).toLowerCase() + ')</div>' +
@@ -1468,7 +1690,7 @@ require([
     var W = view.width, H = view.height, gap = 36, m = 8;  // gap = distância entre o ponto e o cartão (px)
     // A lista de pontos críticos ocupa a direita do mapa: o cartão não passa por cima dela.
     var lista = document.querySelector(".pc-panel");
-    if(lista && lista.offsetWidth){
+    if(lista && lista.offsetWidth && !lista.classList.contains("recolhida")){
       var esq = lista.getBoundingClientRect().left - view.container.getBoundingClientRect().left;
       if(esq > W / 2) W = esq - 10;
     }
@@ -1493,11 +1715,13 @@ require([
     cartao.style.display = "block";
     posicionarCartao();
     marcarPontoNaLista(p.id);
+    desenharLigacoes();
   }
   function fecharCartao(){
     if(cartao) cartao.style.display = "none";
     cartaoPonto = null; cartaoGeom = null;
     marcarPontoNaLista(null);
+    desenharLigacoes();
   }
   reactiveUtils.watch(function(){ return view.extent; }, posicionarCartao);
   window.addEventListener("resize", posicionarCartao);
@@ -1514,13 +1738,11 @@ require([
       return;
     }
     pontosLayer.removeAll();
-    raioLayer.removeAll();
     fecharCartao();
     NOMES_PLANILHA = res.nomes || {};
     PONTOS_POR_ID = {};
     res.pontos.forEach(function(p){
       if(p.lat == null || p.lon == null) return;
-      raioLayer.add(new Graphic({ geometry: circuloGeo(p.lon, p.lat, RAIO_M), symbol: SIMBOLO_RAIO, attributes: { id: p.id } }));
       pontosLayer.add(new Graphic({
         geometry: { type:"point", longitude:p.lon, latitude:p.lat },
         symbol: simboloPonto(p.indice),
@@ -1533,6 +1755,8 @@ require([
       return pa - pb || a.id - b.id;
     });
     renderPontosLista();
+    renderKpiStrip();
+    desenharLigacoes();
     console.log("Pontos críticos carregados da planilha: " + res.pontos.length + " (" + res.lidoEm + ")");
     buildLayerToggle();
   }
@@ -1543,13 +1767,18 @@ require([
      topo também filtra esta lista (trecho ou bairro).
      --------------------------------------------------------------------- */
   var PONTOS_LISTA = null;   // null = ainda carregando (ou erro)
+  // Pontos que passam pela busca do topo (trecho ou bairro). Usado pela lista e pelos KPIs.
+  function pontosFiltrados(){
+    if(!PONTOS_LISTA) return null;
+    var q = document.getElementById("searchInput").value.trim().toLowerCase();
+    return PONTOS_LISTA.filter(function(p){
+      return !q || p.trecho.toLowerCase().indexOf(q) > -1 || p.bairro.toLowerCase().indexOf(q) > -1;
+    });
+  }
   function renderPontosLista(){
     if(!PONTOS_LISTA) return;
     var box = document.getElementById("pcList");
-    var q = document.getElementById("searchInput").value.trim().toLowerCase();
-    var lista = PONTOS_LISTA.filter(function(p){
-      return !q || p.trecho.toLowerCase().indexOf(q) > -1 || p.bairro.toLowerCase().indexOf(q) > -1;
-    });
+    var lista = pontosFiltrados();
     document.getElementById("pcCount").textContent = lista.length + (lista.length === 1 ? " ponto" : " pontos");
     if(!lista.length){
       box.innerHTML = '<div class="pc-msg">Nenhum ponto crítico encontrado para a busca.</div>';
@@ -1557,8 +1786,8 @@ require([
     }
     box.innerHTML = lista.map(function(p){
       var semCoord = p.lat == null || p.lon == null;
-      return '<div class="pc-card' + (semCoord ? ' sem-coord' : '') + (cartaoPonto && cartaoPonto.id === p.id ? ' active' : '') +
-          '" data-id="' + p.id + '" style="border-left:4px solid ' + corIndice(p.indice) + '"' +
+      return '<div class="pc-card tinta' + (semCoord ? ' sem-coord' : '') + (cartaoPonto && cartaoPonto.id === p.id ? ' active' : '') +
+          '" data-id="' + p.id + '" style="' + estiloTinta(corIndice(p.indice)) + '"' +
           (semCoord ? ' title="Ponto sem coordenada na planilha"' : '') + '>' +
         '<div class="pc-card-top"><span class="pc-pos">' + (p.posicao != null ? p.posicao + 'º' : '—') + '</span>' +
           '<span class="pc-indice">Índice de risco <b>' + fmtN(p.indice, 3) + '</b></span></div>' +
@@ -1576,6 +1805,22 @@ require([
       if(ativo) el.scrollIntoView({ block:"nearest", behavior:"smooth" });
     });
   }
+  // Recolher e abrir as listas (pontos críticos à direita; intervenções à esquerda desde 15/10/2026).
+  [[".pc-panel", "pcRecolher", "pc-rec"], [".list-panel:not(.pc-panel)", "obrasRecolher", "obras-rec"]].forEach(function(par){
+    var painel = document.querySelector(par[0]), btn = document.getElementById(par[1]);
+    if(!painel || !btn) return;
+    btn.addEventListener("click", function(){
+      var recolhida = painel.classList.toggle("recolhida");
+      btn.setAttribute("aria-expanded", String(!recolhida));
+      btn.title = recolhida ? "Abrir a lista" : "Recolher a lista";
+      var grade = document.querySelector(".overlay-grid");
+      if(grade) grade.classList.toggle(par[2], recolhida);   // a outra lista ocupa a altura liberada
+      // As duas listas recolhidas: Mapa base e Camadas usam a faixa de baixo inteira.
+      var pilha = document.querySelector(".map-br-stack");
+      if(pilha) pilha.classList.toggle("livre-esq", document.querySelectorAll(".list-panel.recolhida").length === 2);
+      posicionarCartao();
+    });
+  });
   document.getElementById("pcList").addEventListener("click", function(e){
     var el = e.target.closest(".pc-card");
     if(!el) return;
@@ -1583,9 +1828,7 @@ require([
     if(!p) return;  // sem coordenada: não está no mapa
     var g = pontosLayer.graphics.find(function(gr){ return gr.attributes.id === p.id; });
     if(!g) return;
-    view.goTo({ target: g.geometry, zoom: Math.max(view.zoom, 16) }, { duration: 600 })
-      .then(function(){ abrirCartao(p, g.geometry); })
-      .catch(function(){ abrirCartao(p, g.geometry); });
+    selecionarPonto(p, g.geometry);
   });
   if(typeof google !== "undefined" && google.script && google.script.run){
     google.script.run
@@ -1662,7 +1905,9 @@ require([
       label.textContent = "Ver no Google Maps";
     }
   }
-  document.getElementById("btnMapSource").addEventListener("click", toggleMapSource);
+  // Quadro "Mapa" (Google Maps) retirado em 16/10/2026 (pedido de Pedro); toggleMapSource fica sem botão.
+  var btnMapSource = document.getElementById("btnMapSource");
+  if(btnMapSource) btnMapSource.addEventListener("click", toggleMapSource);
 
   function popupTemplateFor(p){
     var b = baciaOf(p.bacia), sub = subOf(p.bacia,p.subbacia);
@@ -1712,6 +1957,52 @@ require([
     });
   }
 
+  // Desenhos dos tipos vindos de `python3 scripts/gerar_icones_obras_tipo.py --js` (até 15/10/2026 eram o ícone inteiro).
+  /* Ícones das obras: hexágono com o desenho do tipo (o de mapa/icones/obra_<tipo>.svg), na cor da etapa.
+     Não planejado cinza · conceitual roxo · em projeto índigo · em licitação rosa · em obra azul · concluída verde. */
+  var GLIFOS_OBRA = {"canal": "<path d=\"M2 4 q1.375 -1.6 2.75 0 t2.75 0 t2.75 0 t2.75 0 M2 7.5 q1.375 -1.6 2.75 0 t2.75 0 t2.75 0 t2.75 0 M2 11 q1.375 -1.6 2.75 0 t2.75 0 t2.75 0 t2.75 0\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>", "dragagem": "<path d=\"M0.8 2.4 q1.1 -1.2 2.2 0 t2.2 0\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M14 1 L9.6 5.6\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M5 4.6 H11 L9.8 9.4 H6.2 Z\" fill=\"#fff\"/><path d=\"M0.5 14.5 Q7.5 9.6 14.5 14.5 Z\" fill=\"#fff\"/>", "reservatorio": "<path d=\"M1 2.5 L3.2 13 H11.8 L14 2.5\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M2.4 7.2 q1.275 -1.4 2.55 0 t2.55 0 t2.55 0 t2.55 0 L11.4 12 H3.6 Z\" fill=\"#fff\"/>", "dique": "<path d=\"M3.6 13.5 L6.3 3.5 H8.7 L11.4 13.5 Z\" fill=\"#fff\"/><path d=\"M0.6 6.5 q0.75 -1 1.5 0 t1.5 0 M0.6 9.5 q0.75 -1 1.5 0 t1.5 0\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M11.8 11 q0.7 -1 1.4 0 t1.4 0\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M0.5 13.8 H14.5\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>", "parque": "<circle cx=\"7.5\" cy=\"4.6\" r=\"3.9\" fill=\"#fff\"/><path d=\"M7.5 7.5 V10.4\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M2 13.2 q1.375 -1.6 2.75 0 t2.75 0 t2.75 0 t2.75 0\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>", "rede": "<path d=\"M0.5 1.5 H14.5\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"7.5\" cy=\"9\" r=\"5\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M3.6 10 H11.4 A3.9 3.9 0 0 1 3.6 10 Z\" fill=\"#fff\"/>", "generica": "<path d=\"M6.50 1.5 H8.50 L9.39 4.3 H5.61 Z\" fill=\"#fff\"/><path d=\"M5.13 5.8 H9.87 L10.73 8.5 H4.27 Z\" fill=\"#fff\"/><path d=\"M3.80 10 H11.20 L12.00 12.5 H3.00 Z\" fill=\"#fff\"/><rect x=\"1\" y=\"12.5\" width=\"13\" height=\"1.8\" rx=\"0.6\" fill=\"#fff\"/>"};
+  // 16/10/2026: licitação em rosa (o ciano se confundia com o azul de "em obra") e concluída em verde (pedido de Pedro).
+  var COR_STATUS_OBRA = { nao_planejado:"#94a3b8", conceitual:"#A855F7", projeto:"#4F46E5",
+                          licitacao:"#DB2777", obra:"#0869A6", concluido:"#16A34A" };
+  function hexPontos(r){
+    var p = [];
+    for(var k = 0; k < 6; k++){ var a = Math.PI / 3 * k - Math.PI / 2; p.push((16 + r * Math.cos(a)).toFixed(2) + "," + (16 + r * Math.sin(a)).toFixed(2)); }
+    return p.join(" ");
+  }
+  var ICONES_OBRA_CACHE = {};
+  // Estilo D2 (16/10/2026, docs/prototipos/situacao_obras.html): fundo branco, contorno e desenho na cor da
+  // etapa; "não planejado" com contorno tracejado.
+  function iconeObraSvg(cat, status){
+    var cor = COR_STATUS_OBRA[status] || COR_STATUS_OBRA.nao_planejado;
+    var glifo = (GLIFOS_OBRA[cat] || GLIFOS_OBRA.generica).replace(/#fff/g, cor);
+    return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">' +
+      '<polygon points="' + hexPontos(15.4) + '" fill="#fff" stroke="' + cor + '" stroke-width="3" stroke-linejoin="round"' +
+        (status === "nao_planejado" ? ' stroke-dasharray="3.2 2"' : '') + '/>' +
+      '<g transform="translate(9.6,9.6) scale(0.85)">' + glifo + '</g></svg>';
+  }
+
+  // Coluna "tipo" da aba "Obras" -> categoria do ícone (mesma tabela de scripts/gerar_pontos_obras.py).
+  var CATEGORIA_OBRA = {
+    "canal":"canal", "perfilamento do rio tejipio":"canal", "dragagem":"dragagem",
+    "reservatorios de detencao":"reservatorio", "microrreservatorio":"reservatorio",
+    "diques e comportas":"dique", "parques alagaveis":"parque", "requalificacoes na rede":"rede"
+  };
+  function iconeObra(tipo, status){
+    var cat = CATEGORIA_OBRA[semAcento(tipo).replace(/\s+/g, " ")] || "generica";
+    var chave = cat + "|" + status;
+    if(!ICONES_OBRA_CACHE[chave]) ICONES_OBRA_CACHE[chave] = "data:image/svg+xml;base64," + btoa(iconeObraSvg(cat, status));
+    return ICONES_OBRA_CACHE[chave];
+  }
+  // "-8.08, -34.93" -> [lat, lon]; null se vazio, ilegível ou fora do Recife.
+  function coordObra(texto){
+    var m = String(texto == null ? "" : texto).split(",");
+    if(m.length !== 2) return null;
+    var lat = +m[0].trim(), lon = +m[1].trim();
+    if(isNaN(lat) || isNaN(lon) || !m[0].trim() || !m[1].trim()) return null;
+    if(lat < -8.16 || lat > -7.92 || lon < -35.02 || lon > -34.85) return null;
+    return [lat, lon];
+  }
+
   // Gráfico em memória de cada obra (não vai para o mapa: a camada de obras do WebMap já desenha as áreas).
   function criarGraficoObra(p){
     var geometry = p.kind === "canal" ? { type:"polyline", paths:[p.path] } : { type:"point", longitude:p.pos[0], latitude:p.pos[1] };
@@ -1746,10 +2037,13 @@ require([
   }
   function statusId(texto){
     var t = semAcento(texto);
-    if(/obra|execu/.test(t)) return "obra";
-    if(/licit|previst|projeto/.test(t)) return "licitacao";
+    // Seis etapas (16/10/2026). Vazio ou texto desconhecido = não planejado.
     if(/conclu/.test(t)) return "concluido";
-    return "indefinido";
+    if(/obra|execu/.test(t)) return "obra";
+    if(/licit/.test(t)) return "licitacao";
+    if(/projeto/.test(t)) return "projeto";
+    if(/conceit|previst|estudo/.test(t)) return "conceitual";
+    return "nao_planejado";
   }
   function lerPlanilhaObras(){
     return new Promise(function(resolve){
@@ -1775,6 +2069,7 @@ require([
   // Só entram no painel as obras que existem na aba "Obras" da planilha (decisão de Pedro, 05/10/2026).
   // Polígono do mapa sem linha correspondente na planilha fica de fora.
   function aplicarPlanilha(res){
+    ETAPAS_OBRA.forEach(function(et){ CAMADA_ETAPA[et].removeAll(); });
     if(!res){ PROJECTS.forEach(function(p){ if(p._graphic) graphicsLayer.remove(p._graphic); }); PROJECTS = []; OBRAS_ESTADO = "sem-planilha"; return; }
     var naPlanilha = {};
     res.obras.forEach(function(o){ naPlanilha["obra-" + String(o.obra_id)] = true; });
@@ -1788,7 +2083,7 @@ require([
       var p = PROJECTS.find(function(x){ return x.id === "obra-" + num; });
       if(!p){
         p = { id:"obra-" + num, code:"OBRA " + num, real:true, semDesenho:true, title:"Obra " + num, bairro:"—", bacia:null, subbacia:null,
-              status:"indefinido", investNum:null, invest:"Investimento a informar", kind:"area", pos:INITIAL_VIEW.center,
+              status:"nao_planejado", investNum:null, invest:"Investimento a informar", kind:"area", pos:INITIAL_VIEW.center,
               pctFisico:null, pctFinanceiro:null, atrasoDias:null, x:{} };
         PROJECTS.push(p);
         criarGraficoObra(p);
@@ -1815,7 +2110,20 @@ require([
         valorMedido: med, entraves: { licenca:o.licenca, desapropriacao:o.desapropriacao, concessionarias:o.concessionarias }
       };
       p.etapas = o.etapas || [];
+      // Ponto da obra: a coordenada da planilha passa a ser o local da obra (centro do zoom ao selecionar).
+      var xy = coordObra(o.coordenadas);
+      p._ponto = null;
+      if(xy){
+        p.pos = [xy[1], xy[0]];
+        p._ponto = new Graphic({
+          geometry: { type:"point", longitude:xy[1], latitude:xy[0] },
+          symbol: { type:"picture-marker", url: iconeObra(o.tipo, p.status), width:"44px", height:"44px" },   // 36 → 44 px (16/10/2026)
+          attributes: { id:p.id }
+        });
+        (CAMADA_ETAPA[p.status] || CAMADA_ETAPA.nao_planejado).add(p._ponto);
+      }
     });
+    desenharLigacoes();
   }
   function carregarObras(){
     var camada = map.allLayers.find(function(l){ return l.type === "feature" && /obra/i.test(l.title || ""); });
@@ -1878,10 +2186,10 @@ require([
       var hitPonto = res.results.find(function(r){ return r.graphic && r.graphic.layer === pontosLayer; });
       if(hitPonto){
         var pc = PONTOS_POR_ID[hitPonto.graphic.attributes.id];
-        if(pc){ abrirCartao(pc, hitPonto.graphic.geometry); return; }
+        if(pc){ selecionarPonto(pc, hitPonto.graphic.geometry); return; }
       }
       fecharCartao();
-      var hitProject = res.results.find(function(r){ return r.graphic && r.graphic.layer === graphicsLayer; });
+      var hitProject = res.results.find(function(r){ return r.graphic && (ehCamadaDeObra(r.graphic.layer) || r.graphic.layer === graphicsLayer); });
       if(hitProject){
         var p = PROJECTS.find(function(pr){ return pr.id === hitProject.graphic.attributes.id; });
         selectProject(p, true);
@@ -1904,11 +2212,17 @@ require([
      ===================================================================== */
   function layerSwatchSvg(title){
     if(title && title.indexOf("Pontos críticos") === 0){
-      return '<img src="' + ICONE_PONTO + '" width="11" height="11" alt="" style="vertical-align:middle">' +
-             '<img src="' + ICONE_PONTO + '" width="17" height="17" alt="" style="vertical-align:middle;margin-left:3px">';
+      // Um ícone só na legenda (pedido de Pedro, 16/10/2026); a cor do anel no mapa segue o índice.
+      return '<img src="' + iconePonto(CLASSES_INDICE[CLASSES_INDICE.length - 1].cor) + '" width="16" height="16" alt="" style="vertical-align:middle">';
     }
-    if(title === RAIO_TITULO){
-      return '<svg width="14" height="14" viewBox="0 0 14 14"><circle cx="7" cy="7" r="6" fill="rgba(227,26,28,.08)" stroke="rgba(227,26,28,.7)" stroke-width="1.2" stroke-dasharray="2.5 2"/></svg>';
+    if(ETAPA_DA_CAMADA[title] !== undefined){
+      return '<img src="' + iconeObra("", ETAPA_DA_CAMADA[title]) + '" width="17" height="17" alt="" style="vertical-align:middle">';
+    }
+    if(title === OBRAS_PONTOS_TITULO){
+      return '<img src="' + iconeObra("", "obra") + '" width="17" height="17" alt="" style="vertical-align:middle">';
+    }
+    if(title === LIGACOES_TITULO){
+      return '<svg width="16" height="12" viewBox="0 0 16 12"><path d="M1 11 15 1" stroke="#334155" stroke-width="2" stroke-dasharray="3 2" fill="none"/></svg>';
     }
     return '<svg width="12" height="12" viewBox="0 0 12 12"><rect width="12" height="12" rx="2" fill="#94a3b8"/></svg>';
   }
@@ -1960,10 +2274,22 @@ require([
       function alterna(){ var aberto = target.style.display !== "none"; target.style.display = aberto ? "none" : ""; c.classList.toggle("open", !aberto); }
       return { el: c, alterna: alterna };
     }
+    // Legenda na horizontal (16/10/2026): cada grupo do WebMap vira uma coluna; as camadas soltas
+    // seguidas (as do painel e as fora de grupo) ficam juntas numa coluna.
+    var colSolta = null;
+    function coluna(isGroup){
+      if(!isGroup && colSolta) return colSolta;
+      var c = document.createElement("div");
+      c.className = "lg-col";
+      container.appendChild(c);
+      colSolta = isGroup ? null : c;
+      return c;
+    }
     // Ordem do Conteúdo do ArcGIS: camada de cima primeiro.
     function addRows(layers, parent, nivel){
       layers.toArray().slice().reverse().forEach(function(layer){
         var isGroup = layer.type === "group" && layer.layers && layer.layers.length > 0;
+        if(nivel === 0) parent = coluna(isGroup);
         var row = document.createElement("div");
         row.className = "lg-item" + (isGroup ? " grp" : "");
         var nome = document.createElement("span");
@@ -1979,7 +2305,6 @@ require([
           row.appendChild(olho(layer, row));
           ch.el.addEventListener("click", ch.alterna);
           nome.addEventListener("click", ch.alterna);
-          if(nivel === 0 && parent.childNodes.length) parent.appendChild(Object.assign(document.createElement("div"), { className: "lg-sep" }));
           parent.appendChild(row);
           parent.appendChild(kids);
           addRows(layer.layers, kids, nivel + 1);
@@ -2024,6 +2349,15 @@ require([
     addRows(map.layers, container, 0);
   }
   (function(){
+    var box = document.getElementById("mapTools"), btn = document.getElementById("mapToolsMin");
+    if(!box || !btn) return;
+    btn.addEventListener("click", function(){
+      var min = box.classList.toggle("min");
+      btn.textContent = min ? "+" : "–";
+      btn.title = min ? "Expandir" : "Recolher";
+    });
+  })();
+  (function(){
     var panel = document.getElementById("layerPanel"), head = document.getElementById("layerPanelHead"), btn = document.getElementById("layerPanelMin");
     if(!panel || !head) return;
     head.addEventListener("click", function(){
@@ -2033,7 +2367,7 @@ require([
     });
   })();
   /* =====================================================================
-     MAPA BASE (cinza por padrão; "Original" restaura o do WebMap)
+     MAPA BASE (Original = o do WebMap, padrão desde 16/10/2026)
      ===================================================================== */
   var originalBasemap = null;
   function markBasemap(id){
@@ -2054,7 +2388,8 @@ require([
   document.querySelectorAll("#basemapSeg button").forEach(function(b){
     b.addEventListener("click", function(){ setBasemap(b.getAttribute("data-bm")); });
   });
-  map.when(function(){ originalBasemap = map.basemap; setBasemap("gray-vector"); });
+  // Mapa base: só o Original (o salvo no WebMap); os botões Cinza/Ruas/Satélite saíram em 16/10/2026 (pedido de Pedro).
+  map.when(function(){ originalBasemap = map.basemap; setBasemap("original"); });
 
   var TECH_FIELD_RE = /^(objectid|fid|globalid|shape.*|source\s*_?id|id\s*_?do\s*_?agrup.*|id\s*_?da\s*_?cor|created_.*|last_edited_.*)$/i;
   function hideTechFields(list){
@@ -2105,10 +2440,26 @@ require([
     kpiStripEl.innerHTML =
       kpiTile("Investimento Total", "R$ " + totalInvest.toLocaleString("pt-BR",{minimumFractionDigits:1,maximumFractionDigits:1}), "Mi") +
       kpiTile("Obras Concluídas", concluidas, "/ " + list.length) +
-      kpiTile("Bairros com Obras", bairros, "");
+      kpiTile("Bairros com Obras", bairros, "") +
+      kpiPontos();
   }
-  function kpiTile(label, value, small){
-    return '<div class="kpi-tile"><div class="kpi-label">'+label+'</div><div class="kpi-value">'+value+(small?' <small>'+small+'</small>':'')+'</div></div>';
+  function kpiTile(label, value, small, cls, title){
+    return '<div class="kpi-tile' + (cls ? ' ' + cls : '') + '"' + (title ? ' title="' + title + '"' : '') + '><div class="kpi-label">'+label+'</div><div class="kpi-value">'+value+(small?' <small>'+small+'</small>':'')+'</div></div>';
+  }
+  /* KPIs dos pontos críticos (14/10/2026), ao lado dos de obras. Seguem a busca do topo.
+     Risco alto = risco ≥ CORTE_RISCO (9 = 3 × 3, corte da matriz em 02-metodologia).
+     Enquanto as notas da planilha forem de teste, o rótulo avisa. */
+  function kpiPontos(){
+    var lista = pontosFiltrados();
+    if(!lista) return "";
+    var total = PONTOS_LISTA.length;
+    var alto = lista.filter(function(p){ return p.risco != null && p.risco >= CORTE_RISCO; }).length;
+    var conferir = lista.filter(function(p){ return p.lat == null || p.lon == null || /aproximad/i.test(p.precisao); }).length;
+    var teste = ' <span class="kpi-teste">notas de teste</span>';
+    return '<div class="kpi-sep"></div>' +
+      kpiTile("Pontos Críticos", lista.length, lista.length === total ? "" : "/ " + total, "kpi-pc") +
+      kpiTile("Risco Alto" + teste, alto, "/ " + lista.length, "kpi-pc", "Risco (Probabilidade × Consequência) igual ou acima de " + CORTE_RISCO) +
+      kpiTile("Local a Conferir", conferir, "/ " + lista.length, "kpi-pc", "Coordenada aproximada ou ausente na planilha");
   }
 
   var listEl = document.getElementById("projectList");
@@ -2117,7 +2468,11 @@ require([
 
   function renderProjectList(){
     var visible = filteredProjects();
-    PROJECTS.forEach(function(p){ p._graphic.visible = visible.indexOf(p) > -1; });
+    PROJECTS.forEach(function(p){
+      var vis = visible.indexOf(p) > -1;
+      p._graphic.visible = vis;
+      if(p._ponto) p._ponto.visible = vis;
+    });
     countEl.textContent = visible.length + (visible.length===1 ? " item" : " itens");
     listEl.innerHTML = "";
     if(OBRAS_ESTADO !== "ok"){
@@ -2132,7 +2487,8 @@ require([
     visible.forEach(function(p){
       var b = baciaOf(p.bacia), sub = subOf(p.bacia,p.subbacia);
       var card = document.createElement("div");
-      card.className = "project-card" + (selected && selected.id===p.id ? " active" : "");
+      card.className = "project-card tinta" + (selected && selected.id===p.id ? " active" : "");
+      card.setAttribute("style", estiloTinta(COR_STATUS_OBRA[p.status] || COR_STATUS_OBRA.nao_planejado));
       card.setAttribute("data-id", p.id);
       card.innerHTML =
         '<div class="project-card-top">' +
@@ -2695,7 +3051,10 @@ require([
       ["Início", fmtData(x.inicio)], ["Término previsto", fmtData(x.fimPrevisto)], ["Término atual", fmtData(x.fimAtual)],
       ["Solução", v(x.solucao)], ["Extensão", v(x.extensao)],
       ["População beneficiada", x.populacao != null ? fmtNum(x.populacao) : "a informar"],
-      ["Pontos críticos atendidos", v(x.pontos)],
+      ["Pontos críticos relacionados", (function(){
+        var l = pontosDaObra(p.id);
+        return l.length ? l.map(function(pc){ return pc.trecho + " (índice " + fmtN(pc.indice, 3) + ")"; }).join("; ") : "nenhum ponto ligado";
+      })()],
       ["Licença", v(ENTRAVE_LABEL[en.licenca] || en.licenca)], ["Desapropriação", v(ENTRAVE_LABEL[en.desapropriacao] || en.desapropriacao)],
       ["Concessionárias", v(ENTRAVE_LABEL[en.concessionarias] || en.concessionarias)],
       ["Fonte da informação", v(x.fonteInfo)]

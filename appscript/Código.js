@@ -46,6 +46,11 @@ function getPontosCriticos() {
     if (faltando.length) return { erro: 'Colunas não encontradas: ' + faltando.join(', ') };
 
     function num(v) { return (typeof v === 'number' && !isNaN(v)) ? v : null; }
+    // Coluna opcional (15/10/2026): obra_id da aba "Obras" ligados ao ponto, separados por ponto e vírgula.
+    var cObras = col('Obras relacionadas');
+    function listaObras(v) {
+      return String(v == null ? '' : v).split(/[;,]/).map(function (s) { return s.trim(); }).filter(Boolean);
+    }
     // Nome de cada variável = texto do cabeçalho depois do código ("P1 Frequência..." → "Frequência...").
     var nomes = {};
     VARIAVEIS.forEach(function (cod) {
@@ -64,7 +69,8 @@ function getPontosCriticos() {
         lat: num(linha[c.lat]), lon: num(linha[c.lon]), precisao: String(linha[c.precisao]),
         P: num(linha[c.notaP]), E: num(linha[c.notaE]), V: num(linha[c.notaV]), I: num(linha[c.notaI]),
         C: num(linha[c.cons]), risco: num(linha[c.risco]), indice: num(linha[c.indice]),
-        posicao: num(linha[c.posicao]), preenchidas: num(linha[c.preenchidas]), notas: subs
+        posicao: num(linha[c.posicao]), preenchidas: num(linha[c.preenchidas]), notas: subs,
+        obras: cObras < 0 ? [] : listaObras(linha[cObras])
       });
     }
     return { pontos: pontos, nomes: nomes, lidoEm: new Date().toISOString() };
