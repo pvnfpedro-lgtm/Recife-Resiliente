@@ -1368,9 +1368,10 @@ require([
      Ícone pelo tipo (hexágono; vazado = em licitação), igual a mapa/icones/obra_*.svg (docs/09). */
   var OBRAS_PONTOS_TITULO = "Obras (pontos da planilha)";
   var obrasPontosLayer = new GraphicsLayer({ title: OBRAS_PONTOS_TITULO });
-  map.add(obrasPontosLayer);
+  // Ordem de desenho: a última adicionada fica por cima. Obras acima dos pontos críticos (pedido de Pedro, 15/10/2026).
   map.add(raioLayer);
   map.add(pontosLayer);
+  map.add(obrasPontosLayer);
   // Polígono do círculo (64 vértices) calculado na esfera a partir de lon/lat.
   function circuloGeo(lon, lat, raioM){
     var R = 6371008.8, d = raioM / R, la1 = lat * Math.PI / 180, lo1 = lon * Math.PI / 180, anel = [];
