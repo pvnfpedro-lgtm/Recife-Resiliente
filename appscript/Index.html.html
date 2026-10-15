@@ -1565,7 +1565,10 @@ require([
     var lons = [pc.lon], lats = [pc.lat];
     obrasDoPonto(pc).forEach(function(o){ lons.push(o.pos[0]); lats.push(o.pos[1]); });
     var x0 = Math.min.apply(null, lons), x1 = Math.max.apply(null, lons), y0 = Math.min.apply(null, lats), y1 = Math.max.apply(null, lats);
-    var MIN = 0.006;   // ~650 m: não aproxima mais que isso
+    // Zoom mais aberto (pedido de Pedro, 15/10/2026): folga de 40% em volta e no mínimo ~2 km de largura.
+    var fx = (x1 - x0) * 0.4, fy = (y1 - y0) * 0.4;
+    x0 -= fx; x1 += fx; y0 -= fy; y1 += fy;
+    var MIN = 0.018;   // ~2 km: não aproxima mais que isso
     if(x1 - x0 < MIN){ var cx = (x0 + x1) / 2; x0 = cx - MIN / 2; x1 = cx + MIN / 2; }
     if(y1 - y0 < MIN){ var cy = (y0 + y1) / 2; y0 = cy - MIN / 2; y1 = cy + MIN / 2; }
     var a = areaLivre(), W = view.width, H = view.height;
