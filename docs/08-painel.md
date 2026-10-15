@@ -146,6 +146,8 @@ não conectado.
 - 15/10/2026 (`clasp push` feito com aprovação de Pedro): os ícones das obras da planilha não apareciam
   no painel, porque o merge que os trazia de volta (`ca023d6`) não tinha sido enviado. Enviado a partir do
   branch `claude/dreamy-shannon-ycw0nv` (main + `claude/inspiring-carson-nu2f7a`), com PR para o `main`.
+- 15/10/2026 (`clasp push` feito com aprovação de Pedro): ícones das obras desenhados **acima** dos pontos
+  críticos e do raio de 300 m (camada "Obras (pontos da planilha)" adicionada por último ao mapa).
 
 ## Estado em 02/10/2026 (aprovado por Pedro)
 - Paleta: #0869A6 · #2685BF · #5496BF · #FFFFFF · #F2F2F2 (painel inteiro).
