@@ -218,4 +218,4 @@ não conectado.
   obras" (linha tracejada do ponto ao ícone da obra; liga e desliga na legenda), seção "Obras
   relacionadas" no cartão do ponto (clique abre a ficha da obra) e "Pontos críticos relacionados" na
   ficha da obra (aba 03), no lugar da coluna "pontos_criticos (ids)" da aba "Obras". Obra sem
-  coordenada na aba "Obras" não ganha linha.
+  coordenada na aba "Obras" não ganha linha. `clasp push` feito com aprovação de Pedro (15:32).
