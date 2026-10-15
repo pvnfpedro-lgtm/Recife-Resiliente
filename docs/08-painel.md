@@ -143,6 +143,9 @@ não conectado.
   Antes de cada `clasp push`, conferir se o branch tem tudo o que já foi enviado.
 - 14/10/2026: ícones da camada "Obras (pontos da planilha)" de 26 para 36 px (pedido de Pedro de ícones
   de obra maiores).
+- 15/10/2026 (`clasp push` feito com aprovação de Pedro): os ícones das obras da planilha não apareciam
+  no painel, porque o merge que os trazia de volta (`ca023d6`) não tinha sido enviado. Enviado a partir do
+  branch `claude/dreamy-shannon-ycw0nv` (main + `claude/inspiring-carson-nu2f7a`), com PR para o `main`.
 
 ## Estado em 02/10/2026 (aprovado por Pedro)
 - Paleta: #0869A6 · #2685BF · #5496BF · #FFFFFF · #F2F2F2 (painel inteiro).
