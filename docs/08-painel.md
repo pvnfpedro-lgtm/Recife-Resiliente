@@ -228,4 +228,4 @@ não conectado.
 - 15/10/2026 (`clasp push` feito com aprovação de Pedro): zoom do clique no ponto mais aberto (Pedro achou
   muito grande): folga de 40% em volta e no mínimo ~2 km de largura (antes ~650 m).
 - 15/10/2026: lista de **Intervenções** (esquerda) também recolhe e abre, com o mesmo botão da lista de
-  pontos críticos. Com a lista recolhida, o zoom do clique no ponto usa o espaço liberado.
+  pontos críticos. Com a lista recolhida, o zoom do clique no ponto usa o espaço liberado. `clasp push` feito com aprovação de Pedro.
