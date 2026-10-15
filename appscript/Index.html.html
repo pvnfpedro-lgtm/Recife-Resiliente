@@ -814,6 +814,11 @@
   #layerToggleList .lg-col .lg-chev.empty{display:none;}
   /* Lista recolhida libera a faixa de baixo daquele lado */
   .map-br-stack.livre-esq{left:12px;}
+  /* Camadas translúcida com linhas pretas (16/10/2026, pedido de Pedro) */
+  #layerPanel{background:rgba(255,255,255,.38);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border:1px solid #000;}
+  #layerPanel .lg-head{border-bottom:1px solid #000;}
+  #layerToggleList .lg-col + .lg-col{border-left:1px solid #000;}
+  #layerToggleList .lg-kids{border-left-color:#000;}
   /* Camadas centralizada: colunas no meio do quadro (as margens automáticas não cortam a rolagem) */
   #layerToggleList .lg-col:first-child{margin-left:auto;}
   #layerToggleList .lg-col:last-child{margin-right:auto;}
