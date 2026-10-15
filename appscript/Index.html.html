@@ -2160,9 +2160,8 @@ require([
      ===================================================================== */
   function layerSwatchSvg(title){
     if(title && title.indexOf("Pontos críticos") === 0){
-      return CLASSES_INDICE.map(function(c){
-        return '<img src="' + iconePonto(c.cor) + '" width="15" height="15" alt="" title="Índice ' + c.rotulo + '" style="vertical-align:middle;margin-right:1px">';
-      }).join("");
+      // Um ícone só na legenda (pedido de Pedro, 16/10/2026); a cor do anel no mapa segue o índice.
+      return '<img src="' + iconePonto(CLASSES_INDICE[CLASSES_INDICE.length - 1].cor) + '" width="16" height="16" alt="" style="vertical-align:middle">';
     }
     if(title === OBRAS_PONTOS_TITULO){
       return '<img src="' + ICONES_OBRA.generica + '" width="16" height="16" alt="" style="vertical-align:middle">';
