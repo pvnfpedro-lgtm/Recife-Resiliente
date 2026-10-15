@@ -817,7 +817,14 @@
   #layerToggleList .lg-col .lg-chev.empty{display:none;}
   /* Lista recolhida libera a faixa de baixo daquele lado */
   .map-br-stack.livre-esq{left:12px;}
-  .map-br-stack.livre-dir{right:70px;}
+  /* Lista de pontos críticos embaixo da de intervenções, na coluna da esquerda (16/10/2026).
+     A direita do mapa fica livre. Lista recolhida vira só o título e a outra ocupa a altura. */
+  :root{--pc-lista-w:0px;}
+  .overlay-grid{grid-template-columns:320px 1fr;grid-template-rows:auto minmax(0,1fr) minmax(0,1fr);}
+  .list-panel.pc-panel{grid-column:1;grid-row:3;}
+  .overlay-grid.obras-rec{grid-template-rows:auto auto minmax(0,1fr);}
+  .overlay-grid.pc-rec{grid-template-rows:auto minmax(0,1fr) auto;}
+  .overlay-grid.obras-rec.pc-rec{grid-template-rows:auto auto auto;}
   .filter-float{gap:6px;}
   .filterbar{padding:6px 12px;gap:8px;border-radius:12px;}
   .filterbar label{font-size:10.5px;}
@@ -1577,10 +1584,10 @@ require([
   // lista de pontos à direita), em pixels.
   function areaLivre(){
     var cont = view.container.getBoundingClientRect(), L = 0, R = 0, T = 0;
-    var esq = document.querySelector(".list-panel:not(.pc-panel)");
-    if(esq && esq.offsetWidth && !esq.classList.contains("recolhida")) L = Math.max(0, esq.getBoundingClientRect().right - cont.left);
-    var dir = document.querySelector(".pc-panel");
-    if(dir && dir.offsetWidth && !dir.classList.contains("recolhida")) R = Math.max(0, cont.right - dir.getBoundingClientRect().left);
+    // As duas listas ficam à esquerda (16/10/2026); conta a mais larga que estiver aberta.
+    document.querySelectorAll(".list-panel").forEach(function(el){
+      if(el.offsetWidth && !el.classList.contains("recolhida")) L = Math.max(L, el.getBoundingClientRect().right - cont.left);
+    });
     var topo = document.getElementById("kpiStrip");
     if(topo && topo.offsetHeight) T = Math.max(0, topo.getBoundingClientRect().bottom - cont.top);
     if(view.width - L - R < 200){ L = 0; R = 0; }   // tela estreita: ignora os painéis
@@ -1801,15 +1808,18 @@ require([
     });
   }
   // Recolher e abrir as listas (pontos críticos à direita; intervenções à esquerda desde 15/10/2026).
-  [[".pc-panel", "pcRecolher", "livre-dir"], [".list-panel:not(.pc-panel)", "obrasRecolher", "livre-esq"]].forEach(function(par){
+  [[".pc-panel", "pcRecolher", "pc-rec"], [".list-panel:not(.pc-panel)", "obrasRecolher", "obras-rec"]].forEach(function(par){
     var painel = document.querySelector(par[0]), btn = document.getElementById(par[1]);
     if(!painel || !btn) return;
     btn.addEventListener("click", function(){
       var recolhida = painel.classList.toggle("recolhida");
       btn.setAttribute("aria-expanded", String(!recolhida));
       btn.title = recolhida ? "Abrir a lista" : "Recolher a lista";
+      var grade = document.querySelector(".overlay-grid");
+      if(grade) grade.classList.toggle(par[2], recolhida);   // a outra lista ocupa a altura liberada
+      // As duas listas recolhidas: Mapa base e Camadas usam a faixa de baixo inteira.
       var pilha = document.querySelector(".map-br-stack");
-      if(pilha) pilha.classList.toggle(par[2], recolhida);   // Mapa base e Camadas usam o espaço liberado
+      if(pilha) pilha.classList.toggle("livre-esq", document.querySelectorAll(".list-panel.recolhida").length === 2);
       posicionarCartao();
     });
   });

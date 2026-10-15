@@ -254,3 +254,6 @@ não conectado.
 - 16/10/2026: etapas "Em licitação" em rosa #DB2777 (o ciano se confundia com o azul de "Em obra") e
   "Concluída" em verde #16A34A (pedido de Pedro); ícones das obras de 36 para 44 px; controles do mapa
   (+, −, início, enquadrar, SV) na horizontal, no alto, à esquerda da lista de pontos. `clasp push` feito com aprovação de Pedro.
+- 16/10/2026: **lista de pontos críticos embaixo da de intervenções**, na coluna da esquerda (cada uma com
+  metade da altura; recolher uma dá a altura para a outra). A direita do mapa fica livre; controles do mapa
+  e Mapa base/Camadas passam a ir até a borda direita.
