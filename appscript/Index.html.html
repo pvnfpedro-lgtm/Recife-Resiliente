@@ -820,7 +820,9 @@
   /* Cor só nos textos-chave (16/10/2026, no lugar do card inteiro pintado): a etapa nas intervenções e o
      índice de risco nos pontos, mais uma faixa fina à esquerda. --tinta = cor "r,g,b"; --tinta-txt = a mesma
      cor escurecida, para o texto ler bem sobre o fundo claro (o amarelo puro não lê). */
-  .project-card.tinta,.pc-card.tinta{border-left:3px solid rgb(var(--tinta));}
+  /* Contorno do card inteiro na cor (pedido de Pedro, 16/10/2026) */
+  .project-card.tinta,.pc-card.tinta{border:2px solid rgb(var(--tinta));}
+  .project-card.tinta.active,.pc-card.tinta.active{box-shadow:0 0 0 3px rgba(var(--tinta),.25);}
   .project-card.tinta .status-pill{background:rgba(var(--tinta),.16);color:rgb(var(--tinta-txt));}
   .pc-card.tinta .pc-indice b{color:rgb(var(--tinta-txt));}
   /* Lista de pontos críticos embaixo da de intervenções, na coluna da esquerda (16/10/2026).
