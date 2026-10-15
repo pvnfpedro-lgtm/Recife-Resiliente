@@ -1377,7 +1377,8 @@ require([
   var OBRAS_PONTOS_TITULO = "Obras (pontos da planilha)";
   var obrasPontosLayer = new GraphicsLayer({ title: OBRAS_PONTOS_TITULO });
   // Ordem de desenho: a última adicionada fica por cima. Obras acima dos pontos críticos (pedido de Pedro, 15/10/2026).
-  /* Ligação ponto crítico ↔ obra: linha tracejada do ponto até o ícone da obra (15/10/2026).
+  /* Ligação ponto crítico ↔ obra: linha tracejada do ponto até o ícone da obra (15/10/2026),
+     só para o ponto clicado (cartão aberto).
      Vem da coluna "Obras relacionadas (obra_id)" da aba "Notas dos pontos". */
   var LIGACOES_TITULO = "Ligação pontos críticos ↔ obras";
   var ligacoesLayer = new GraphicsLayer({ title: LIGACOES_TITULO });
@@ -1475,9 +1476,11 @@ require([
     var num = String(obraId).replace(/^obra-/, "");
     return (PONTOS_LISTA || []).filter(function(pc){ return (pc.obras || []).indexOf(num) > -1; });
   }
+  // Só as linhas do ponto com o cartão aberto (pedido de Pedro, 15/10/2026); cartão fechado = sem linhas.
   function desenharLigacoes(){
     ligacoesLayer.removeAll();
-    (PONTOS_LISTA || []).forEach(function(pc){
+    if(!cartaoPonto) return;
+    (PONTOS_LISTA || []).filter(function(pc){ return pc.id === cartaoPonto.id; }).forEach(function(pc){
       if(pc.lat == null || pc.lon == null) return;
       (pc.obras || []).forEach(function(id){
         var o = PROJECTS.find(function(x){ return x.id === "obra-" + id; });
@@ -1589,11 +1592,13 @@ require([
     cartao.style.display = "block";
     posicionarCartao();
     marcarPontoNaLista(p.id);
+    desenharLigacoes();
   }
   function fecharCartao(){
     if(cartao) cartao.style.display = "none";
     cartaoPonto = null; cartaoGeom = null;
     marcarPontoNaLista(null);
+    desenharLigacoes();
   }
   reactiveUtils.watch(function(){ return view.extent; }, posicionarCartao);
   window.addEventListener("resize", posicionarCartao);

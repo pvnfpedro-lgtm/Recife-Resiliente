@@ -219,3 +219,4 @@ não conectado.
   relacionadas" no cartão do ponto (clique abre a ficha da obra) e "Pontos críticos relacionados" na
   ficha da obra (aba 03), no lugar da coluna "pontos_criticos (ids)" da aba "Obras". Obra sem
   coordenada na aba "Obras" não ganha linha. `clasp push` feito com aprovação de Pedro (15:32).
+- 15/10/2026: as linhas de ligação só aparecem para o ponto clicado (cartão aberto); fechar o cartão apaga as linhas.
