@@ -225,3 +225,5 @@ não conectado.
   mapa (700 ms), salto da gota (450 ms), linha correndo do ponto até a obra (600 ms) e pulso na obra
   (700 ms). Ponto sem obra: zoom, salto e pulso na cor do risco. Fechar o cartão apaga as linhas e não mexe
   no zoom. Quem usa "reduzir movimento" no sistema vê tudo sem animação. `clasp push` feito com aprovação de Pedro (15:50).
+- 15/10/2026 (`clasp push` feito com aprovação de Pedro): zoom do clique no ponto mais aberto (Pedro achou
+  muito grande): folga de 40% em volta e no mínimo ~2 km de largura (antes ~650 m).
