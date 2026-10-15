@@ -662,7 +662,7 @@
   .project-card-top{display:flex;align-items:center;justify-content:space-between;gap:8px;}
   .status-pill{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;padding:3px 8px;border-radius:999px;white-space:nowrap;}
   /* Status das obras em tom neutro (sem cor), para não competir com o risco */
-  .status-pill.obra,.status-pill.licitacao,.status-pill.concluido{background:rgba(51,65,85,.10);color:#334155;}
+  .status-pill.obra,.status-pill.licitacao,.status-pill.concluido,.status-pill.nao_planejado,.status-pill.conceitual,.status-pill.projeto{background:rgba(51,65,85,.10);color:#334155;}
   .status-pill.saudavel{background:var(--saudavel-bg);color:var(--saudavel-text);}
   .status-pill.atencao{background:var(--atencao-bg);color:var(--atencao-text);}
   .status-pill.critico{background:var(--critico-bg);color:var(--critico-text);}
@@ -909,9 +909,12 @@
                 <label>Status</label>
                 <select id="filterStatus">
                   <option value="">Todos os status</option>
-                  <option value="obra">Em Obra</option>
-                  <option value="licitacao">Em Licitação</option>
-                  <option value="concluido">Concluído</option>
+                  <option value="nao_planejado">Não planejado</option>
+                  <option value="conceitual">Conceitual</option>
+                  <option value="projeto">Em projeto</option>
+                  <option value="licitacao">Em licitação</option>
+                  <option value="obra">Em obra</option>
+                  <option value="concluido">Concluída</option>
                 </select>
                 <span class="fcount" id="fcount"></span>
                 <button class="freset" id="freset" type="button">Limpar filtros</button>
@@ -1190,8 +1193,9 @@ require([
   "esri/core/reactiveUtils",
   "esri/widgets/Popup",
   "esri/symbols/support/symbolUtils",
-  "esri/geometry/Extent"
-], function(WebMap, MapView, GraphicsLayer, Graphic, PopupTemplate, EsriMap, reactiveUtils, Popup, symbolUtils, Extent){
+  "esri/geometry/Extent",
+  "esri/layers/GroupLayer"
+], function(WebMap, MapView, GraphicsLayer, Graphic, PopupTemplate, EsriMap, reactiveUtils, Popup, symbolUtils, Extent, GroupLayer){
   "use strict";
 
   /* =====================================================================
@@ -1317,10 +1321,13 @@ require([
   }
   function medidoMi(p){ return (p.investNum == null || p.pctFinanceiro == null) ? null : p.investNum * p.pctFinanceiro / 100; }
 
-  var STATUS_LABEL = { obra:"Em Obra", licitacao:"Em Licitação", concluido:"Concluído", indefinido:"Status a informar" };
+  /* Etapas das obras (16/10/2026, decisão de Pedro): ordem do início ao fim. Coluna "status" da aba "Obras". */
+  var ETAPAS_OBRA = ["nao_planejado", "conceitual", "projeto", "licitacao", "obra", "concluido"];
+  var STATUS_LABEL = { nao_planejado:"Não planejado", conceitual:"Conceitual", projeto:"Em projeto",
+                       licitacao:"Em licitação", obra:"Em obra", concluido:"Concluída" };
   var SCHED_LABEL = { saudavel:"Saudável", atencao:"Atenção", critico:"Crítico", neutro:"Sem dados" };
 
-  function statusClass(s){ return s==="obra"?"obra":s==="licitacao"?"licitacao":"concluido"; }
+  function statusClass(s){ return STATUS_LABEL[s] ? s : "nao_planejado"; }
   function schedStatus(p){
     if(p.status==="concluido") return "saudavel";
     if(p.atrasoDias == null) return "neutro";
@@ -1398,9 +1405,18 @@ require([
   /* Círculo de 300 m em volta dos pontos: retirado do mapa em 16/10/2026 (pedido de Pedro).
      O raio continua sendo a área do score (metodologia); só deixou de ser desenhado. */
   /* Obras: um ponto por obra, na coordenada da coluna "coordenadas (lat, lon)" da aba "Obras".
-     Ícone pelo tipo (hexágono; vazado = em licitação), igual a mapa/icones/obra_*.svg (docs/09). */
+     Desenho pelo tipo e cor pela etapa. Uma camada por etapa dentro do grupo (16/10/2026), para
+     ligar e desligar cada etapa na legenda. */
   var OBRAS_PONTOS_TITULO = "Obras (pontos da planilha)";
-  var obrasPontosLayer = new GraphicsLayer({ title: OBRAS_PONTOS_TITULO });
+  var CAMADA_ETAPA = {}, ETAPA_DA_CAMADA = {};
+  // A legenda lista a última camada do grupo primeiro: adiciona do fim para o começo.
+  var obrasPontosLayer = new GroupLayer({ title: OBRAS_PONTOS_TITULO, visibilityMode: "independent",
+    layers: ETAPAS_OBRA.slice().reverse().map(function(et){
+      var l = new GraphicsLayer({ title: STATUS_LABEL[et] });
+      CAMADA_ETAPA[et] = l; ETAPA_DA_CAMADA[l.title] = et;
+      return l;
+    }) });
+  function ehCamadaDeObra(l){ return !!l && ETAPA_DA_CAMADA[l.title] !== undefined && CAMADA_ETAPA[ETAPA_DA_CAMADA[l.title]] === l; }
   // Ordem de desenho: a última adicionada fica por cima. Obras acima dos pontos críticos (pedido de Pedro, 15/10/2026).
   /* Ligação ponto crítico ↔ obra: linha tracejada do ponto até o ícone da obra (15/10/2026),
      só para o ponto clicado (cartão aberto).
@@ -1928,28 +1944,28 @@ require([
   }
 
   // Desenhos dos tipos vindos de `python3 scripts/gerar_icones_obras_tipo.py --js` (até 15/10/2026 eram o ícone inteiro).
-  /* Ícones das obras (16/10/2026, prévia em docs/prototipos/icones_obras_proposta.html): mesmo desenho
-     da gota do ponto crítico (borda branca, anel e miolo), em hexágono e no azul da paleta.
-     Em obra = #0869A6 · concluída = #5496BF · em licitação = vazado, anel tracejado · a informar = cinza.
-     O desenho branco de cada tipo é o de mapa/icones/obra_<tipo>.svg. */
+  /* Ícones das obras: hexágono com o desenho do tipo (o de mapa/icones/obra_<tipo>.svg), na cor da etapa.
+     Não planejado cinza · conceitual roxo · em projeto índigo · em licitação ciano · em obra azul · concluída grafite. */
   var GLIFOS_OBRA = {"canal": "<path d=\"M2 4 q1.375 -1.6 2.75 0 t2.75 0 t2.75 0 t2.75 0 M2 7.5 q1.375 -1.6 2.75 0 t2.75 0 t2.75 0 t2.75 0 M2 11 q1.375 -1.6 2.75 0 t2.75 0 t2.75 0 t2.75 0\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>", "dragagem": "<path d=\"M0.8 2.4 q1.1 -1.2 2.2 0 t2.2 0\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M14 1 L9.6 5.6\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M5 4.6 H11 L9.8 9.4 H6.2 Z\" fill=\"#fff\"/><path d=\"M0.5 14.5 Q7.5 9.6 14.5 14.5 Z\" fill=\"#fff\"/>", "reservatorio": "<path d=\"M1 2.5 L3.2 13 H11.8 L14 2.5\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M2.4 7.2 q1.275 -1.4 2.55 0 t2.55 0 t2.55 0 t2.55 0 L11.4 12 H3.6 Z\" fill=\"#fff\"/>", "dique": "<path d=\"M3.6 13.5 L6.3 3.5 H8.7 L11.4 13.5 Z\" fill=\"#fff\"/><path d=\"M0.6 6.5 q0.75 -1 1.5 0 t1.5 0 M0.6 9.5 q0.75 -1 1.5 0 t1.5 0\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M11.8 11 q0.7 -1 1.4 0 t1.4 0\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M0.5 13.8 H14.5\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>", "parque": "<circle cx=\"7.5\" cy=\"4.6\" r=\"3.9\" fill=\"#fff\"/><path d=\"M7.5 7.5 V10.4\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M2 13.2 q1.375 -1.6 2.75 0 t2.75 0 t2.75 0 t2.75 0\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>", "rede": "<path d=\"M0.5 1.5 H14.5\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"7.5\" cy=\"9\" r=\"5\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M3.6 10 H11.4 A3.9 3.9 0 0 1 3.6 10 Z\" fill=\"#fff\"/>", "generica": "<path d=\"M6.50 1.5 H8.50 L9.39 4.3 H5.61 Z\" fill=\"#fff\"/><path d=\"M5.13 5.8 H9.87 L10.73 8.5 H4.27 Z\" fill=\"#fff\"/><path d=\"M3.80 10 H11.20 L12.00 12.5 H3.00 Z\" fill=\"#fff\"/><rect x=\"1\" y=\"12.5\" width=\"13\" height=\"1.8\" rx=\"0.6\" fill=\"#fff\"/>"};
-  var COR_STATUS_OBRA = { obra:"#0869A6", concluido:"#5496BF", licitacao:"#0869A6", indefinido:"#94a3b8" };
+  var COR_STATUS_OBRA = { nao_planejado:"#94a3b8", conceitual:"#A855F7", projeto:"#4F46E5",
+                          licitacao:"#0EA5E9", obra:"#0869A6", concluido:"#1E293B" };
   function hexPontos(r){
     var p = [];
     for(var k = 0; k < 6; k++){ var a = Math.PI / 3 * k - Math.PI / 2; p.push((16 + r * Math.cos(a)).toFixed(2) + "," + (16 + r * Math.sin(a)).toFixed(2)); }
     return p.join(" ");
   }
   var ICONES_OBRA_CACHE = {};
+  // Estilo D2 (16/10/2026, docs/prototipos/situacao_obras.html): fundo branco, contorno e desenho na cor da
+  // etapa; "não planejado" com contorno tracejado.
   function iconeObraSvg(cat, status){
-    var cor = COR_STATUS_OBRA[status] || COR_STATUS_OBRA.indefinido, vazado = status === "licitacao";
-    var glifo = GLIFOS_OBRA[cat] || GLIFOS_OBRA.generica;
-    if(vazado) glifo = glifo.replace(/#fff/g, cor);
+    var cor = COR_STATUS_OBRA[status] || COR_STATUS_OBRA.nao_planejado;
+    var glifo = (GLIFOS_OBRA[cat] || GLIFOS_OBRA.generica).replace(/#fff/g, cor);
     return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">' +
-      '<polygon points="' + hexPontos(16) + '" fill="#fff" stroke="#fff" stroke-width="1" stroke-linejoin="round"/>' +
-      '<polygon points="' + hexPontos(13) + '" fill="none" stroke="' + cor + '" stroke-width="3.4" stroke-linejoin="round"' + (vazado ? ' stroke-dasharray="3.2 2"' : '') + '/>' +
-      '<polygon points="' + hexPontos(10) + '" fill="' + (vazado ? '#fff' : cor) + '"/>' +
-      '<g transform="translate(10.6,10.6) scale(0.72)">' + glifo + '</g></svg>';
+      '<polygon points="' + hexPontos(15.4) + '" fill="#fff" stroke="' + cor + '" stroke-width="3" stroke-linejoin="round"' +
+        (status === "nao_planejado" ? ' stroke-dasharray="3.2 2"' : '') + '/>' +
+      '<g transform="translate(9.6,9.6) scale(0.85)">' + glifo + '</g></svg>';
   }
+
   // Coluna "tipo" da aba "Obras" -> categoria do ícone (mesma tabela de scripts/gerar_pontos_obras.py).
   var CATEGORIA_OBRA = {
     "canal":"canal", "perfilamento do rio tejipio":"canal", "dragagem":"dragagem",
@@ -2006,10 +2022,13 @@ require([
   }
   function statusId(texto){
     var t = semAcento(texto);
-    if(/obra|execu/.test(t)) return "obra";
-    if(/licit|previst|projeto/.test(t)) return "licitacao";
+    // Seis etapas (16/10/2026). Vazio ou texto desconhecido = não planejado.
     if(/conclu/.test(t)) return "concluido";
-    return "indefinido";
+    if(/obra|execu/.test(t)) return "obra";
+    if(/licit/.test(t)) return "licitacao";
+    if(/projeto/.test(t)) return "projeto";
+    if(/conceit|previst|estudo/.test(t)) return "conceitual";
+    return "nao_planejado";
   }
   function lerPlanilhaObras(){
     return new Promise(function(resolve){
@@ -2035,7 +2054,7 @@ require([
   // Só entram no painel as obras que existem na aba "Obras" da planilha (decisão de Pedro, 05/10/2026).
   // Polígono do mapa sem linha correspondente na planilha fica de fora.
   function aplicarPlanilha(res){
-    obrasPontosLayer.removeAll();
+    ETAPAS_OBRA.forEach(function(et){ CAMADA_ETAPA[et].removeAll(); });
     if(!res){ PROJECTS.forEach(function(p){ if(p._graphic) graphicsLayer.remove(p._graphic); }); PROJECTS = []; OBRAS_ESTADO = "sem-planilha"; return; }
     var naPlanilha = {};
     res.obras.forEach(function(o){ naPlanilha["obra-" + String(o.obra_id)] = true; });
@@ -2049,7 +2068,7 @@ require([
       var p = PROJECTS.find(function(x){ return x.id === "obra-" + num; });
       if(!p){
         p = { id:"obra-" + num, code:"OBRA " + num, real:true, semDesenho:true, title:"Obra " + num, bairro:"—", bacia:null, subbacia:null,
-              status:"indefinido", investNum:null, invest:"Investimento a informar", kind:"area", pos:INITIAL_VIEW.center,
+              status:"nao_planejado", investNum:null, invest:"Investimento a informar", kind:"area", pos:INITIAL_VIEW.center,
               pctFisico:null, pctFinanceiro:null, atrasoDias:null, x:{} };
         PROJECTS.push(p);
         criarGraficoObra(p);
@@ -2086,7 +2105,7 @@ require([
           symbol: { type:"picture-marker", url: iconeObra(o.tipo, p.status), width:"36px", height:"36px" },
           attributes: { id:p.id }
         });
-        obrasPontosLayer.add(p._ponto);
+        (CAMADA_ETAPA[p.status] || CAMADA_ETAPA.nao_planejado).add(p._ponto);
       }
     });
     desenharLigacoes();
@@ -2155,7 +2174,7 @@ require([
         if(pc){ selecionarPonto(pc, hitPonto.graphic.geometry); return; }
       }
       fecharCartao();
-      var hitProject = res.results.find(function(r){ return r.graphic && (r.graphic.layer === obrasPontosLayer || r.graphic.layer === graphicsLayer); });
+      var hitProject = res.results.find(function(r){ return r.graphic && (ehCamadaDeObra(r.graphic.layer) || r.graphic.layer === graphicsLayer); });
       if(hitProject){
         var p = PROJECTS.find(function(pr){ return pr.id === hitProject.graphic.attributes.id; });
         selectProject(p, true);
@@ -2180,6 +2199,9 @@ require([
     if(title && title.indexOf("Pontos críticos") === 0){
       // Um ícone só na legenda (pedido de Pedro, 16/10/2026); a cor do anel no mapa segue o índice.
       return '<img src="' + iconePonto(CLASSES_INDICE[CLASSES_INDICE.length - 1].cor) + '" width="16" height="16" alt="" style="vertical-align:middle">';
+    }
+    if(ETAPA_DA_CAMADA[title] !== undefined){
+      return '<img src="' + iconeObra("", ETAPA_DA_CAMADA[title]) + '" width="17" height="17" alt="" style="vertical-align:middle">';
     }
     if(title === OBRAS_PONTOS_TITULO){
       return '<img src="' + iconeObra("", "obra") + '" width="17" height="17" alt="" style="vertical-align:middle">';

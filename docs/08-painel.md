@@ -244,3 +244,10 @@ não conectado.
   `docs/prototipos/icones_obras_proposta.html`): hexágono com borda branca, anel e miolo, desenho branco do
   tipo. Em obra #0869A6, concluída #5496BF, em licitação vazada com anel tracejado, a informar cinza.
   Os SVG/PNG de `mapa/icones/` (para o ArcGIS) continuam no desenho antigo. `clasp push` feito com aprovação de Pedro.
+- 16/10/2026 (decisão de Pedro): **6 etapas das obras** no lugar de 3 status: Não planejado, Conceitual, Em
+  projeto, Em licitação, Em obra, Concluída. Ícone estilo D2 (`docs/prototipos/situacao_obras.html`): fundo
+  branco, contorno e desenho na cor da etapa (cinza tracejado, roxo #A855F7, índigo #4F46E5, ciano #0EA5E9,
+  azul #0869A6, grafite #1E293B). Na legenda, "Obras (pontos da planilha)" virou grupo com uma camada por
+  etapa; o filtro "Status" tem as 6 etapas. Na planilha, coluna `status` da aba "Obras" com lista suspensa
+  das 6 etapas (aviso, sem bloquear); "obra" → "Em obra" e "Concluído" → "Concluída" reescritos. Vazio =
+  Não planejado. O painel ainda aceita textos antigos ("prevista" → Conceitual, "execução" → Em obra).

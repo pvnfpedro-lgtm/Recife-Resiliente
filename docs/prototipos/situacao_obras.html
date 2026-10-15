@@ -1,0 +1,56 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Situação das obras</title>
+<style>
+body{margin:0;background:#F2F2F2;color:#1e2430;font-family:Inter,system-ui,-apple-system,'Segoe UI',sans-serif}
+.w{max-width:900px;margin:0 auto;padding:16px}h1{font-size:18px;margin:4px 0 6px}p{font-size:13px;color:#64748b;line-height:1.5;margin:0 0 10px}
+.esc{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0}
+.e{box-sizing:border-box;background:#fff;border-radius:10px;padding:10px 8px;flex:1 1 100px;text-align:center;box-shadow:0 1px 4px rgba(15,23,42,.08)}
+.e b{display:block;font-size:12px;margin-top:6px}.e span{font-size:11px;color:#64748b}
+.seta{font-size:12px;color:#64748b;margin:-4px 0 10px}
+.mapa{background:#e8eaed;border-radius:10px;height:200px;position:relative;overflow:hidden}
+.mapa img{position:absolute;transform:translate(-50%,-50%)}
+</style></head><body><div class="w">
+<h1>Situação das obras: 6 etapas</h1>
+<p>Uma rampa de azul, do mais claro (início) ao mais escuro (concluída), com os azuis da paleta no meio.
+"Não planejado" fica fora da rampa: cinza e vazado, porque ainda não é obra. Verde, amarelo, laranja e vermelho continuam só para o risco.</p>
+<h2 style="font-size:14px;margin:16px 0 4px">A. Miolo na cor da etapa</h2>
+<div class="esc" id="esc"></div>
+<h2 style="font-size:14px;margin:16px 0 4px">B. Miolo grafite fixo e anel grosso na cor da etapa (igual à gota: miolo vermelho fixo, anel na cor do risco)</h2>
+<div class="esc" id="escB"></div>
+<h2 style="font-size:14px;margin:16px 0 4px">C. Bordas brancas pintadas na cor da etapa (miolo grafite, desenho branco)</h2>
+<div class="esc" id="escC"></div>
+<h2 style="font-size:14px;margin:16px 0 4px">D. Desenho pintado na cor da etapa (fundo branco, contorno na cor da etapa)</h2>
+<div class="esc" id="escD"></div>
+<h2 style="font-size:14px;margin:16px 0 4px">D2. Como a D, com cores mais distintas (roxo, índigo, ciano, azul, grafite)</h2>
+<div class="esc" id="escD2"></div>
+<div class="seta">mais claro = mais longe de acontecer · mais escuro = mais perto do fim</div>
+<h2 style="font-size:14px;margin:16px 0 4px">No mapa, ao lado de uma gota: A · C · D · D2</h2><div class="mapa" id="mapa"></div><div class="mapa" id="mapaC" style="margin-top:8px"></div><div class="mapa" id="mapaD" style="margin-top:8px"></div><div class="mapa" id="mapaD2" style="margin-top:8px"></div>
+</div><script>
+var G={"canal": "<path d=\"M2 4 q1.375 -1.6 2.75 0 t2.75 0 t2.75 0 t2.75 0 M2 7.5 q1.375 -1.6 2.75 0 t2.75 0 t2.75 0 t2.75 0 M2 11 q1.375 -1.6 2.75 0 t2.75 0 t2.75 0 t2.75 0\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>", "dragagem": "<path d=\"M0.8 2.4 q1.1 -1.2 2.2 0 t2.2 0\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M14 1 L9.6 5.6\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M5 4.6 H11 L9.8 9.4 H6.2 Z\" fill=\"#fff\"/><path d=\"M0.5 14.5 Q7.5 9.6 14.5 14.5 Z\" fill=\"#fff\"/>", "reservatorio": "<path d=\"M1 2.5 L3.2 13 H11.8 L14 2.5\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M2.4 7.2 q1.275 -1.4 2.55 0 t2.55 0 t2.55 0 t2.55 0 L11.4 12 H3.6 Z\" fill=\"#fff\"/>", "dique": "<path d=\"M3.6 13.5 L6.3 3.5 H8.7 L11.4 13.5 Z\" fill=\"#fff\"/><path d=\"M0.6 6.5 q0.75 -1 1.5 0 t1.5 0 M0.6 9.5 q0.75 -1 1.5 0 t1.5 0\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M11.8 11 q0.7 -1 1.4 0 t1.4 0\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M0.5 13.8 H14.5\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>", "parque": "<circle cx=\"7.5\" cy=\"4.6\" r=\"3.9\" fill=\"#fff\"/><path d=\"M7.5 7.5 V10.4\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M2 13.2 q1.375 -1.6 2.75 0 t2.75 0 t2.75 0 t2.75 0\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>", "rede": "<path d=\"M0.5 1.5 H14.5\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"7.5\" cy=\"9\" r=\"5\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M3.6 10 H11.4 A3.9 3.9 0 0 1 3.6 10 Z\" fill=\"#fff\"/>", "generica": "<path d=\"M6.50 1.5 H8.50 L9.39 4.3 H5.61 Z\" fill=\"#fff\"/><path d=\"M5.13 5.8 H9.87 L10.73 8.5 H4.27 Z\" fill=\"#fff\"/><path d=\"M3.80 10 H11.20 L12.00 12.5 H3.00 Z\" fill=\"#fff\"/><rect x=\"1\" y=\"12.5\" width=\"13\" height=\"1.8\" rx=\"0.6\" fill=\"#fff\"/>"};
+var ETAPAS=[["nao_planejado","Não planejado","#94a3b8","ainda sem decisão",1],["conceitual","Conceitual","#A9CBE3","ideia / estudo",0],["projeto","Em projeto","#5496BF","projeto básico/executivo",0],["licitacao","Em licitação","#2685BF","edital publicado",0],["obra","Em obra","#0869A6","em execução",0],["concluido","Concluída","#053B5E","entregue",0]];
+function hp(r){var p=[];for(var k=0;k<6;k++){var a=Math.PI/3*k-Math.PI/2;p.push((16+r*Math.cos(a)).toFixed(2)+","+(16+r*Math.sin(a)).toFixed(2));}return p.join(" ");}
+function ic(cat,e){var cor=e[2],vaz=e[4],claro=e[0]==="conceitual",g=G[cat];
+ if(vaz)g=g.replace(/#fff/g,cor); else if(claro)g=g.replace(/#fff/g,"#0869A6");
+ return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><polygon points="'+hp(16)+'" fill="#fff" stroke="#fff" stroke-width="1" stroke-linejoin="round"/><polygon points="'+hp(13)+'" fill="none" stroke="'+cor+'" stroke-width="3.4" stroke-linejoin="round"'+(vaz?' stroke-dasharray="3.2 2"':'')+'/><polygon points="'+hp(10)+'" fill="'+(vaz?'#fff':cor)+'"/><g transform="translate(10.6,10.6) scale(0.72)">'+g+'</g></svg>';}
+function icB(cat,e){var cor=e[2],vaz=e[4],g=G[cat],miolo=vaz?"#fff":"#334155";
+ if(vaz)g=g.replace(/#fff/g,"#94a3b8");
+ return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><polygon points="'+hp(16)+'" fill="#fff" stroke="#fff" stroke-width="1" stroke-linejoin="round"/><polygon points="'+hp(12.6)+'" fill="none" stroke="'+cor+'" stroke-width="5" stroke-linejoin="round"'+(vaz?' stroke-dasharray="3.2 2"':'')+'/><polygon points="'+hp(9.6)+'" fill="'+miolo+'"/><g transform="translate(10.9,10.9) scale(0.68)">'+g+'</g></svg>';}
+// C: as linhas brancas (borda e separação) na cor da etapa; miolo grafite e desenho branco
+function icC(cat,e){var cor=e[2],vaz=e[4],g=G[cat];
+ if(vaz) return ic(cat,e);
+ return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><polygon points="'+hp(15.6)+'" fill="'+cor+'" stroke="'+cor+'" stroke-width="0.8" stroke-linejoin="round"/><polygon points="'+hp(11.6)+'" fill="#334155" stroke="#fff" stroke-width="1.2" stroke-linejoin="round"/><g transform="translate(10.9,10.9) scale(0.68)">'+g+'</g></svg>';}
+// D: o desenho na cor da etapa, miolo branco e anel na cor da etapa
+function icD(cat,e){var cor=e[2],vaz=e[4],g=G[cat].replace(/#fff/g,cor);
+ return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><polygon points="'+hp(15.4)+'" fill="#fff" stroke="'+cor+'" stroke-width="3" stroke-linejoin="round"'+(vaz?' stroke-dasharray="3.2 2"':'')+'/><g transform="translate(9.6,9.6) scale(0.85)">'+g+'</g></svg>';}
+// D2: igual à D, com cores bem distintas entre si (fora das cores do risco)
+var CORES_D2={nao_planejado:"#94a3b8",conceitual:"#A855F7",projeto:"#4F46E5",licitacao:"#0EA5E9",obra:"#0869A6",concluido:"#1E293B"};
+function icD2(cat,e){return icD(cat,[e[0],e[1],CORES_D2[e[0]],e[3],e[4]]);}
+function u(s){return "data:image/svg+xml;base64,"+btoa(s);}
+document.getElementById("esc").innerHTML=ETAPAS.map(function(e){return '<div class="e"><img width="44" height="44" src="'+u(ic("canal",e))+'" alt=""><b>'+e[1]+'</b><span>'+e[3]+'</span></div>';}).join("");
+document.getElementById("escB").innerHTML=ETAPAS.map(function(e){return '<div class="e"><img width="44" height="44" src="'+u(icB("canal",e))+'" alt=""><b>'+e[1]+'</b><span>'+e[3]+'</span></div>';}).join("");
+[["escC",icC],["escD",icD],["escD2",icD2]].forEach(function(x){document.getElementById(x[0]).innerHTML=ETAPAS.map(function(e){return '<div class="e"><img width="44" height="44" src="'+u(x[1]("canal",e))+'" alt=""><b>'+e[1]+'</b><span>'+e[3]+'</span></div>';}).join("");});
+var cats=["canal","parque","reservatorio","dique","rede","dragagem"],pos=[[12,60],[28,140],[45,70],[60,150],[76,60],[90,135]];
+var gota='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><circle cx="16" cy="16" r="15.5" fill="#fff"/><circle cx="16" cy="16" r="13" fill="none" stroke="#d73027" stroke-width="5"/><circle cx="16" cy="16" r="9.5" fill="#e31a1c"/></svg>';
+document.getElementById("mapa").innerHTML='<img src="'+u(gota)+'" style="left:36%;top:110px;width:32px">'+ETAPAS.map(function(e,i){return '<img src="'+u(ic(cats[i],e))+'" style="left:'+pos[i][0]+'%;top:'+pos[i][1]+'px;width:36px" alt="">';}).join("");
+[["mapaC",icC],["mapaD",icD],["mapaD2",icD2]].forEach(function(x){document.getElementById(x[0]).innerHTML='<img src="'+u(gota)+'" style="left:36%;top:110px;width:32px">'+ETAPAS.map(function(e,i){return '<img src="'+u(x[1](cats[i],e))+'" style="left:'+pos[i][0]+'%;top:'+pos[i][1]+'px;width:36px" alt="">';}).join("");});
+</script></body></html>
