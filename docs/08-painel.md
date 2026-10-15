@@ -243,4 +243,4 @@ não conectado.
 - 16/10/2026: **ícones das obras redesenhados** para conversar com a gota do ponto crítico (prévia em
   `docs/prototipos/icones_obras_proposta.html`): hexágono com borda branca, anel e miolo, desenho branco do
   tipo. Em obra #0869A6, concluída #5496BF, em licitação vazada com anel tracejado, a informar cinza.
-  Os SVG/PNG de `mapa/icones/` (para o ArcGIS) continuam no desenho antigo.
+  Os SVG/PNG de `mapa/icones/` (para o ArcGIS) continuam no desenho antigo. `clasp push` feito com aprovação de Pedro.
