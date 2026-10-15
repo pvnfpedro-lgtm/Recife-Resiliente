@@ -234,3 +234,6 @@ não conectado.
 - 16/10/2026: mapa base **Original** (o do WebMap) ao abrir o painel, no lugar do Cinza. Quadros "Mapa base" e
   "Camadas" lado a lado, embaixo, entre a lista de intervenções e a de pontos críticos; a lista de camadas
   abre para cima, com rolagem (até 45% da altura). Em tela estreita continuam empilhados à direita. `clasp push` feito com aprovação de Pedro.
+- 16/10/2026: legenda **Camadas na horizontal**: cada grupo do WebMap vira uma coluna (as camadas soltas
+  ficam juntas na primeira), com rolagem lateral quando não cabe. Recolher a lista de intervenções ou a de
+  pontos libera a faixa de baixo daquele lado para Mapa base e Camadas.

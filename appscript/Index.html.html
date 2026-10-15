@@ -792,7 +792,19 @@
      Esquerda = margem 12 + lista 320 + 2 × 8 de folga. A lista de camadas abre para cima, com rolagem. */
   .map-br-stack{left:348px;right:calc(20px + var(--pc-lista-w));bottom:12px;flex-direction:row;justify-content:center;align-items:flex-end;pointer-events:none;}
   .map-br-stack > *{pointer-events:auto;}
-  #layerToggleList{max-height:45vh;overflow-y:auto;}
+  #layerPanel{width:auto;max-width:100%;min-width:0;}
+  .map-br-stack{flex-wrap:nowrap;}
+  .map-br-stack > #layerPanel{flex:0 1 auto;min-width:0;}
+  .map-br-stack > #mapTools{flex:none;}
+  #layerToggleList{display:flex;align-items:flex-start;gap:0;overflow-x:auto;max-height:38vh;}
+  #layerToggleList .lg-col{flex:none;width:190px;max-height:38vh;overflow-y:auto;padding:4px 6px;}
+  #layerToggleList .lg-col + .lg-col{border-left:1px solid var(--border);}
+  #layerToggleList .lg-col .lg-name{flex:1;min-width:0;white-space:normal;overflow:visible;text-overflow:clip;line-height:1.25;overflow-wrap:break-word;hyphens:auto;}
+  #layerToggleList .lg-col .lg-kids{margin-left:6px;padding-left:4px;}
+  #layerToggleList .lg-col .lg-chev.empty{display:none;}
+  /* Lista recolhida libera a faixa de baixo daquele lado */
+  .map-br-stack.livre-esq{left:12px;}
+  .map-br-stack.livre-dir{right:70px;}
   .filter-float{gap:6px;}
   .filterbar{padding:6px 12px;gap:8px;border-radius:12px;}
   .filterbar label{font-size:10.5px;}
@@ -1759,13 +1771,15 @@ require([
     });
   }
   // Recolher e abrir as listas (pontos críticos à direita; intervenções à esquerda desde 15/10/2026).
-  [[".pc-panel", "pcRecolher"], [".list-panel:not(.pc-panel)", "obrasRecolher"]].forEach(function(par){
+  [[".pc-panel", "pcRecolher", "livre-dir"], [".list-panel:not(.pc-panel)", "obrasRecolher", "livre-esq"]].forEach(function(par){
     var painel = document.querySelector(par[0]), btn = document.getElementById(par[1]);
     if(!painel || !btn) return;
     btn.addEventListener("click", function(){
       var recolhida = painel.classList.toggle("recolhida");
       btn.setAttribute("aria-expanded", String(!recolhida));
       btn.title = recolhida ? "Abrir a lista" : "Recolher a lista";
+      var pilha = document.querySelector(".map-br-stack");
+      if(pilha) pilha.classList.toggle(par[2], recolhida);   // Mapa base e Camadas usam o espaço liberado
       posicionarCartao();
     });
   });
@@ -2206,10 +2220,22 @@ require([
       function alterna(){ var aberto = target.style.display !== "none"; target.style.display = aberto ? "none" : ""; c.classList.toggle("open", !aberto); }
       return { el: c, alterna: alterna };
     }
+    // Legenda na horizontal (16/10/2026): cada grupo do WebMap vira uma coluna; as camadas soltas
+    // seguidas (as do painel e as fora de grupo) ficam juntas numa coluna.
+    var colSolta = null;
+    function coluna(isGroup){
+      if(!isGroup && colSolta) return colSolta;
+      var c = document.createElement("div");
+      c.className = "lg-col";
+      container.appendChild(c);
+      colSolta = isGroup ? null : c;
+      return c;
+    }
     // Ordem do Conteúdo do ArcGIS: camada de cima primeiro.
     function addRows(layers, parent, nivel){
       layers.toArray().slice().reverse().forEach(function(layer){
         var isGroup = layer.type === "group" && layer.layers && layer.layers.length > 0;
+        if(nivel === 0) parent = coluna(isGroup);
         var row = document.createElement("div");
         row.className = "lg-item" + (isGroup ? " grp" : "");
         var nome = document.createElement("span");
@@ -2225,7 +2251,6 @@ require([
           row.appendChild(olho(layer, row));
           ch.el.addEventListener("click", ch.alterna);
           nome.addEventListener("click", ch.alterna);
-          if(nivel === 0 && parent.childNodes.length) parent.appendChild(Object.assign(document.createElement("div"), { className: "lg-sep" }));
           parent.appendChild(row);
           parent.appendChild(kids);
           addRows(layer.layers, kids, nivel + 1);
