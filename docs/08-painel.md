@@ -268,4 +268,4 @@ não conectado.
   (verde, amarelo, laranja, vermelho), com a faixa da esquerda na cor cheia. `clasp push` feito com aprovação de Pedro.
 - 16/10/2026: em vez do card inteiro pintado, a cor fica só nos textos-chave: o selo da etapa nas
   intervenções e o número do índice de risco nos pontos (cor escurecida 30% para ler bem; o amarelo puro não
-  lê), mais uma faixa fina à esquerda. O fundo dos cards volta ao translúcido neutro.
+  lê), mais uma faixa fina à esquerda. O fundo dos cards volta ao translúcido neutro. `clasp push` feito com aprovação de Pedro.
