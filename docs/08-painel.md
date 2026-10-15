@@ -237,4 +237,4 @@ não conectado.
 - 16/10/2026: legenda **Camadas na horizontal**: cada grupo do WebMap vira uma coluna (as camadas soltas
   ficam juntas na primeira), com rolagem lateral quando não cabe. Recolher a lista de intervenções ou a de
   pontos libera a faixa de baixo daquele lado para Mapa base e Camadas. `clasp push` feito com aprovação de Pedro.
-- 16/10/2026: legenda dos pontos críticos com um ícone só (antes, um por classe do índice).
+- 16/10/2026: legenda dos pontos críticos com um ícone só (antes, um por classe do índice). `clasp push` feito com aprovação de Pedro.
