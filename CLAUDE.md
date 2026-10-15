@@ -79,6 +79,16 @@ Arquivo de trabalho da equipe: a planilha Google
 - Em aberto com Pedro: tirar da aba "Obras" os programas sem local (4, 5,
   26, 27, 28); valores de status iguais na camada e na planilha.
 
+## Estado em 15/10/2026 (branch `claude/dreamy-shannon-ycw0nv`, PR #8 aberto)
+- Tudo o que está no Apps Script saiu deste branch (main + `claude/inspiring-carson-nu2f7a`).
+  **Antes de qualquer `clasp push`, conferir que o branch contém o PR #8**; senão os ícones das obras
+  da planilha somem de novo (aconteceu em 14/10).
+- Painel: camadas próprias no topo após o WebMap carregar; ligação ponto ↔ obra pela coluna AJ
+  "Obras relacionadas (obra_id)" da aba "Notas dos pontos" (obra 2 ligada aos pontos 9, 24 e 36);
+  linhas só do ponto clicado; animação (zoom ~2 km mínimo, salto, linha, pulso); listas recolhíveis.
+- Pendente: infraestrutura crítica (hospitais, aeroporto, metrô) como camadas do WebMap (pendência 18);
+  decidir se apaga a coluna "pontos_criticos (ids)" da aba "Obras" (sem uso).
+
 ## Próximos passos (escolha de Pedro)
 1. Indicadores e ranking dos pontos críticos na aba 01 do painel.
 2. Lista de conferência das coordenadas (11 "Aproximado").
