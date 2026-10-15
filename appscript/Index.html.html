@@ -632,10 +632,11 @@
   .pc-recolher{display:flex;align-items:center;justify-content:center;width:24px;height:24px;border:none;border-radius:6px;
                background:rgba(255,255,255,.55);color:#0869A6;cursor:pointer;padding:0;}
   .pc-recolher:hover{background:#fff;}
+  #obrasRecolher{margin-left:auto;}
   .pc-recolher svg{transition:transform .2s;}
-  .list-panel.pc-panel.recolhida{align-self:start;padding-bottom:12px;}
-  .list-panel.pc-panel.recolhida #pcList{display:none;}
-  .list-panel.pc-panel.recolhida .pc-recolher svg{transform:rotate(180deg);}
+  .list-panel.recolhida{align-self:start;padding-bottom:12px;}
+  .list-panel.recolhida .project-list{display:none;}
+  .list-panel.recolhida .pc-recolher svg{transform:rotate(180deg);}
   .pc-card{
     border:1px solid rgba(255,255,255,.50);border-radius:var(--radius);padding:10px 12px;
     background:rgba(255,255,255,.12);cursor:pointer;transition:border-color .15s, box-shadow .15s, background .15s;
@@ -904,6 +905,9 @@
             <div class="list-panel-header">
               <h3>Intervenções</h3>
               <span class="list-count" id="listCount"></span>
+              <button type="button" class="pc-recolher" id="obrasRecolher" title="Recolher a lista" aria-expanded="true">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 15l6-6 6 6"/></svg>
+              </button>
             </div>
             <div class="project-list" id="projectList"></div>
           </div>
@@ -1552,7 +1556,7 @@ require([
   function areaLivre(){
     var cont = view.container.getBoundingClientRect(), L = 0, R = 0, T = 0;
     var esq = document.querySelector(".list-panel:not(.pc-panel)");
-    if(esq && esq.offsetWidth) L = Math.max(0, esq.getBoundingClientRect().right - cont.left);
+    if(esq && esq.offsetWidth && !esq.classList.contains("recolhida")) L = Math.max(0, esq.getBoundingClientRect().right - cont.left);
     var dir = document.querySelector(".pc-panel");
     if(dir && dir.offsetWidth && !dir.classList.contains("recolhida")) R = Math.max(0, cont.right - dir.getBoundingClientRect().left);
     var topo = document.getElementById("kpiStrip");
@@ -1784,15 +1788,17 @@ require([
     reactiveUtils.watch(function(){ return raioLayer.visible; }, pinta);
     pinta();
   })();
-  (function(){
-    var painel = document.querySelector(".pc-panel"), btn = document.getElementById("pcRecolher");
+  // Recolher e abrir as listas (pontos críticos à direita; intervenções à esquerda desde 15/10/2026).
+  [[".pc-panel", "pcRecolher"], [".list-panel:not(.pc-panel)", "obrasRecolher"]].forEach(function(par){
+    var painel = document.querySelector(par[0]), btn = document.getElementById(par[1]);
+    if(!painel || !btn) return;
     btn.addEventListener("click", function(){
       var recolhida = painel.classList.toggle("recolhida");
       btn.setAttribute("aria-expanded", String(!recolhida));
       btn.title = recolhida ? "Abrir a lista" : "Recolher a lista";
       posicionarCartao();
     });
-  })();
+  });
   document.getElementById("pcList").addEventListener("click", function(e){
     var el = e.target.closest(".pc-card");
     if(!el) return;
