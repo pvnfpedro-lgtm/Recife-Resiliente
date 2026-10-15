@@ -100,6 +100,10 @@
   .map-center-controls button+button{border-top:1px solid var(--border);}
   .map-center-controls .ctrl-sep{height:0;border-top:1px solid var(--border);}
   .map-center-controls button:hover{background:var(--bg);color:var(--text);}
+  /* Controles do mapa na horizontal, no alto, à esquerda da lista de pontos (16/10/2026) */
+  .map-center-controls{flex-direction:row;top:76px;transform:none;}
+  .map-center-controls button+button{border-top:none;border-left:1px solid var(--border);}
+  .map-center-controls .ctrl-sep{height:auto;width:0;border-top:none;border-left:1px solid var(--border);}
   .legend{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow-lg);padding:12px 14px;min-width:210px;}
   .legend h4{margin:0 0 8px;font-size:10.5px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:.05em;}
   .legend-row{display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--text);padding:3px 0;}
@@ -1945,10 +1949,11 @@ require([
 
   // Desenhos dos tipos vindos de `python3 scripts/gerar_icones_obras_tipo.py --js` (até 15/10/2026 eram o ícone inteiro).
   /* Ícones das obras: hexágono com o desenho do tipo (o de mapa/icones/obra_<tipo>.svg), na cor da etapa.
-     Não planejado cinza · conceitual roxo · em projeto índigo · em licitação ciano · em obra azul · concluída grafite. */
+     Não planejado cinza · conceitual roxo · em projeto índigo · em licitação rosa · em obra azul · concluída verde. */
   var GLIFOS_OBRA = {"canal": "<path d=\"M2 4 q1.375 -1.6 2.75 0 t2.75 0 t2.75 0 t2.75 0 M2 7.5 q1.375 -1.6 2.75 0 t2.75 0 t2.75 0 t2.75 0 M2 11 q1.375 -1.6 2.75 0 t2.75 0 t2.75 0 t2.75 0\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>", "dragagem": "<path d=\"M0.8 2.4 q1.1 -1.2 2.2 0 t2.2 0\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M14 1 L9.6 5.6\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M5 4.6 H11 L9.8 9.4 H6.2 Z\" fill=\"#fff\"/><path d=\"M0.5 14.5 Q7.5 9.6 14.5 14.5 Z\" fill=\"#fff\"/>", "reservatorio": "<path d=\"M1 2.5 L3.2 13 H11.8 L14 2.5\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M2.4 7.2 q1.275 -1.4 2.55 0 t2.55 0 t2.55 0 t2.55 0 L11.4 12 H3.6 Z\" fill=\"#fff\"/>", "dique": "<path d=\"M3.6 13.5 L6.3 3.5 H8.7 L11.4 13.5 Z\" fill=\"#fff\"/><path d=\"M0.6 6.5 q0.75 -1 1.5 0 t1.5 0 M0.6 9.5 q0.75 -1 1.5 0 t1.5 0\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M11.8 11 q0.7 -1 1.4 0 t1.4 0\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M0.5 13.8 H14.5\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>", "parque": "<circle cx=\"7.5\" cy=\"4.6\" r=\"3.9\" fill=\"#fff\"/><path d=\"M7.5 7.5 V10.4\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M2 13.2 q1.375 -1.6 2.75 0 t2.75 0 t2.75 0 t2.75 0\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>", "rede": "<path d=\"M0.5 1.5 H14.5\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"7.5\" cy=\"9\" r=\"5\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M3.6 10 H11.4 A3.9 3.9 0 0 1 3.6 10 Z\" fill=\"#fff\"/>", "generica": "<path d=\"M6.50 1.5 H8.50 L9.39 4.3 H5.61 Z\" fill=\"#fff\"/><path d=\"M5.13 5.8 H9.87 L10.73 8.5 H4.27 Z\" fill=\"#fff\"/><path d=\"M3.80 10 H11.20 L12.00 12.5 H3.00 Z\" fill=\"#fff\"/><rect x=\"1\" y=\"12.5\" width=\"13\" height=\"1.8\" rx=\"0.6\" fill=\"#fff\"/>"};
+  // 16/10/2026: licitação em rosa (o ciano se confundia com o azul de "em obra") e concluída em verde (pedido de Pedro).
   var COR_STATUS_OBRA = { nao_planejado:"#94a3b8", conceitual:"#A855F7", projeto:"#4F46E5",
-                          licitacao:"#0EA5E9", obra:"#0869A6", concluido:"#1E293B" };
+                          licitacao:"#DB2777", obra:"#0869A6", concluido:"#16A34A" };
   function hexPontos(r){
     var p = [];
     for(var k = 0; k < 6; k++){ var a = Math.PI / 3 * k - Math.PI / 2; p.push((16 + r * Math.cos(a)).toFixed(2) + "," + (16 + r * Math.sin(a)).toFixed(2)); }
@@ -2102,7 +2107,7 @@ require([
         p.pos = [xy[1], xy[0]];
         p._ponto = new Graphic({
           geometry: { type:"point", longitude:xy[1], latitude:xy[0] },
-          symbol: { type:"picture-marker", url: iconeObra(o.tipo, p.status), width:"36px", height:"36px" },
+          symbol: { type:"picture-marker", url: iconeObra(o.tipo, p.status), width:"44px", height:"44px" },   // 36 → 44 px (16/10/2026)
           attributes: { id:p.id }
         });
         (CAMADA_ETAPA[p.status] || CAMADA_ETAPA.nao_planejado).add(p._ponto);
