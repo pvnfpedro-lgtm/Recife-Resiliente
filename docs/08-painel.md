@@ -230,4 +230,4 @@ não conectado.
 - 15/10/2026: lista de **Intervenções** (esquerda) também recolhe e abre, com o mesmo botão da lista de
   pontos críticos. Com a lista recolhida, o zoom do clique no ponto usa o espaço liberado. `clasp push` feito com aprovação de Pedro.
 - 16/10/2026: **círculo de 300 m retirado do mapa** (pedido de Pedro), junto com o botão "Raio 300 m" e a
-  camada "Área de análise — 300 m" da legenda. O raio de 300 m continua sendo a área do score.
+  camada "Área de análise — 300 m" da legenda. O raio de 300 m continua sendo a área do score. `clasp push` feito com aprovação de Pedro.
