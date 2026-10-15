@@ -213,3 +213,9 @@ não conectado.
   separados por ponto e vírgula (ex.: `1; 13`). Formato texto. O painel ainda não lê a coluna (próximo
   passo: linha ponto ↔ obra no mapa, "Obras relacionadas" no cartão do ponto e pontos na ficha da obra).
   A coluna "pontos_criticos (ids)" da aba "Obras" fica sem uso, para não haver duas fontes da mesma ligação.
+- 15/10/2026: Pedro ligou a obra 2 (Canal da Mauricéa) aos pontos 9 e 36 (Av. Mascarenhas de Moraes) e
+  24 (Rua Blumenau). O painel passa a ler a coluna "Obras relacionadas": camada "Ligação pontos críticos ↔
+  obras" (linha tracejada do ponto ao ícone da obra; liga e desliga na legenda), seção "Obras
+  relacionadas" no cartão do ponto (clique abre a ficha da obra) e "Pontos críticos relacionados" na
+  ficha da obra (aba 03), no lugar da coluna "pontos_criticos (ids)" da aba "Obras". Obra sem
+  coordenada na aba "Obras" não ganha linha.

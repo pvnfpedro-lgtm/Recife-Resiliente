@@ -751,6 +751,14 @@
   .rr-tab tr.rr-dim.aberto .rr-seta{transform:rotate(90deg);}
   .rr-th-n{font-weight:400;font-size:9.5px;opacity:.85;}
   .rr-pe{margin-top:10px;font-size:10.5px;color:#9ca3af;}
+  .rr-obras{margin:10px 0 4px;}
+  .rr-obras-t{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:#64748b;margin-bottom:4px;}
+  .rr-obras-vazio{font-size:11px;color:#9ca3af;}
+  .rr-obra{display:flex;justify-content:space-between;gap:8px;padding:5px 8px;margin-bottom:3px;border-radius:6px;
+           background:rgba(255,255,255,.35);border:1px solid rgba(226,232,240,.9);font-size:12px;cursor:pointer;}
+  .rr-obra:hover{background:rgba(226,232,240,.85);}
+  .rr-obra-n{font-weight:600;color:#1e2430;}
+  .rr-obra-s{color:#64748b;white-space:nowrap;}
   .rr-pe a{color:var(--rr);font-weight:600;}
 
   /* ---------- Legenda e Camadas (05/10/2026) ---------- */
@@ -1369,13 +1377,18 @@ require([
   var OBRAS_PONTOS_TITULO = "Obras (pontos da planilha)";
   var obrasPontosLayer = new GraphicsLayer({ title: OBRAS_PONTOS_TITULO });
   // Ordem de desenho: a última adicionada fica por cima. Obras acima dos pontos críticos (pedido de Pedro, 15/10/2026).
+  /* Ligação ponto crítico ↔ obra: linha tracejada do ponto até o ícone da obra (15/10/2026).
+     Vem da coluna "Obras relacionadas (obra_id)" da aba "Notas dos pontos". */
+  var LIGACOES_TITULO = "Ligação pontos críticos ↔ obras";
+  var ligacoesLayer = new GraphicsLayer({ title: LIGACOES_TITULO });
+  map.add(ligacoesLayer);
   map.add(raioLayer);
   map.add(pontosLayer);
   map.add(obrasPontosLayer);
   // O WebMap só traz as camadas dele depois de carregar, e elas entram por cima das nossas (os rios
   // cobriam os ícones das obras). Depois do carregamento, as nossas voltam para o topo, na mesma ordem.
   map.when(function(){
-    [raioLayer, pontosLayer, obrasPontosLayer].forEach(function(l){ map.reorder(l, map.layers.length - 1); });
+    [ligacoesLayer, raioLayer, pontosLayer, obrasPontosLayer].forEach(function(l){ map.reorder(l, map.layers.length - 1); });
   });
   // Polígono do círculo (64 vértices) calculado na esfera a partir de lon/lat.
   function circuloGeo(lon, lat, raioM){
@@ -1446,6 +1459,37 @@ require([
     { nome:"Impacto",         cods:["I1","I2","I3"] }
   ];
 
+  // Obras ligadas ao ponto (coluna "Obras relacionadas" da planilha), com link para a ficha.
+  function obrasDoPontoHtml(p){
+    var ids = p.obras || [];
+    if(!ids.length) return '<div class="rr-obras"><div class="rr-obras-t">Obras relacionadas</div><div class="rr-obras-vazio">Nenhuma obra ligada a este ponto.</div></div>';
+    return '<div class="rr-obras"><div class="rr-obras-t">Obras relacionadas</div>' + ids.map(function(id){
+      var o = PROJECTS.find(function(x){ return x.id === "obra-" + id; });
+      if(!o) return '<div class="rr-obra">Obra ' + escHtml(id) + ' <span class="rr-obras-vazio">(não está na aba "Obras")</span></div>';
+      return '<div class="rr-obra" onclick="openFichaById(\'' + o.id + '\')" title="Abrir a ficha da obra">' +
+        '<span class="rr-obra-n">' + escHtml(o.title) + '</span><span class="rr-obra-s">' + escHtml(STATUS_LABEL[o.status] || "") + ' ›</span></div>';
+    }).join("") + '</div>';
+  }
+  // Pontos críticos ligados a uma obra (inverso da coluna "Obras relacionadas").
+  function pontosDaObra(obraId){
+    var num = String(obraId).replace(/^obra-/, "");
+    return (PONTOS_LISTA || []).filter(function(pc){ return (pc.obras || []).indexOf(num) > -1; });
+  }
+  function desenharLigacoes(){
+    ligacoesLayer.removeAll();
+    (PONTOS_LISTA || []).forEach(function(pc){
+      if(pc.lat == null || pc.lon == null) return;
+      (pc.obras || []).forEach(function(id){
+        var o = PROJECTS.find(function(x){ return x.id === "obra-" + id; });
+        if(!o || !o._ponto) return;  // obra sem coordenada na aba "Obras": sem linha
+        ligacoesLayer.add(new Graphic({
+          geometry: { type:"polyline", paths:[[[pc.lon, pc.lat], [o.pos[0], o.pos[1]]]], spatialReference:{ wkid:4326 } },
+          symbol: { type:"simple-line", color:[51,65,85,0.85], width:2, style:"dash" },
+          attributes: { ponto: pc.id, obra: o.id }
+        }));
+      });
+    });
+  }
   function popupPonto(p){
     var linhas = "";
     GRUPOS_SUB.forEach(function(g, gi){
@@ -1467,6 +1511,7 @@ require([
         '<div class="rr-kpi"><div class="rr-kpi-v">' + (p.posicao != null ? p.posicao + 'º' : '—') + '</div>' +
           '<div class="rr-kpi-r">Posição no ranking</div><div class="rr-kpi-n">de 21 pontos</div></div>' +
       '</div>' +
+      obrasDoPontoHtml(p) +
       '<table class="rr-tab"><tr><th>Dimensão / variável</th><th>Avaliação<br><span class="rr-th-n">(nota 1–5)</span></th></tr>' + linhas + '</table>' +
       '<div class="rr-pe">Avaliação de 1 a 5 (5 = mais crítico) · Lat ' + fmtN(p.lat, 6) + ' · Lon ' + fmtN(p.lon, 6) +
         ' (' + escHtml(p.precisao).toLowerCase() + ')</div>' +
@@ -1585,6 +1630,7 @@ require([
     });
     renderPontosLista();
     renderKpiStrip();
+    desenharLigacoes();
     console.log("Pontos críticos carregados da planilha: " + res.pontos.length + " (" + res.lidoEm + ")");
     buildLayerToggle();
   }
@@ -1940,6 +1986,7 @@ require([
         obrasPontosLayer.add(p._ponto);
       }
     });
+    desenharLigacoes();
   }
   function carregarObras(){
     var camada = map.allLayers.find(function(l){ return l.type === "feature" && /obra/i.test(l.title || ""); });
@@ -2034,6 +2081,9 @@ require([
     }
     if(title === OBRAS_PONTOS_TITULO){
       return '<img src="' + ICONES_OBRA.generica + '" width="16" height="16" alt="" style="vertical-align:middle">';
+    }
+    if(title === LIGACOES_TITULO){
+      return '<svg width="16" height="12" viewBox="0 0 16 12"><path d="M1 11 15 1" stroke="#334155" stroke-width="2" stroke-dasharray="3 2" fill="none"/></svg>';
     }
     if(title === RAIO_TITULO){
       return CLASSES_INDICE.map(function(c){
@@ -2845,7 +2895,10 @@ require([
       ["Início", fmtData(x.inicio)], ["Término previsto", fmtData(x.fimPrevisto)], ["Término atual", fmtData(x.fimAtual)],
       ["Solução", v(x.solucao)], ["Extensão", v(x.extensao)],
       ["População beneficiada", x.populacao != null ? fmtNum(x.populacao) : "a informar"],
-      ["Pontos críticos atendidos", v(x.pontos)],
+      ["Pontos críticos relacionados", (function(){
+        var l = pontosDaObra(p.id);
+        return l.length ? l.map(function(pc){ return pc.trecho + " (índice " + fmtN(pc.indice, 3) + ")"; }).join("; ") : "nenhum ponto ligado";
+      })()],
       ["Licença", v(ENTRAVE_LABEL[en.licenca] || en.licenca)], ["Desapropriação", v(ENTRAVE_LABEL[en.desapropriacao] || en.desapropriacao)],
       ["Concessionárias", v(ENTRAVE_LABEL[en.concessionarias] || en.concessionarias)],
       ["Fonte da informação", v(x.fonteInfo)]
