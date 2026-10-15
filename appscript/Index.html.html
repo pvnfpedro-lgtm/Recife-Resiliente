@@ -970,17 +970,6 @@
         </div>
 
         <div class="map-br-stack">
-          <div class="legend" id="mapTools">
-            <div class="map-tools-head">
-              <h4>Mapa</h4>
-              <div class="data-info" tabindex="0" role="note" aria-label="Aviso sobre a origem dos dados do mapa">
-                <div class="data-info-icon">i</div>
-                <div class="data-info-tip">Mapa: WebMap real da Prefeitura (ArcGIS Enterprise) · Pontos críticos: lidos da planilha de notas (teste, coordenadas não verificadas) · Lista de intervenções ao lado: dados de exemplo, ainda não conectados ao FeatureServer real</div>
-              </div>
-              <button class="mt-min" id="mapToolsMin" type="button" title="Recolher">–</button>
-            </div>
-            <button class="map-source-toggle" id="btnMapSource" type="button"><span id="mapSourceLabel">Ver no Google Maps</span></button>
-          </div>
           <div class="legend" id="layerPanel">
             <div class="lg-head" id="layerPanelHead"><h4>Camadas</h4><button class="lg-min" id="layerPanelMin" type="button" title="Recolher">–</button></div>
             <div id="layerToggleList"><span style="font-size:11px;color:var(--text-faint)">Carregando…</span></div>
@@ -1896,7 +1885,9 @@ require([
       label.textContent = "Ver no Google Maps";
     }
   }
-  document.getElementById("btnMapSource").addEventListener("click", toggleMapSource);
+  // Quadro "Mapa" (Google Maps) retirado em 16/10/2026 (pedido de Pedro); toggleMapSource fica sem botão.
+  var btnMapSource = document.getElementById("btnMapSource");
+  if(btnMapSource) btnMapSource.addEventListener("click", toggleMapSource);
 
   function popupTemplateFor(p){
     var b = baciaOf(p.bacia), sub = subOf(p.bacia,p.subbacia);
