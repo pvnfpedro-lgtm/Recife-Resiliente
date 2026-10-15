@@ -261,4 +261,4 @@ não conectado.
   botões e Google Maps em linhas separadas (o "–" de recolher fica no título); controles em coluna no meio da
   direita do mapa. `clasp push` feito com aprovação de Pedro.
 - 16/10/2026 (pedido de Pedro): botões de mapa base (Cinza, Ruas, Satélite, Original) retirados; o painel usa
-  só o mapa base Original do WebMap. O quadro passou a se chamar "Mapa" e ficou com "Ver no Google Maps".
+  só o mapa base Original do WebMap. O quadro passou a se chamar "Mapa" e ficou com "Ver no Google Maps". `clasp push` feito com aprovação de Pedro.
