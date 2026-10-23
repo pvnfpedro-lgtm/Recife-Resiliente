@@ -16,3 +16,6 @@ __pycache__/
 # Sistema
 .DS_Store
 Thumbs.db
+
+# graphify (saída gerada; refazer com /graphify docs)
+graphify-out/
