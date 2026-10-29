@@ -19,10 +19,14 @@ class TestMontarPainel(unittest.TestCase):
         self.assertNotIn("<?", self.html)
 
     def test_um_style_e_um_script_proprios(self):
-        self.assertEqual(self.html.count("<style>"), 1)
-        self.assertEqual(self.html.count("</style>"), 1)
+        # Tags no começo da linha (o texto da página de impressão do ranking também tem <style>).
+        def conta(tag):
+            return len(re.findall(r"^" + tag, self.html, re.M))
+        self.assertEqual(conta("<style>"), 1)
+        self.assertEqual(conta("</style>"), 1)
         # O único <script> sem src é o do painel (as 4 partes juntas).
-        self.assertEqual(len(re.findall(r"<script>", self.html)), 1)
+        self.assertEqual(conta("<script>"), 1)
+        self.assertEqual(conta("</script>"), 1)
 
     def test_partes_na_ordem(self):
         pos = [self.html.index(t) for t in (

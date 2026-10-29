@@ -27,7 +27,7 @@
     var total = PONTOS_LISTA.length;
     var alto = lista.filter(function(p){ return p.risco != null && p.risco >= CORTE_RISCO; }).length;
     var conferir = lista.filter(function(p){ return p.lat == null || p.lon == null || /aproximad/i.test(p.precisao); }).length;
-    var teste = ' <span class="kpi-teste">notas de teste</span>';
+    var teste = NOTAS_DE_TESTE ? ' <span class="kpi-teste">notas de teste</span>' : '';
     return '<div class="kpi-sep"></div>' +
       kpiTile("Pontos Críticos", lista.length, lista.length === total ? "" : "/ " + total, "kpi-pc") +
       kpiTile("Risco Alto" + teste, alto, "/ " + lista.length, "kpi-pc", "Risco (Probabilidade × Consequência) igual ou acima de " + CORTE_RISCO) +

@@ -7,6 +7,9 @@
      ===================================================================== */
   var PONTOS_TITULO = "Pontos críticos — RPA 6 (teste)";
   var CORTE_RISCO = 9;
+  // Notas da planilha ainda de teste (=RANDBETWEEN). Mudar para false quando entrarem as notas reais:
+  // some a etiqueta "notas de teste" dos KPIs e o aviso do ranking.
+  var NOTAS_DE_TESTE = true;
   var pontosLayer = new GraphicsLayer({ title: PONTOS_TITULO });
   /* Círculo de 300 m em volta dos pontos: retirado do mapa em 16/10/2026 (pedido de Pedro).
      O raio continua sendo a área do score (metodologia); só deixou de ser desenhado. */
@@ -355,9 +358,11 @@
       var pa = a.posicao == null ? Infinity : a.posicao, pb = b.posicao == null ? Infinity : b.posicao;
       return pa - pb || a.id - b.id;
     });
+    PONTOS_LIDO_EM = res.lidoEm || null;
     renderPontosLista();
     renderKpiStrip();
     desenharLigacoes();
+    if(document.getElementById("rkModal").classList.contains("open")) renderRanking();
     console.log("Pontos críticos carregados da planilha: " + res.pontos.length + " (" + res.lidoEm + ")");
     buildLayerToggle();
   }
@@ -431,6 +436,176 @@
     if(!g) return;
     selecionarPonto(p, g.geometry);
   });
+  /* ---------------------------------------------------------------------
+     RANKING DOS PONTOS CRÍTICOS (29/10/2026): tabela dos pontos na ordem da
+     coluna "Posição" da planilha, com download em CSV, cópia para colar no
+     Excel/Sheets e versão para imprimir ou salvar em PDF. Mostra sempre todos
+     os pontos (não segue a busca do topo). O CSV leva também as 18 variáveis.
+     --------------------------------------------------------------------- */
+  var PONTOS_LIDO_EM = null;
+  function classeIndice(i){
+    if(i == null) return null;
+    for(var k=0;k<CLASSES_INDICE.length;k++){ if(i < CLASSES_INDICE[k].max) return CLASSES_INDICE[k]; }
+    return CLASSES_INDICE[CLASSES_INDICE.length-1];
+  }
+  function localPonto(p){ return p.lat == null || p.lon == null ? "Sem coordenada" : (p.precisao || ""); }
+  function nomesObras(p){
+    return (p.obras || []).map(function(id){
+      var o = (typeof PROJECTS !== "undefined" ? PROJECTS : []).find(function(x){ return x.id === "obra-" + id; });
+      return o ? id + " – " + o.title : String(id);
+    });
+  }
+  function dataHora(iso){
+    if(!iso) return "";
+    var d = new Date(iso);
+    return isNaN(d) ? String(iso) : d.toLocaleDateString("pt-BR") + " " + d.toLocaleTimeString("pt-BR", { hour:"2-digit", minute:"2-digit" });
+  }
+  // Colunas do ranking: [título, valor(p), casas decimais, só no CSV].
+  function colunasRanking(){
+    var cols = [
+      ["Posição", function(p){ return p.posicao; }, 0],
+      ["ID", function(p){ return p.id; }, 0],
+      ["Trecho", function(p){ return p.trecho; }],
+      ["Bairro", function(p){ return p.bairro; }],
+      ["Tipo", function(p){ return p.tipo; }],
+      ["Grupo", function(p){ return p.grupo; }, null, true],
+      ["Probabilidade", function(p){ return p.P; }, 1],
+      ["Exposição", function(p){ return p.E; }, 1],
+      ["Vulnerabilidade", function(p){ return p.V; }, 1],
+      ["Impacto", function(p){ return p.I; }, 1],
+      ["Consequência", function(p){ return p.C; }, 2],
+      ["Risco (1–25)", function(p){ return p.risco; }, 2],
+      ["Índice de risco (0–1)", function(p){ return p.indice; }, 3],
+      ["Classe do índice", function(p){ var c = classeIndice(p.indice); return c ? c.rotulo : null; }],
+      ["Local", localPonto],
+      ["Notas preenchidas", function(p){ return p.preenchidas; }, 0],
+      ["Obras relacionadas", function(p){ return nomesObras(p).join("; "); }]
+    ];
+    GRUPOS_SUB.forEach(function(g){
+      g.cods.forEach(function(c){
+        cols.push([c + " " + (NOMES_PLANILHA[c] || NOMES_SUB[c]), function(p){ return p.notas ? p.notas[c] : null; }, null, true]);
+      });
+    });
+    cols.push(["Latitude", function(p){ return p.lat; }, 6, true], ["Longitude", function(p){ return p.lon; }, 6, true]);
+    return cols;
+  }
+  // Texto da célula: números com vírgula decimal (casas fixas quando a coluna pede).
+  function celulaTexto(col, p){
+    var v = col[1](p);
+    if(v == null || v === "") return "";
+    if(typeof v === "number") return col[2] == null ? String(v).replace(".", ",") : v.toFixed(col[2]).replace(".", ",");
+    return String(v);
+  }
+  // Tabela em texto: sep = ";" para CSV (Excel em português), "\t" para colar.
+  function rankingTexto(sep){
+    var cols = colunasRanking();
+    function campo(t){
+      t = String(t).replace(/\r?\n/g, " ");
+      return sep === "\t" ? t.replace(/\t/g, " ") : (/[";]/.test(t) ? '"' + t.replace(/"/g, '""') + '"' : t);
+    }
+    var linhas = [cols.map(function(c){ return campo(c[0]); }).join(sep)];
+    (PONTOS_LISTA || []).forEach(function(p){
+      linhas.push(cols.map(function(c){ return campo(celulaTexto(c, p)); }).join(sep));
+    });
+    return linhas.join("\r\n");
+  }
+  function avisoRanking(){
+    return (NOTAS_DE_TESTE ? "Notas de teste: a planilha ainda sorteia as notas e o ranking muda a cada recálculo. " : "") +
+      "Lido da planilha em " + (dataHora(PONTOS_LIDO_EM) || "—") + ".";
+  }
+  var CLASSE_COLUNA_RANKING = { "Trecho":"rk-largo", "Obras relacionadas":"rk-largo", "Classe do índice":"rk-nowrap", "Local":"rk-nowrap" };
+  function classeColuna(c){
+    var cls = [c[2] != null ? "num" : "", CLASSE_COLUNA_RANKING[c[0]] || ""].join(" ").trim();
+    return cls ? ' class="' + cls + '"' : '';
+  }
+  function tabelaRankingHtml(){
+    var cols = colunasRanking().filter(function(c){ return !c[3]; });
+    return '<table class="rk-tab"><thead><tr>' + cols.map(function(c){
+        return '<th' + classeColuna(c) + '>' + escHtml(c[0]) + '</th>'; }).join("") + '</tr></thead><tbody>' +
+      (PONTOS_LISTA || []).map(function(p){
+        return '<tr>' + cols.map(function(c){
+          var t = escHtml(celulaTexto(c, p));
+          if(c[0] === "Classe do índice" && t) t = '<span class="rk-cor" style="background:' + corIndice(p.indice) + '"></span>' + t;
+          return '<td' + classeColuna(c) + '>' + (t || '—') + '</td>';
+        }).join("") + '</tr>';
+      }).join("") + '</tbody></table>';
+  }
+  function renderRanking(){
+    var corpo = document.getElementById("rkCorpo");
+    var ok = PONTOS_LISTA && PONTOS_LISTA.length;
+    document.querySelectorAll("#rkModal .rk-acoes button").forEach(function(b){ b.disabled = !ok; });
+    if(!ok){
+      corpo.innerHTML = '<div class="pc-msg">' + (PONTOS_LISTA ? 'Nenhum ponto na planilha.' : 'Os pontos ainda não foram lidos da planilha.') + '</div>';
+      return;
+    }
+    document.getElementById("rkAviso").textContent = avisoRanking();
+    corpo.innerHTML = tabelaRankingHtml();
+  }
+  function nomeArquivoRanking(ext){
+    return "ranking_pontos_criticos_RPA6_" + new Date().toISOString().slice(0, 10) + (NOTAS_DE_TESTE ? "_notas-de-teste" : "") + "." + ext;
+  }
+  function baixarRankingCsv(){
+    // BOM no começo: o Excel abre os acentos certos.
+    var blob = new Blob(["﻿" + rankingTexto(";")], { type:"text/csv;charset=utf-8" });
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = nomeArquivoRanking("csv");
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function(){ URL.revokeObjectURL(a.href); }, 10000);
+  }
+  function avisarRanking(msg){
+    var el = document.getElementById("rkStatus");
+    el.textContent = msg;
+    clearTimeout(avisarRanking.t);
+    avisarRanking.t = setTimeout(function(){ el.textContent = ""; }, 4000);
+  }
+  // Copia como texto separado por tabulação: cola em colunas no Excel e no Google Sheets.
+  function copiarRanking(){
+    var texto = rankingTexto("\t");
+    function antigo(){
+      var ta = document.createElement("textarea");
+      ta.value = texto; ta.style.position = "fixed"; ta.style.opacity = "0";
+      document.body.appendChild(ta); ta.select();
+      var ok = false;
+      try { ok = document.execCommand("copy"); } catch(e){}
+      ta.remove();
+      avisarRanking(ok ? "Tabela copiada. Cole no Excel ou no Google Sheets." : "Não foi possível copiar. Use “Baixar CSV”.");
+    }
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(texto).then(function(){ avisarRanking("Tabela copiada. Cole no Excel ou no Google Sheets."); }, antigo);
+    } else antigo();
+  }
+  // Abre a tabela numa página própria, que já chama a impressão (dá para salvar em PDF).
+  function imprimirRanking(){
+    var html = '<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>' + escHtml(nomeArquivoRanking("pdf").replace(/\.pdf$/, "")) + '</title>' +
+      '<style>@page{size:A4 landscape;margin:12mm;}body{font-family:Inter,Arial,sans-serif;color:#1e293b;margin:0;padding:16px;}' +
+      'h1{font-size:16px;margin:0 0 4px;color:#0869A6;}p{font-size:11px;color:#475569;margin:0 0 10px;}' +
+      '.rk-tab{border-collapse:collapse;width:100%;font-size:9.5px;}.rk-tab th,.rk-tab td{border:1px solid #cbd5e1;padding:3px 5px;text-align:left;vertical-align:top;}' +
+      '.rk-tab th{background:#F2F2F2;}.rk-tab .num,.rk-tab .rk-nowrap{text-align:right;white-space:nowrap;}.rk-tab .rk-nowrap{text-align:left;}.rk-tab .rk-largo{min-width:140px;}' +
+      '.rk-cor{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px;-webkit-print-color-adjust:exact;print-color-adjust:exact;}' +
+      'button{margin-bottom:10px;padding:6px 12px;font:inherit;cursor:pointer;}@media print{button{display:none;}}</style></head><body>' +
+      '<button onclick="print()">Imprimir / salvar em PDF</button>' +
+      '<h1>Recife Resiliente — ranking dos pontos críticos da RPA 6</h1>' +
+      '<p>' + escHtml(avisoRanking()) + ' Risco = Probabilidade × Consequência (1 a 25); índice = (risco − 1) ÷ 24.</p>' +
+      tabelaRankingHtml() + '<scr' + 'ipt>window.onload=function(){print();};</scr' + 'ipt></body></html>';
+    var url = URL.createObjectURL(new Blob([html], { type:"text/html" }));
+    var w = window.open(url, "_blank");
+    if(!w) avisarRanking("O navegador bloqueou a nova janela. Libere pop-ups para este site.");
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 60000);
+  }
+  function abrirRanking(){
+    renderRanking();
+    document.getElementById("rkModal").classList.add("open");
+  }
+  function fecharRanking(){ document.getElementById("rkModal").classList.remove("open"); }
+  document.getElementById("pcRanking").addEventListener("click", abrirRanking);
+  document.getElementById("rkFechar").addEventListener("click", fecharRanking);
+  document.getElementById("rkModal").addEventListener("click", function(e){ if(e.target.id === "rkModal") fecharRanking(); });
+  document.addEventListener("keydown", function(e){ if(e.key === "Escape") fecharRanking(); });
+  document.getElementById("rkCsv").addEventListener("click", baixarRankingCsv);
+  document.getElementById("rkCopiar").addEventListener("click", copiarRanking);
+  document.getElementById("rkImprimir").addEventListener("click", imprimirRanking);
+
   if(typeof google !== "undefined" && google.script && google.script.run){
     google.script.run
       .withSuccessHandler(desenharPontos)

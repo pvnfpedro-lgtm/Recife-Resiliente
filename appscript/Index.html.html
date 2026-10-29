@@ -92,6 +92,7 @@
             <div class="list-panel-header">
               <h3>Pontos críticos</h3>
               <span class="list-count" id="pcCount"></span>
+              <button type="button" class="pc-ranking" id="pcRanking" title="Tabela do ranking, com download em CSV e impressão">Ranking</button>
               <button type="button" class="pc-recolher" id="pcRecolher" title="Recolher a lista" aria-expanded="true">
                 <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 15l6-6 6 6"/></svg>
               </button>
@@ -298,6 +299,23 @@
       </div>
     </div>
     <iframe id="svFrame" src="" title="Google Street View" allowfullscreen loading="lazy"></iframe>
+  </div>
+</div>
+
+<div class="sv-modal rk-modal" id="rkModal">
+  <div class="sv-modal-inner rk-modal-inner" role="dialog" aria-modal="true" aria-labelledby="rkTitulo">
+    <div class="sv-modal-head">
+      <span id="rkTitulo">Ranking dos pontos críticos — RPA 6</span>
+      <div class="rk-acoes">
+        <span class="rk-status" id="rkStatus" role="status"></span>
+        <button type="button" id="rkCsv">Baixar CSV</button>
+        <button type="button" id="rkCopiar">Copiar tabela</button>
+        <button type="button" id="rkImprimir">Imprimir / PDF</button>
+        <button class="sv-close" id="rkFechar" type="button" title="Fechar">&times;</button>
+      </div>
+    </div>
+    <div class="rk-aviso" id="rkAviso"></div>
+    <div class="rk-corpo" id="rkCorpo"></div>
   </div>
 </div>
 

@@ -189,6 +189,23 @@ não conectado.
 - Liberar `*.arcgis.com` e `esigportal2.recife.pe.gov.br` na rede do
   ambiente para testar o painel antes de cada envio.
 
+## Ranking dos pontos críticos (29/10/2026, código; `clasp push` só após aprovação)
+Botão **"Ranking"** no título da lista de pontos críticos. Abre uma tabela com todos os pontos na
+ordem da coluna "Posição" da planilha (não segue a busca do topo): posição, ID, trecho, bairro, tipo,
+notas das 4 dimensões, consequência, risco (1–25), índice (0–1), classe do índice (mesmas cores do
+mapa), local (exato/aproximado/sem coordenada), notas preenchidas e obras relacionadas.
+- **Baixar CSV:** separado por `;`, vírgula decimal e acentos certos no Excel em português. Leva também
+  o grupo, as 18 variáveis e a latitude/longitude. O nome do arquivo tem a data e, enquanto as notas
+  forem de teste, termina em `_notas-de-teste`.
+- **Copiar tabela:** texto separado por tabulação, para colar direto no Excel ou no Google Sheets.
+- **Imprimir / PDF:** abre a tabela numa página própria (A4 deitado), com o aviso e a data da leitura,
+  e chama a impressão; dá para salvar em PDF.
+- O aviso "notas de teste" (ranking e KPIs) depende de `NOTAS_DE_TESTE` em `JsPontosCriticos.html`:
+  mudar para `false` quando entrarem as notas reais.
+- Testado fora do Apps Script, com o ArcGIS simulado e dados fictícios: tabela, CSV, impressão, Esc e
+  tela de celular. **Não testado no Apps Script:** se o navegador bloquear o download ou a nova janela
+  dentro do iframe do Apps Script, o botão "Copiar tabela" continua funcionando.
+
 ## Arquivos do painel (desde 29/10/2026)
 O `Index.html` tinha cerca de 3.100 linhas. Foi dividido sem mudar o que a página mostra:
 
