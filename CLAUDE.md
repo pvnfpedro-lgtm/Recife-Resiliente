@@ -42,7 +42,9 @@ Arquivo de trabalho da equipe: a planilha Google
 - **Painel:** Google Apps Script em `appscript/` (projeto
   `1Om9PIGQQrIXZ9cTFqbv_iLv9DIvyGW3AbJEDejtEU2SC9PbKDbUVuIFr`), enviado com
   `clasp push` só após aprovação de Pedro. URL de teste e decisões em
-  `docs/08-painel.md`. O painel lê a planilha e mostra os 21 pontos com um
+  `docs/08-painel.md`. Desde 29/10/2026 o código fica em vários arquivos
+  (`Estilos`, `JsBase`, `JsPontosCriticos`, `JsMapa`, `JsPaginas`) juntados
+  pelo Index com `include()`; tabela em `docs/08-painel.md`. O painel lê a planilha e mostra os 21 pontos com um
   cartão próprio (à direita do ponto). Paleta: #0869A6 · #2685BF · #5496BF ·
   #FFFFFF · #F2F2F2. Obras fictícias mantidas por enquanto.
 - **clasp:** a credencial fica só na sessão em que foi feito o login. Numa
@@ -59,6 +61,35 @@ Arquivo de trabalho da equipe: a planilha Google
   de 500 m a 2 km; ainda fora da aba "Notas dos pontos" e do painel); E3 leva
   o aspecto econômico: soma do IPTU não residencial no círculo de 1 km
   (exceção aos 300 m), notas por quintis. ZEC descartada.
+
+## Em andamento (06/10/2026, branch `claude/nice-hopper-7xi6qn`)
+- Ícones do mapa: Drenagem (quadrado) e Obras (hexágono; em obra, em
+  licitação, concluído) em `mapa/icones/`, propostas a aprovar
+  (`docs/09-identidade-visual-mapa.md`). Mínimo de 32 px no ArcGIS.
+- Aba "Obras" da planilha do painel: obra_id 1 e 2 (canais) + 3 a 28 (Tabela
+  84, documento de origem a identificar; pendência 22). Colunas novas Z
+  "coordenadas (lat, lon)" e AA "coord_precisao" para Pedro colar do Google
+  Maps. **Próximo passo:** quando Pedro avisar, ler Z/AA e gerar um CSV de
+  pontos (lat e lon separados, ponto decimal, obra_id, nome, status) para
+  "Tabela XY para Ponto" no ArcGIS Pro (WGS 1984).
+- Camadas no ArcGIS: polígonos (camada "2. Obras") + pontos (do CSV). O
+  campo `obra` da camada = obra_id da planilha (Dique da Av. Recife = 13).
+- Outra sessão (branch `claude/admiring-johnson-th56xx`, já com `clasp push`)
+  trocou o WebMap do painel para `d19385d68f1b4303b5f94ddc5ce58ff6` e passou a
+  ler a aba "Obras". O diagrama `docs/img/fluxo_painel.png` deste branch está
+  desatualizado nesse ponto (ainda mostra df725 e obras fictícias).
+- Em aberto com Pedro: tirar da aba "Obras" os programas sem local (4, 5,
+  26, 27, 28); valores de status iguais na camada e na planilha.
+
+## Estado em 15/10/2026 (branch `claude/dreamy-shannon-ycw0nv`, PR #8 aberto)
+- Tudo o que está no Apps Script saiu deste branch (main + `claude/inspiring-carson-nu2f7a`).
+  **Antes de qualquer `clasp push`, conferir que o branch contém o PR #8**; senão os ícones das obras
+  da planilha somem de novo (aconteceu em 14/10).
+- Painel: camadas próprias no topo após o WebMap carregar; ligação ponto ↔ obra pela coluna AJ
+  "Obras relacionadas (obra_id)" da aba "Notas dos pontos" (obra 2 ligada aos pontos 9, 24 e 36);
+  linhas só do ponto clicado; animação (zoom ~2 km mínimo, salto, linha, pulso); listas recolhíveis.
+- Pendente: infraestrutura crítica (hospitais, aeroporto, metrô) como camadas do WebMap (pendência 18);
+  decidir se apaga a coluna "pontos_criticos (ids)" da aba "Obras" (sem uso).
 
 ## Próximos passos (escolha de Pedro)
 1. Indicadores e ranking dos pontos críticos na aba 01 do painel.

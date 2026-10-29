@@ -1,0 +1,593 @@
+/* Script do painel, parte 3 de 4: Street View, troca ArcGIS/Google Maps, obras reais do WebMap, legenda e mapa base.
+   Não é um arquivo independente: o Index junta as 4 partes num único bloco de script. */
+  /* =====================================================================
+     GOOGLE STREET VIEW (modal embutido, sem precisar de chave de API)
+     ===================================================================== */
+  function streetViewCoords(p){
+    if(p.kind === "canal"){ var mid = p.path[Math.floor(p.path.length/2)]; return { lng: mid[0], lat: mid[1] }; }
+    return { lng: p.pos[0], lat: p.pos[1] };
+  }
+  function openStreetView(lat, lng){
+    document.getElementById("svFrame").src = "https://maps.google.com/maps?layer=c&cbll=" + lat + "," + lng + "&cbp=0,0,0,0,0&output=svembed";
+    document.getElementById("svExternalLink").href = "https://www.google.com/maps/@" + lat + "," + lng + ",3a,75y,90t/data=!3m6!1e1";
+    document.getElementById("svModal").classList.add("open");
+  }
+  function closeStreetView(){
+    document.getElementById("svModal").classList.remove("open");
+    document.getElementById("svFrame").src = "";
+  }
+  window.openStreetView = openStreetView; // usado pelo HTML do popup do ArcGIS
+  document.getElementById("svClose").addEventListener("click", closeStreetView);
+  document.getElementById("svModal").addEventListener("click", function(e){ if(e.target.id === "svModal") closeStreetView(); });
+  document.getElementById("btnStreetViewHere").addEventListener("click", function(){
+    openStreetView(view.center.latitude, view.center.longitude);
+  });
+
+  /* =====================================================================
+     TROCA ARCGIS <-> GOOGLE MAPS (na Página 1)
+     ===================================================================== */
+  var googleMapActive = false;
+  // Chave gratuita da "Maps Embed API" (console.cloud.google.com > APIs & Serviços > Credenciais).
+  // Não exige conta de faturamento para esse uso. Sem chave, mostramos um aviso em vez de um mapa quebrado.
+  var GOOGLE_MAPS_EMBED_KEY = "";
+  function buildGoogleMapsUrl(){
+    var c = view.center;
+    var z = Math.max(1, Math.round(view.zoom) + 1);
+    return "https://www.google.com/maps/embed/v1/view?key=" + encodeURIComponent(GOOGLE_MAPS_EMBED_KEY) +
+      "&center=" + c.latitude + "," + c.longitude + "&zoom=" + z;
+  }
+  function toggleMapSource(){
+    googleMapActive = !googleMapActive;
+    var frame = document.getElementById("googleMapFrame");
+    var missingKey = document.getElementById("googleMapMissingKey");
+    var label = document.getElementById("mapSourceLabel");
+    var centerControls = document.querySelector(".map-center-controls");
+    var layerPanel = document.getElementById("layerPanel"), basemapBox = document.getElementById("basemapBox");
+    if(googleMapActive){
+      document.getElementById("viewDiv").style.display = "none";
+      if(centerControls) centerControls.style.display = "none";
+      if(layerPanel) layerPanel.style.display = "none";
+      if(basemapBox) basemapBox.style.display = "none";
+      label.textContent = "Voltar para o ArcGIS";
+      if(GOOGLE_MAPS_EMBED_KEY){
+        frame.src = buildGoogleMapsUrl();
+        frame.style.display = "block";
+        missingKey.style.display = "none";
+      } else {
+        frame.style.display = "none";
+        missingKey.style.display = "flex";
+      }
+    } else {
+      frame.style.display = "none";
+      frame.src = "";
+      missingKey.style.display = "none";
+      document.getElementById("viewDiv").style.display = "block";
+      if(centerControls) centerControls.style.display = "flex";
+      if(layerPanel) layerPanel.style.display = "";
+      if(basemapBox) basemapBox.style.display = "";
+      label.textContent = "Ver no Google Maps";
+    }
+  }
+  // Quadro "Mapa" (Google Maps) retirado em 16/10/2026 (pedido de Pedro); toggleMapSource fica sem botão.
+  var btnMapSource = document.getElementById("btnMapSource");
+  if(btnMapSource) btnMapSource.addEventListener("click", toggleMapSource);
+
+  function popupTemplateFor(p){
+    var b = baciaOf(p.bacia), sub = subOf(p.bacia,p.subbacia);
+    var c = streetViewCoords(p);
+    return new PopupTemplate({
+      title: esc(p.title),
+      content: [{
+        type: "text",
+        text:
+          '<div class="pp">' +
+            '<div class="pp-head"><span class="status-pill ' + statusClass(p.status) + '">' + STATUS_LABEL[p.status] + '</span>' +
+              '<span class="project-code">' + esc(p.code) + '</span></div>' +
+            '<div class="pp-sub"><b>' + esc(p.bairro) + '</b> · ' + esc(b.nome) + (sub ? ' — ' + esc(sub.nome) : '') + '</div>' +
+            '<div class="pp-desc">' + esc(p.desc) + '</div>' +
+
+            '<div class="pp-sec"><div class="pp-sec-t">Execução física e cronograma</div>' + progressBar(p) +
+              '<div class="pp-grid">' +
+                '<div><span class="pp-k">Início</span><span class="pp-v">' + fmtMes(p.x.inicio) + '</span></div>' +
+                '<div><span class="pp-k">Término previsto</span><span class="pp-v">' + fmtMes(p.x.fim) + '</span></div>' +
+                '<div><span class="pp-k">Atraso</span><span class="pp-v">' + (p.status==="concluido" ? '—' : p.atrasoDias + ' dias') + '</span></div>' +
+              '</div></div>' +
+
+            '<div class="pp-sec"><div class="pp-sec-t">Contrato e financeiro</div>' +
+              '<div class="pbar"><div class="pbar-track"><div class="pbar-fill" style="width:' + p.pctFinanceiro + '%"></div></div><span class="pbar-val">' + p.pctFinanceiro + '%</span></div>' +
+              '<div class="pp-grid">' +
+                '<div><span class="pp-k">Investimento</span><span class="pp-v">' + p.invest + '</span></div>' +
+                '<div><span class="pp-k">Medido</span><span class="pp-v">' + fmtMi(medidoMi(p)) + '</span></div>' +
+                '<div><span class="pp-k">Empresa</span><span class="pp-v">' + esc(p.x.empresa || '—') + '</span></div>' +
+                '<div><span class="pp-k">Fonte de recurso</span><span class="pp-v">' + esc(p.x.fonte || '—') + '</span></div>' +
+              '</div></div>' +
+
+            '<div class="pp-sec"><div class="pp-sec-t">Impacto e engenharia</div>' +
+              '<div class="pp-grid">' +
+                '<div><span class="pp-k">Extensão</span><span class="pp-v">' + (p.x.extensao || '—') + '</span></div>' +
+                '<div><span class="pp-k">Solução</span><span class="pp-v">' + (p.x.solucao || p.tipo) + '</span></div>' +
+                '<div><span class="pp-k">Pontos críticos impactados</span><span class="pp-v">' + fmtNum(p.x.pontosImpactados) + '</span></div>' +
+                '<div><span class="pp-k">População beneficiada</span><span class="pp-v">' + fmtNum(p.x.populacao) + '</span></div>' +
+              '</div></div>' +
+
+            '<div class="pp-actions">' +
+              '<button class="pp-btn" onclick="openStreetView(' + c.lat + ',' + c.lng + ')">Street View</button>' +
+              '<button class="pp-btn" onclick="openFichaById(\'' + p.id + '\')">Ficha completa</button>' +
+              '<button class="pp-btn off" title="Disponível quando a base tiver fotos" disabled>Fotos da obra</button>' +
+            '</div>' +
+          '</div>'
+      }]
+    });
+  }
+
+  // Desenhos dos tipos vindos de `python3 scripts/gerar_icones_obras_tipo.py --js` (até 15/10/2026 eram o ícone inteiro).
+  /* Ícones das obras: hexágono com o desenho do tipo (o de mapa/icones/obra_<tipo>.svg), na cor da etapa.
+     Não planejado cinza · conceitual roxo · em projeto índigo · em licitação rosa · em obra azul · concluída verde. */
+  var GLIFOS_OBRA = {"canal": "<path d=\"M2 4 q1.375 -1.6 2.75 0 t2.75 0 t2.75 0 t2.75 0 M2 7.5 q1.375 -1.6 2.75 0 t2.75 0 t2.75 0 t2.75 0 M2 11 q1.375 -1.6 2.75 0 t2.75 0 t2.75 0 t2.75 0\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>", "dragagem": "<path d=\"M0.8 2.4 q1.1 -1.2 2.2 0 t2.2 0\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M14 1 L9.6 5.6\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M5 4.6 H11 L9.8 9.4 H6.2 Z\" fill=\"#fff\"/><path d=\"M0.5 14.5 Q7.5 9.6 14.5 14.5 Z\" fill=\"#fff\"/>", "reservatorio": "<path d=\"M1 2.5 L3.2 13 H11.8 L14 2.5\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M2.4 7.2 q1.275 -1.4 2.55 0 t2.55 0 t2.55 0 t2.55 0 L11.4 12 H3.6 Z\" fill=\"#fff\"/>", "dique": "<path d=\"M3.6 13.5 L6.3 3.5 H8.7 L11.4 13.5 Z\" fill=\"#fff\"/><path d=\"M0.6 6.5 q0.75 -1 1.5 0 t1.5 0 M0.6 9.5 q0.75 -1 1.5 0 t1.5 0\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M11.8 11 q0.7 -1 1.4 0 t1.4 0\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M0.5 13.8 H14.5\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>", "parque": "<circle cx=\"7.5\" cy=\"4.6\" r=\"3.9\" fill=\"#fff\"/><path d=\"M7.5 7.5 V10.4\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M2 13.2 q1.375 -1.6 2.75 0 t2.75 0 t2.75 0 t2.75 0\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>", "rede": "<path d=\"M0.5 1.5 H14.5\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"7.5\" cy=\"9\" r=\"5\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M3.6 10 H11.4 A3.9 3.9 0 0 1 3.6 10 Z\" fill=\"#fff\"/>", "generica": "<path d=\"M6.50 1.5 H8.50 L9.39 4.3 H5.61 Z\" fill=\"#fff\"/><path d=\"M5.13 5.8 H9.87 L10.73 8.5 H4.27 Z\" fill=\"#fff\"/><path d=\"M3.80 10 H11.20 L12.00 12.5 H3.00 Z\" fill=\"#fff\"/><rect x=\"1\" y=\"12.5\" width=\"13\" height=\"1.8\" rx=\"0.6\" fill=\"#fff\"/>"};
+  // 16/10/2026: licitação em rosa (o ciano se confundia com o azul de "em obra") e concluída em verde (pedido de Pedro).
+  var COR_STATUS_OBRA = { nao_planejado:"#94a3b8", conceitual:"#A855F7", projeto:"#4F46E5",
+                          licitacao:"#DB2777", obra:"#0869A6", concluido:"#16A34A" };
+  function hexPontos(r){
+    var p = [];
+    for(var k = 0; k < 6; k++){ var a = Math.PI / 3 * k - Math.PI / 2; p.push((16 + r * Math.cos(a)).toFixed(2) + "," + (16 + r * Math.sin(a)).toFixed(2)); }
+    return p.join(" ");
+  }
+  var ICONES_OBRA_CACHE = {};
+  // Estilo D2 (16/10/2026, docs/prototipos/situacao_obras.html): fundo branco, contorno e desenho na cor da
+  // etapa; "não planejado" com contorno tracejado.
+  function iconeObraSvg(cat, status){
+    var cor = COR_STATUS_OBRA[status] || COR_STATUS_OBRA.nao_planejado;
+    var glifo = (GLIFOS_OBRA[cat] || GLIFOS_OBRA.generica).replace(/#fff/g, cor);
+    return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">' +
+      '<polygon points="' + hexPontos(15.4) + '" fill="#fff" stroke="' + cor + '" stroke-width="3" stroke-linejoin="round"' +
+        (status === "nao_planejado" ? ' stroke-dasharray="3.2 2"' : '') + '/>' +
+      '<g transform="translate(9.6,9.6) scale(0.85)">' + glifo + '</g></svg>';
+  }
+
+  // Coluna "tipo" da aba "Obras" -> categoria do ícone (mesma tabela de scripts/gerar_pontos_obras.py).
+  var CATEGORIA_OBRA = {
+    "canal":"canal", "perfilamento do rio tejipio":"canal", "dragagem":"dragagem",
+    "reservatorios de detencao":"reservatorio", "microrreservatorio":"reservatorio",
+    "diques e comportas":"dique", "parques alagaveis":"parque", "requalificacoes na rede":"rede"
+  };
+  function iconeObra(tipo, status){
+    var cat = CATEGORIA_OBRA[semAcento(tipo).replace(/\s+/g, " ")] || "generica";
+    var chave = cat + "|" + status;
+    if(!ICONES_OBRA_CACHE[chave]) ICONES_OBRA_CACHE[chave] = "data:image/svg+xml;base64," + btoa(iconeObraSvg(cat, status));
+    return ICONES_OBRA_CACHE[chave];
+  }
+  // "-8.08, -34.93" -> [lat, lon]; null se vazio, ilegível ou fora do Recife.
+  function coordObra(texto){
+    var m = String(texto == null ? "" : texto).split(",");
+    if(m.length !== 2) return null;
+    var lat = +m[0].trim(), lon = +m[1].trim();
+    if(isNaN(lat) || isNaN(lon) || !m[0].trim() || !m[1].trim()) return null;
+    if(lat < -8.16 || lat > -7.92 || lon < -35.02 || lon > -34.85) return null;
+    return [lat, lon];
+  }
+
+  // Gráfico em memória de cada obra (não vai para o mapa: a camada de obras do WebMap já desenha as áreas).
+  function criarGraficoObra(p){
+    var geometry = p.kind === "canal" ? { type:"polyline", paths:[p.path] } : { type:"point", longitude:p.pos[0], latitude:p.pos[1] };
+    var symbol = p.kind === "canal" ? canalSymbol : pontoSymbol;
+    p._graphic = new Graphic({ geometry: geometry, symbol: symbol, attributes: { id:p.id } });
+    graphicsLayer.add(p._graphic);
+  }
+
+  /* =====================================================================
+     OBRAS REAIS — lidas da camada de obras do WebMap (desde 05/10/2026)
+     Campos procurados pelo nome, sem diferenciar maiúsculas:
+     obra/obra_id, nome, bairro, bacia, status, invest/invest_mi/investimento, orgao, fonte.
+     Investimento acima de 1.000 é lido como reais; abaixo, como milhões.
+     Andamento, datas, empresa e entraves não existem na base: aparecem como "a informar".
+     ===================================================================== */
+  function semAcento(t){ return String(t == null ? "" : t).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim(); }
+  function campo(attrs, nomes){
+    var chaves = Object.keys(attrs || {});
+    for(var i = 0; i < nomes.length; i++){
+      for(var j = 0; j < chaves.length; j++){ if(chaves[j].toLowerCase() === nomes[i]) return attrs[chaves[j]]; }
+    }
+    return null;
+  }
+  function baciaId(texto){
+    var t = semAcento(texto);
+    if(!t) return null;
+    var b = BACIAS.find(function(x){ return x.id === t || semAcento(x.nome) === t || semAcento(x.nome).indexOf(t) > -1 || t.indexOf(x.id) > -1; });
+    if(b) return b.id;
+    var id = t.replace(/[^a-z0-9]+/g, "-");
+    if(!baciaOf(id)) BACIAS.push({ id:id, nome:String(texto).trim(), cor:"var(--text-dim)", subbacias:[] });
+    return id;
+  }
+  function statusId(texto){
+    var t = semAcento(texto);
+    // Seis etapas (16/10/2026). Vazio ou texto desconhecido = não planejado.
+    if(/conclu/.test(t)) return "concluido";
+    if(/obra|execu/.test(t)) return "obra";
+    if(/licit/.test(t)) return "licitacao";
+    if(/projeto/.test(t)) return "projeto";
+    if(/conceit|previst|estudo/.test(t)) return "conceitual";
+    return "nao_planejado";
+  }
+  function lerPlanilhaObras(){
+    return new Promise(function(resolve){
+      if(typeof google === "undefined" || !google.script || !google.script.run){ resolve(null); return; }
+      google.script.run
+        .withSuccessHandler(function(res){ if(res && res.erro) console.warn("Planilha de obras:", res.erro); resolve(res && res.obras ? res : null); })
+        .withFailureHandler(function(e){ console.warn("Planilha de obras:", e); resolve(null); })
+        .getObras();
+    });
+  }
+  function numero(v){ if(v === null || v === undefined || v === "") return null; var n = +String(v).replace(/[^\d,.-]/g, "").replace(/\.(?=\d{3}(\D|$))/g, "").replace(",", "."); return isNaN(n) ? null : n; }
+  function subbaciaId(bId, texto){
+    var b = baciaOf(bId), t = semAcento(texto);
+    if(!b || !t) return null;
+    var sb = b.subbacias.find(function(x){ return x.id === t || semAcento(x.nome).indexOf(t) > -1 || t.indexOf(x.id) > -1; });
+    if(sb) return sb.id;
+    var id = t.replace(/[^a-z0-9]+/g, "-");
+    b.subbacias.push({ id:id, nome:String(texto).trim() });
+    return id;
+  }
+  function diasEntre(a, b){ return Math.round((new Date(b) - new Date(a)) / 86400000); }
+  // A planilha manda nos dados; o mapa entra com o desenho (local). Junção pelo número da obra.
+  // Só entram no painel as obras que existem na aba "Obras" da planilha (decisão de Pedro, 05/10/2026).
+  // Polígono do mapa sem linha correspondente na planilha fica de fora.
+  function aplicarPlanilha(res){
+    ETAPAS_OBRA.forEach(function(et){ CAMADA_ETAPA[et].removeAll(); });
+    if(!res){ PROJECTS.forEach(function(p){ if(p._graphic) graphicsLayer.remove(p._graphic); }); PROJECTS = []; OBRAS_ESTADO = "sem-planilha"; return; }
+    var naPlanilha = {};
+    res.obras.forEach(function(o){ naPlanilha["obra-" + String(o.obra_id)] = true; });
+    PROJECTS = PROJECTS.filter(function(p){
+      if(naPlanilha[p.id]) return true;
+      if(p._graphic) graphicsLayer.remove(p._graphic);
+      return false;
+    });
+    res.obras.forEach(function(o){
+      var num = String(o.obra_id);
+      var p = PROJECTS.find(function(x){ return x.id === "obra-" + num; });
+      if(!p){
+        p = { id:"obra-" + num, code:"OBRA " + num, real:true, semDesenho:true, title:"Obra " + num, bairro:"—", bacia:null, subbacia:null,
+              status:"nao_planejado", investNum:null, invest:"Investimento a informar", kind:"area", pos:INITIAL_VIEW.center,
+              pctFisico:null, pctFinanceiro:null, atrasoDias:null, x:{} };
+        PROJECTS.push(p);
+        criarGraficoObra(p);
+      }
+      if(o.nome) p.title = String(o.nome);
+      if(o.bairro) p.bairro = String(o.bairro);
+      if(o.bacia) p.bacia = baciaId(o.bacia);
+      if(o.subbacia) p.subbacia = subbaciaId(p.bacia, o.subbacia);
+      if(o.status) p.status = statusId(o.status);
+      var inv = numero(o.investimento_total);
+      if(inv != null){ p.investNum = inv > 1000 ? inv / 1e6 : inv; p.invest = fmtMi(p.investNum); }
+      var med = numero(o.valor_medido);
+      if(med != null && inv) p.pctFinanceiro = Math.max(0, Math.min(100, med / inv * 100));
+      var pf = numero(o.pct_fisico);
+      if(pf != null) p.pctFisico = Math.max(0, Math.min(100, Math.round(pf)));
+      if(o.termino_previsto && o.termino_atual) p.atrasoDias = Math.max(0, diasEntre(o.termino_previsto, o.termino_atual));
+      p.x = {
+        orgao: o.orgao || p.x.orgao, fonte: o.fonte_recurso || null, fonteInfo: o.fonte_info || p.x.fonte || null,
+        empresa: o.empresa || null, fase: o.fase || null, tipo: o.tipo || null,
+        inicio: o.inicio || null, fim: o.termino_atual || o.termino_previsto || null,
+        fimPrevisto: o.termino_previsto || null, fimAtual: o.termino_atual || null,
+        solucao: o.solucao || null, extensao: o.extensao || null,
+        populacao: numero(o.populacao_beneficiada), pontos: o.pontos_criticos || null,
+        valorMedido: med, entraves: { licenca:o.licenca, desapropriacao:o.desapropriacao, concessionarias:o.concessionarias }
+      };
+      p.etapas = o.etapas || [];
+      // Ponto da obra: a coordenada da planilha passa a ser o local da obra (centro do zoom ao selecionar).
+      var xy = coordObra(o.coordenadas);
+      p._ponto = null;
+      if(xy){
+        p.pos = [xy[1], xy[0]];
+        p._ponto = new Graphic({
+          geometry: { type:"point", longitude:xy[1], latitude:xy[0] },
+          symbol: { type:"picture-marker", url: iconeObra(o.tipo, p.status), width:"44px", height:"44px" },   // 36 → 44 px (16/10/2026)
+          attributes: { id:p.id }
+        });
+        (CAMADA_ETAPA[p.status] || CAMADA_ETAPA.nao_planejado).add(p._ponto);
+      }
+    });
+    desenharLigacoes();
+  }
+  function carregarObras(){
+    var camada = map.allLayers.find(function(l){ return l.type === "feature" && /obra/i.test(l.title || ""); });
+    var planilha = lerPlanilhaObras();
+    if(!camada){
+      planilha.then(function(res){ aplicarPlanilha(res); if(OBRAS_ESTADO !== "sem-planilha") OBRAS_ESTADO = "ok"; renderAll(); });
+      return;
+    }
+    camada.load().then(function(){
+      return camada.queryFeatures({ where:"1=1", outFields:["*"], returnGeometry:true, outSpatialReference:{ wkid:4326 } });
+    }).then(function(res){
+      var grupos = {}, ordem = [], semNumero = 0;
+      res.features.forEach(function(f){
+        var a = f.attributes || {};
+        var id = campo(a, ["obra", "obra_id"]);
+        // Polígono sem número de obra e sem nome: provavelmente um trecho ainda não preenchido. Fica de fora (aviso no console).
+        if((id == null || id === 0 || id === "") && !campo(a, ["nome"])){ semNumero++; return; }
+        var chave = (id == null || id === 0 || id === "") ? "oid-" + (campo(a, ["objectid", "fid", "oid"]) || ordem.length) : String(id);
+        if(!grupos[chave]){ grupos[chave] = { id:id, attrs:{}, feats:[] }; ordem.push(chave); }
+        Object.keys(a).forEach(function(k){ var v = a[k]; if(v !== null && v !== "" && grupos[chave].attrs[k] == null) grupos[chave].attrs[k] = v; });
+        grupos[chave].feats.push(f);
+      });
+      PROJECTS = ordem.map(function(chave){
+        var g = grupos[chave], a = g.attrs;
+        var ext = null;
+        g.feats.forEach(function(f){ if(f.geometry && f.geometry.extent){ ext = ext ? ext.union(f.geometry.extent) : f.geometry.extent.clone(); } });
+        var c = ext ? ext.center : null;
+        var inv = campo(a, ["invest", "invest_mi", "investimento"]);
+        inv = (inv === null || inv === "" || isNaN(+inv)) ? null : +inv;
+        var investNum = inv == null ? null : (inv > 1000 ? inv / 1e6 : inv);
+        var num = g.id != null ? String(g.id) : chave;
+        return {
+          id: "obra-" + num, code: "OBRA " + num, real: true,
+          title: campo(a, ["nome"]) || ("Obra " + num),
+          bairro: campo(a, ["bairro"]) || "—",
+          bacia: baciaId(campo(a, ["bacia"])), subbacia: null,
+          status: statusId(campo(a, ["status"])),
+          investNum: investNum, invest: investNum == null ? "Investimento a informar" : fmtMi(investNum),
+          kind: "area", pos: c ? [c.longitude, c.latitude] : INITIAL_VIEW.center,
+          pctFisico: null, pctFinanceiro: null, atrasoDias: null,
+          x: { orgao: campo(a, ["orgao"]), fonte: campo(a, ["fonte"]) }
+        };
+      });
+      if(semNumero) console.warn(semNumero + " polígono(s) da camada de obras sem número de obra e sem nome foram ignorados.");
+      PROJECTS.forEach(criarGraficoObra);
+      return planilha;
+    }).then(function(res){
+      aplicarPlanilha(res);
+      if(OBRAS_ESTADO !== "sem-planilha") OBRAS_ESTADO = "ok";
+      renderAll();
+    }).catch(function(err){
+      console.error("Falha ao ler a camada de obras:", err);
+      planilha.then(function(res){ aplicarPlanilha(res); if(OBRAS_ESTADO !== "sem-planilha") OBRAS_ESTADO = "ok"; renderAll(); });
+    });
+  }
+  map.when(carregarObras, function(){ OBRAS_ESTADO = "erro"; renderAll(); });
+
+  view.on("click", function(evt){
+    view.hitTest(evt).then(function(res){
+      var hitPonto = res.results.find(function(r){ return r.graphic && r.graphic.layer === pontosLayer; });
+      if(hitPonto){
+        var pc = PONTOS_POR_ID[hitPonto.graphic.attributes.id];
+        if(pc){ selecionarPonto(pc, hitPonto.graphic.geometry); return; }
+      }
+      fecharCartao();
+      var hitProject = res.results.find(function(r){ return r.graphic && (ehCamadaDeObra(r.graphic.layer) || r.graphic.layer === graphicsLayer); });
+      if(hitProject){
+        var p = PROJECTS.find(function(pr){ return pr.id === hitProject.graphic.attributes.id; });
+        selectProject(p, true);
+        return;
+      }
+    });
+  });
+
+  var INITIAL_VIEW = { center: [-34.9020, -8.0600], zoom: 12 };
+  document.getElementById("zoomIn").addEventListener("click", function(){ view.goTo({ zoom: view.zoom + 1 }, { duration:250 }); });
+  document.getElementById("zoomOut").addEventListener("click", function(){ view.goTo({ zoom: view.zoom - 1 }, { duration:250 }); });
+  document.getElementById("btnHome").addEventListener("click", function(){ view.goTo(INITIAL_VIEW, { duration:500 }); });
+  document.getElementById("btnFullExtent").addEventListener("click", function(){
+    var allGraphics = pontosLayer.graphics.toArray();
+    if(allGraphics.length){ view.goTo(allGraphics, { duration:500 }); }
+  });
+
+  /* =====================================================================
+     LEGENDA E CAMADAS (simbologia + liga/desliga de cada camada do mapa)
+     ===================================================================== */
+  function layerSwatchSvg(title){
+    if(title && title.indexOf("Pontos críticos") === 0){
+      // Um ícone só na legenda (pedido de Pedro, 16/10/2026); a cor do anel no mapa segue o índice.
+      return '<img src="' + iconePonto(CLASSES_INDICE[CLASSES_INDICE.length - 1].cor) + '" width="16" height="16" alt="" style="vertical-align:middle">';
+    }
+    if(ETAPA_DA_CAMADA[title] !== undefined){
+      return '<img src="' + iconeObra("", ETAPA_DA_CAMADA[title]) + '" width="17" height="17" alt="" style="vertical-align:middle">';
+    }
+    if(title === OBRAS_PONTOS_TITULO){
+      return '<img src="' + iconeObra("", "obra") + '" width="17" height="17" alt="" style="vertical-align:middle">';
+    }
+    if(title === LIGACOES_TITULO){
+      return '<svg width="16" height="12" viewBox="0 0 16 12"><path d="M1 11 15 1" stroke="#334155" stroke-width="2" stroke-dasharray="3 2" fill="none"/></svg>';
+    }
+    return '<svg width="12" height="12" viewBox="0 0 12 12"><rect width="12" height="12" rx="2" fill="#94a3b8"/></svg>';
+  }
+  // Nome sem a numeração do Conteúdo do ArcGIS ("3. Território" -> "Território").
+  function nomeCamada(t){ return String(t || "(sem nome)").replace(/^\s*\d+\s*[.)\-–]\s*/, ""); }
+  var ICON_CHEV = '<svg width="10" height="10" viewBox="0 0 10 10"><path d="M3 1.5 6.5 5 3 8.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  var ICON_EYE = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1.5 12S5.5 4.5 12 4.5 22.5 12 22.5 12 18.5 19.5 12 19.5 1.5 12 1.5 12Z"/><circle cx="12" cy="12" r="3"/></svg>';
+  var ICON_EYE_OFF = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l18 18"/><path d="M10.6 5.1A10 10 0 0 1 12 4.5c6.5 0 10.5 7.5 10.5 7.5a17 17 0 0 1-3 3.8M6.2 6.6C3.3 8.5 1.5 12 1.5 12S5.5 19.5 12 19.5a9.6 9.6 0 0 0 4.4-1.1"/></svg>';
+  // Amostra do símbolo real da camada (vale também para os símbolos do ArcGIS Pro, como hachuras).
+  function amostra(el, symbol, size){
+    if(!symbol || !symbolUtils){ el.innerHTML = layerSwatchSvg(""); return; }
+    symbolUtils.renderPreviewHTML(symbol, { size: size || 16 }).then(function(node){
+      el.innerHTML = ""; el.appendChild(node);
+    }).catch(function(){ el.innerHTML = layerSwatchSvg(""); });
+  }
+  function classesDoRenderer(r){
+    if(!r) return [];
+    if(r.type === "unique-value"){
+      var infos = (r.uniqueValueInfos || []).map(function(i){ return { symbol: i.symbol, label: i.label || String(i.value) }; });
+      if(r.defaultSymbol && r.defaultLabel) infos.push({ symbol: r.defaultSymbol, label: r.defaultLabel });
+      return infos;
+    }
+    if(r.type === "class-breaks"){
+      return (r.classBreakInfos || []).map(function(i){ return { symbol: i.symbol, label: i.label || (i.minValue + "–" + i.maxValue) }; });
+    }
+    return [];
+  }
+  function buildLayerToggle(){
+    var container = document.getElementById("layerToggleList");
+    container.innerHTML = "";
+    if(map.layers.length === 0){
+      container.innerHTML = '<span style="font-size:11px;color:var(--text-faint);padding:6px 8px;display:block">Nenhuma camada encontrada.</span>';
+      return;
+    }
+    function olho(layer, row){
+      var btn = document.createElement("button");
+      btn.type = "button"; btn.className = "lg-eye";
+      function pinta(){ btn.innerHTML = layer.visible ? ICON_EYE : ICON_EYE_OFF; btn.title = layer.visible ? "Ocultar" : "Mostrar"; row.classList.toggle("off", !layer.visible); }
+      btn.addEventListener("click", function(ev){ ev.stopPropagation(); layer.visible = !layer.visible; pinta(); });
+      reactiveUtils.watch(function(){ return layer.visible; }, pinta);
+      pinta();
+      return btn;
+    }
+    function chevron(target, abertoInicial){
+      var c = document.createElement("span");
+      c.className = "lg-chev" + (abertoInicial ? " open" : "");
+      c.innerHTML = ICON_CHEV;
+      target.style.display = abertoInicial ? "" : "none";
+      function alterna(){ var aberto = target.style.display !== "none"; target.style.display = aberto ? "none" : ""; c.classList.toggle("open", !aberto); }
+      return { el: c, alterna: alterna };
+    }
+    // Legenda na horizontal (16/10/2026): cada grupo do WebMap vira uma coluna; as camadas soltas
+    // seguidas (as do painel e as fora de grupo) ficam juntas numa coluna.
+    var colSolta = null;
+    function coluna(isGroup){
+      if(!isGroup && colSolta) return colSolta;
+      var c = document.createElement("div");
+      c.className = "lg-col";
+      container.appendChild(c);
+      colSolta = isGroup ? null : c;
+      return c;
+    }
+    // Ordem do Conteúdo do ArcGIS: camada de cima primeiro.
+    function addRows(layers, parent, nivel){
+      layers.toArray().slice().reverse().forEach(function(layer){
+        var isGroup = layer.type === "group" && layer.layers && layer.layers.length > 0;
+        if(nivel === 0) parent = coluna(isGroup);
+        var row = document.createElement("div");
+        row.className = "lg-item" + (isGroup ? " grp" : "");
+        var nome = document.createElement("span");
+        nome.className = "lg-name";
+        nome.textContent = nomeCamada(layer.title);
+        nome.title = nomeCamada(layer.title);
+        if(isGroup){
+          var kids = document.createElement("div");
+          kids.className = "lg-kids";
+          var ch = chevron(kids, true);
+          row.appendChild(ch.el);
+          row.appendChild(nome);
+          row.appendChild(olho(layer, row));
+          ch.el.addEventListener("click", ch.alterna);
+          nome.addEventListener("click", ch.alterna);
+          parent.appendChild(row);
+          parent.appendChild(kids);
+          addRows(layer.layers, kids, nivel + 1);
+          return;
+        }
+        var sw = document.createElement("span");
+        sw.className = "lg-sw";
+        var classes = document.createElement("div");
+        classes.className = "lg-classes";
+        var ch2 = chevron(classes, false);
+        ch2.el.classList.add("empty");
+        row.appendChild(ch2.el);
+        row.appendChild(sw);
+        row.appendChild(nome);
+        row.appendChild(olho(layer, row));
+        parent.appendChild(row);
+        parent.appendChild(classes);
+        if(layer.type === "graphics"){ sw.innerHTML = layerSwatchSvg(layer.title); return; }
+        layer.when(function(){
+          var r = layer.renderer;
+          var lista = classesDoRenderer(r);
+          if(lista.length){
+            amostra(sw, lista[0].symbol, 16);
+            lista.forEach(function(it){
+              var linha = document.createElement("div");
+              linha.className = "lg-class";
+              var s2 = document.createElement("span"); s2.className = "lg-sw";
+              linha.appendChild(s2);
+              linha.appendChild(document.createTextNode(it.label));
+              classes.appendChild(linha);
+              amostra(s2, it.symbol, 14);
+            });
+            ch2.el.classList.remove("empty");
+            ch2.el.addEventListener("click", ch2.alterna);
+            nome.addEventListener("click", ch2.alterna);
+          } else {
+            amostra(sw, r && r.symbol, 16);
+          }
+        }, function(){ sw.innerHTML = layerSwatchSvg(""); });
+      });
+    }
+    addRows(map.layers, container, 0);
+  }
+  (function(){
+    var box = document.getElementById("mapTools"), btn = document.getElementById("mapToolsMin");
+    if(!box || !btn) return;
+    btn.addEventListener("click", function(){
+      var min = box.classList.toggle("min");
+      btn.textContent = min ? "+" : "–";
+      btn.title = min ? "Expandir" : "Recolher";
+    });
+  })();
+  (function(){
+    var panel = document.getElementById("layerPanel"), head = document.getElementById("layerPanelHead"), btn = document.getElementById("layerPanelMin");
+    if(!panel || !head) return;
+    head.addEventListener("click", function(){
+      var min = panel.classList.toggle("min");
+      btn.textContent = min ? "+" : "–";
+      btn.title = min ? "Expandir" : "Recolher";
+    });
+  })();
+  /* =====================================================================
+     MAPA BASE (Original = o do WebMap, padrão desde 16/10/2026)
+     ===================================================================== */
+  var originalBasemap = null;
+  function markBasemap(id){
+    document.querySelectorAll("#basemapSeg button").forEach(function(b){ b.classList.toggle("on", b.getAttribute("data-bm") === id); });
+  }
+  function setBasemap(id){
+    if(id === "original"){ if(originalBasemap) map.basemap = originalBasemap; markBasemap(id); return; }
+    map.basemap = id;
+    markBasemap(id);
+    if(map.basemap && map.basemap.load){
+      map.basemap.load().catch(function(){
+        console.warn("Mapa base '" + id + "' indisponível; voltando ao original.");
+        if(originalBasemap) map.basemap = originalBasemap;
+        markBasemap("original");
+      });
+    }
+  }
+  document.querySelectorAll("#basemapSeg button").forEach(function(b){
+    b.addEventListener("click", function(){ setBasemap(b.getAttribute("data-bm")); });
+  });
+  // Mapa base: só o Original (o salvo no WebMap); os botões Cinza/Ruas/Satélite saíram em 16/10/2026 (pedido de Pedro).
+  map.when(function(){ originalBasemap = map.basemap; setBasemap("original"); });
+
+  var TECH_FIELD_RE = /^(objectid|fid|globalid|shape.*|source\s*_?id|id\s*_?do\s*_?agrup.*|id\s*_?da\s*_?cor|created_.*|last_edited_.*)$/i;
+  function hideTechFields(list){
+    (list || []).forEach(function(fi){
+      if(TECH_FIELD_RE.test(fi.fieldName || "") || TECH_FIELD_RE.test(fi.label || "")) fi.visible = false;
+    });
+  }
+  function cleanPopup(layer){
+    if(layer.type !== "feature") return;
+    if(!layer.popupTemplate && layer.createPopupTemplate){ try{ layer.popupTemplate = layer.createPopupTemplate(); }catch(e){} }
+    var pt = layer.popupTemplate;
+    if(!pt) return;
+    hideTechFields(pt.fieldInfos);
+    if(Array.isArray(pt.content)){
+      pt.content.forEach(function(el){ if(el && el.type === "fields") hideTechFields(el.fieldInfos); });
+    }
+  }
+  map.when(function(){
+    map.allLayers.forEach(function(layer){
+      layer.when(function(){ cleanPopup(layer); }, function(){});
+    });
+  });
+  map.when(buildLayerToggle, function(err){
+    console.error("Falha ao montar lista de camadas:", err);
+  });
+
+  var selected = null;
+  function selectProject(p, fromMap){
+    selected = p;
+    var target = p.kind === "canal" ? { center: p.path[Math.floor(p.path.length/2)], zoom:15 } : { center: p.pos, zoom:15 };
+    view.goTo(target, { duration:800 });
+    renderProjectList();
+    if(!fromMap){
+      var card = document.querySelector('.project-card[data-id="'+p.id+'"]');
+      if(card) card.scrollIntoView({ block:"nearest", behavior:"smooth" });
+    }
+  }
+

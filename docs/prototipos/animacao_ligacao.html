@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prévia da animação</title>
+<style>
+  :root{--bg:#F2F2F2;--panel:#FFFFFF;--text:#1e2430;--dim:#64748b;--linha:#334155;}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,'Segoe UI',sans-serif;}
+  .wrap{max-width:900px;margin:0 auto;padding:16px;}
+  h1{font-size:18px;margin:4px 0 4px;}
+  p{font-size:13px;color:var(--dim);margin:0 0 12px;line-height:1.45;}
+  .mapa{background:#e9ecef;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(15,23,42,.08);}
+  svg{display:block;width:100%;height:auto;}
+  .ponto{cursor:pointer;}
+  .ctrl{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;align-items:center;font-size:12px;color:var(--dim);}
+  button{font:inherit;font-size:12px;padding:6px 10px;border-radius:6px;border:1px solid #cbd5e1;background:var(--panel);cursor:pointer;}
+  button:hover{background:#e2e8f0;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Prévia: animação ao clicar no ponto crítico</h1>
+  <p>Clique numa gota. O mapa aproxima até enquadrar o ponto e a obra ligada a ele; depois a gota salta, a linha sai do ponto e corre até a obra ligada (Canal da Mauricéa); ao chegar, a obra dá um pulso.
+     A gota clicada dá um pequeno salto. A gota sem obra ligada (Avenida Boa Viagem) salta e pulsa. Posições e ruas ilustrativas, sem escala: é só para ver o movimento.</p>
+  <div class="mapa">
+    <svg id="svg" viewBox="0 0 800 480" aria-label="Mapa ilustrativo">
+      <rect width="800" height="480" fill="#eef0f2"/>
+      <!-- ruas e rio ilustrativos -->
+      <g stroke="#ffffff" stroke-width="9" fill="none" stroke-linecap="round">
+        <path d="M0 120 L800 160"/><path d="M0 330 L800 300"/><path d="M180 0 L240 480"/>
+        <path d="M520 0 L470 480"/><path d="M660 0 L700 480"/>
+      </g>
+      <path d="M0 230 C150 200 260 280 400 250 S640 200 800 240" stroke="#2685BF" stroke-width="5" fill="none" opacity=".8"/>
+      <g id="camLinhas"></g>
+      <g id="camPulsos"></g>
+      <g id="camObras"></g>
+      <g id="camPontos"></g>
+    </svg>
+  </div>
+  <div class="ctrl">
+    <button type="button" id="fechar">Fechar cartão (apaga as linhas e volta ao mapa inteiro)</button>
+    <span>Zoom: 700 ms · salto da gota: 450 ms · linha: 600 ms · pulso: 700 ms</span>
+  </div>
+</div>
+<script>
+(function(){
+  var NS = "http://www.w3.org/2000/svg";
+  function el(tag, attrs, pai){ var e = document.createElementNS(NS, tag); for(var k in attrs) e.setAttribute(k, attrs[k]); if(pai) pai.appendChild(e); return e; }
+  var obras = { 2: { nome:"Canal da Mauricéa", x:330, y:250 } };
+  var pontos = [
+    { id:24, nome:"Rua Blumenau", x:240, y:330, cor:"#d73027", obras:[2] },
+    { id:9,  nome:"Av. Mascarenhas de Moraes (Gen. Mac Arthur até a Universo)", x:490, y:140, cor:"#f46d43", obras:[2] },
+    { id:36, nome:"Av. Mascarenhas de Moraes (Ferreira Costa)", x:480, y:360, cor:"#f2b705", obras:[2] },
+    { id:26, nome:"Av. Boa Viagem (sem obra ligada)", x:690, y:200, cor:"#d73027", obras:[] }
+  ];
+  var camLinhas = document.getElementById("camLinhas"), camPulsos = document.getElementById("camPulsos");
+  var camObras = document.getElementById("camObras"), camPontos = document.getElementById("camPontos");
+
+  // Obra: hexágono grafite, como no painel.
+  Object.keys(obras).forEach(function(id){
+    var o = obras[id], r = 17, pts = [];
+    for(var k = 0; k < 6; k++){ var a = Math.PI / 3 * k - Math.PI / 6; pts.push((o.x + r * Math.cos(a)).toFixed(1) + "," + (o.y + r * Math.sin(a)).toFixed(1)); }
+    el("polygon", { points: pts.join(" "), fill:"#334155", stroke:"#fff", "stroke-width":2 }, camObras);
+    el("path", { d:"M" + (o.x-8) + " " + (o.y+1) + " q4 -5 8 0 t8 0", stroke:"#fff", "stroke-width":2, fill:"none" }, camObras);
+    var t = el("text", { x:o.x, y:o.y + 32, "text-anchor":"middle", "font-size":11, fill:"#334155", "font-weight":600 }, camObras);
+    t.textContent = o.nome;
+  });
+  // Ponto crítico: gota com anel na cor do índice.
+  pontos.forEach(function(p){
+    var g = el("g", { class:"ponto", transform:"translate(" + p.x + "," + p.y + ")" }, camPontos);
+    p.g = g;
+    el("circle", { r:15.5, fill:"#fff" }, g);
+    el("circle", { r:13, fill:"none", stroke:p.cor, "stroke-width":5 }, g);
+    el("circle", { r:9.5, fill:"#e31a1c" }, g);
+    el("path", { d:"M0 -6 C2 -3 4 0 4 2 a4 4 0 0 1 -8 0 C-4 0 -2 -3 0 -6Z", fill:"#fff" }, g);
+    var tt = el("title", {}, g); tt.textContent = p.nome;
+    g.addEventListener("click", function(){ clicar(p); });
+  });
+
+  var anims = [];
+  function limpar(){ anims.forEach(cancelAnimationFrame); anims = []; camLinhas.innerHTML = ""; camPulsos.innerHTML = ""; }
+  function suave(t){ return 1 - Math.pow(1 - t, 3); }  // desacelera no fim
+  function pulso(x, y, cor){
+    var c = el("circle", { cx:x, cy:y, r:16, fill:"none", stroke:cor, "stroke-width":3 }, camPulsos), t0 = null;
+    function passo(ts){
+      if(t0 === null) t0 = ts;
+      var t = Math.min(1, (ts - t0) / 700);
+      c.setAttribute("r", 16 + 22 * suave(t)); c.setAttribute("opacity", 1 - t);
+      if(t < 1) anims.push(requestAnimationFrame(passo)); else c.remove();
+    }
+    anims.push(requestAnimationFrame(passo));
+  }
+  function linha(p, o){
+    var l = el("line", { x1:p.x, y1:p.y, x2:p.x, y2:p.y, stroke:"#334155", "stroke-width":2.5, "stroke-dasharray":"7 5", "stroke-linecap":"round", opacity:.9 }, camLinhas);
+    var t0 = null;
+    function passo(ts){
+      if(t0 === null) t0 = ts;
+      var t = Math.min(1, (ts - t0) / 600), e = suave(t);
+      l.setAttribute("x2", p.x + (o.x - p.x) * e); l.setAttribute("y2", p.y + (o.y - p.y) * e);
+      if(t < 1) anims.push(requestAnimationFrame(passo)); else pulso(o.x, o.y, "#334155");
+    }
+    anims.push(requestAnimationFrame(passo));
+  }
+  // Gota dá um pequeno salto (sobe 6 px e cresce 20%, volta com um leve quique), 450 ms.
+  function saltar(p){
+    var t0 = null;
+    function passo(ts){
+      if(t0 === null) t0 = ts;
+      var t = Math.min(1, (ts - t0) / 450);
+      var h = Math.sin(Math.PI * t) * Math.exp(-2 * t);          // sobe e desce, amortecido
+      var dy = -10 * h, s = 1 + 0.35 * h;
+      p.g.setAttribute("transform", "translate(" + p.x + "," + (p.y + dy) + ") scale(" + s.toFixed(3) + ")");
+      if(t < 1) anims.push(requestAnimationFrame(passo));
+      else p.g.setAttribute("transform", "translate(" + p.x + "," + p.y + ")");
+    }
+    anims.push(requestAnimationFrame(passo));
+  }
+  // Zoom: enquadra o ponto e as obras ligadas a ele (com folga), em 700 ms; depois vêm o salto e a linha.
+  // No painel será view.goTo() do ArcGIS; aqui o viewBox do desenho faz o papel da câmera.
+  var svg = document.getElementById("svg"), CHEIO = [0, 0, 800, 480], vbAtual = CHEIO.slice(), zoomAnim = null;
+  function irPara(alvo, ms, depois){
+    if(zoomAnim) cancelAnimationFrame(zoomAnim);
+    var ini = vbAtual.slice(), t0 = null;
+    function passo(ts){
+      if(t0 === null) t0 = ts;
+      var t = Math.min(1, (ts - t0) / ms), e = t < .5 ? 4*t*t*t : 1 - Math.pow(-2*t + 2, 3) / 2;  // acelera e desacelera
+      vbAtual = ini.map(function(v, i){ return v + (alvo[i] - v) * e; });
+      svg.setAttribute("viewBox", vbAtual.join(" "));
+      if(t < 1) zoomAnim = requestAnimationFrame(passo); else { zoomAnim = null; if(depois) depois(); }
+    }
+    zoomAnim = requestAnimationFrame(passo);
+  }
+  function enquadrar(p){
+    var xs = [p.x], ys = [p.y];
+    p.obras.forEach(function(id){ xs.push(obras[id].x); ys.push(obras[id].y); });
+    var x0 = Math.min.apply(null, xs), x1 = Math.max.apply(null, xs), y0 = Math.min.apply(null, ys), y1 = Math.max.apply(null, ys);
+    var folga = 90, w = Math.max(x1 - x0 + 2 * folga, 320), h = Math.max(y1 - y0 + 2 * folga, 192);
+    if(w / h > 800 / 480) h = w * 480 / 800; else w = h * 800 / 480;   // mantém a proporção da tela
+    var cx = (x0 + x1) / 2, cy = (y0 + y1) / 2;
+    return [cx - w / 2, cy - h / 2, w, h];
+  }
+  function clicar(p){
+    limpar();
+    pontos.forEach(function(q){ q.g.setAttribute("transform", "translate(" + q.x + "," + q.y + ")"); });
+    irPara(enquadrar(p), 700, function(){
+      saltar(p);
+      if(!p.obras.length){ pulso(p.x, p.y, p.cor); return; }
+      p.obras.forEach(function(id){ linha(p, obras[id]); });
+    });
+  }
+  document.getElementById("fechar").addEventListener("click", function(){ limpar(); irPara(CHEIO, 600); });
+})();
+</script>
+</body>
+</html>

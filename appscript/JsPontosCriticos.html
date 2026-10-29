@@ -1,0 +1,615 @@
+/* Script do painel, parte 2 de 4: pontos críticos lidos da planilha (mapa, cartão, lista).
+   Não é um arquivo independente: o Index junta as 4 partes num único bloco de script. */
+  /* =====================================================================
+     PONTOS CRÍTICOS — lidos da planilha de notas pelo Apps Script (TESTE)
+     Código.js > getPontosCriticos(). Cor pelo índice de risco (0–1);
+     corte da matriz = risco 9 = índice 0,333.
+     ===================================================================== */
+  var PONTOS_TITULO = "Pontos críticos — RPA 6 (teste)";
+  var CORTE_RISCO = 9;
+  // Notas da planilha ainda de teste (=RANDBETWEEN). Mudar para false quando entrarem as notas reais:
+  // some a etiqueta "notas de teste" dos KPIs e o aviso do ranking.
+  var NOTAS_DE_TESTE = true;
+  var pontosLayer = new GraphicsLayer({ title: PONTOS_TITULO });
+  /* Círculo de 300 m em volta dos pontos: retirado do mapa em 16/10/2026 (pedido de Pedro).
+     O raio continua sendo a área do score (metodologia); só deixou de ser desenhado. */
+  /* Obras: um ponto por obra, na coordenada da coluna "coordenadas (lat, lon)" da aba "Obras".
+     Desenho pelo tipo e cor pela etapa. Uma camada por etapa dentro do grupo (16/10/2026), para
+     ligar e desligar cada etapa na legenda. */
+  var OBRAS_PONTOS_TITULO = "Obras (pontos da planilha)";
+  var CAMADA_ETAPA = {}, ETAPA_DA_CAMADA = {};
+  // A legenda lista a última camada do grupo primeiro: adiciona do fim para o começo.
+  var obrasPontosLayer = new GroupLayer({ title: OBRAS_PONTOS_TITULO, visibilityMode: "independent",
+    layers: ETAPAS_OBRA.slice().reverse().map(function(et){
+      var l = new GraphicsLayer({ title: STATUS_LABEL[et] });
+      CAMADA_ETAPA[et] = l; ETAPA_DA_CAMADA[l.title] = et;
+      return l;
+    }) });
+  function ehCamadaDeObra(l){ return !!l && ETAPA_DA_CAMADA[l.title] !== undefined && CAMADA_ETAPA[ETAPA_DA_CAMADA[l.title]] === l; }
+  // Ordem de desenho: a última adicionada fica por cima. Obras acima dos pontos críticos (pedido de Pedro, 15/10/2026).
+  /* Ligação ponto crítico ↔ obra: linha tracejada do ponto até o ícone da obra (15/10/2026),
+     só para o ponto clicado (cartão aberto).
+     Vem da coluna "Obras relacionadas (obra_id)" da aba "Notas dos pontos". */
+  var LIGACOES_TITULO = "Ligação pontos críticos ↔ obras";
+  var ligacoesLayer = new GraphicsLayer({ title: LIGACOES_TITULO });
+  map.add(ligacoesLayer);
+  map.add(pontosLayer);
+  map.add(obrasPontosLayer);
+  // O WebMap só traz as camadas dele depois de carregar, e elas entram por cima das nossas (os rios
+  // cobriam os ícones das obras). Depois do carregamento, as nossas voltam para o topo, na mesma ordem.
+  map.when(function(){
+    [ligacoesLayer, pontosLayer, obrasPontosLayer].forEach(function(l){ map.reorder(l, map.layers.length - 1); });
+  });
+  var CLASSES_INDICE = [
+    { max: 0.2,      cor: "#1a9850", rotulo: "< 0,200" },
+    { max: 1/3,      cor: "#f2b705", rotulo: "0,200 – 0,333" },
+    { max: 0.5,      cor: "#f46d43", rotulo: "0,333 – 0,500" },
+    { max: Infinity, cor: "#d73027", rotulo: "≥ 0,500" }
+  ];
+  /* Símbolo do ponto crítico (mapa/icones/ponto_critico.svg): gota com onda, cor única.
+     O risco aparece pelo tamanho: 22 pt (índice 0) a 38 pt (índice 1) (aumentado em 14/10/2026)
+     e pela cor do anel colado na figura (classe do índice, CLASSES_INDICE). */
+  function tamanhoPonto(i){ return i == null ? 20 : 22 + 16 * Math.max(0, Math.min(1, i)); }
+  // Mesma gota com onda, menor por dentro, e anel largo na cor do grau de criticidade (contorno branco).
+  var ICONES_POR_COR = {};
+  function iconePonto(cor){
+    if(!ICONES_POR_COR[cor]){
+      var svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">' +
+        '<circle cx="16" cy="16" r="15.5" fill="#fff"/>' +
+        '<circle cx="16" cy="16" r="13" fill="none" stroke="' + cor + '" stroke-width="5"/>' +
+        '<circle cx="16" cy="16" r="9.5" fill="#e31a1c"/>' +
+        '<g transform="translate(10.4,10.4) scale(0.7467)" fill="#fff">' +
+          '<path d="M7.5 14C9.57688 14 12 12.7117 12 9.43241C12 7.20724 8.53844 2.2883 7.5 1C6.57691 2.2883 3 7.09007 3 9.43241C3 12.7117 5.42312 14 7.5 14Z"/>' +
+          '<path d="M4.6 10.2c.95-.8 1.9-.8 2.9 0s1.95.8 2.9 0" fill="none" stroke="#e31a1c" stroke-width="1.4" stroke-linecap="round"/>' +
+        '</g></svg>';
+      ICONES_POR_COR[cor] = "data:image/svg+xml;base64," + btoa(svg);
+    }
+    return ICONES_POR_COR[cor];
+  }
+  function simboloPonto(i){
+    var t = tamanhoPonto(i);
+    return { type:"picture-marker", url: iconePonto(corIndice(i)), width: t, height: t };
+  }
+  function corIndice(i){
+    if(i == null) return "#9ca3af";
+    for(var k=0;k<CLASSES_INDICE.length;k++){ if(i < CLASSES_INDICE[k].max) return CLASSES_INDICE[k].cor; }
+    return CLASSES_INDICE[CLASSES_INDICE.length-1].cor;
+  }
+  function rgbDeHex(c){ return parseInt(c.substr(1,2),16) + "," + parseInt(c.substr(3,2),16) + "," + parseInt(c.substr(5,2),16); }
+  // Mesma cor 30% mais escura, para texto.
+  function rgbTexto(c){ return [1,3,5].map(function(i){ return Math.round(parseInt(c.substr(i,2),16) * 0.7); }).join(","); }
+  function estiloTinta(c){ return "--tinta:" + rgbDeHex(c) + ";--tinta-txt:" + rgbTexto(c); }
+  function fmtN(v, casas){ return v == null ? "—" : v.toFixed(casas).replace(".", ","); }
+  function escHtml(t){ return String(t == null ? "" : t).replace(/[&<>"]/g, function(ch){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[ch]; }); }
+
+  // Nomes das variáveis: vêm do cabeçalho da planilha (NOMES_PLANILHA).
+  // NOMES_SUB é só a reserva, se a planilha não mandar o nome.
+  var NOMES_PLANILHA = {};
+  var NOMES_SUB = { P1:"Frequência", P2:"Severidade", P3:"Maré", P4:"Rio/canal", P5:"Impermeabilização", P6:"Relevo",
+    E1:"População", E2:"Equip. públicos", E3:"Comércio e serviços",
+    V2:"Pop. vulnerável", V3:"ZEIS/favelas", V4:"Tipo de moradia", V5:"Evacuação", V6:"Infra. precária", V1:"IVS",
+    I1:"Trânsito", I2:"Sanitário", I3:"Isolamento" };
+  var GRUPOS_SUB = [
+    { nome:"Probabilidade",   cods:["P1","P2","P3","P4","P5","P6"] },
+    { nome:"Exposição",       cods:["E1","E2","E3"] },
+    { nome:"Vulnerabilidade", cods:["V2","V3","V4","V5","V6","V1"] },
+    { nome:"Impacto",         cods:["I1","I2","I3"] }
+  ];
+
+  // Obras ligadas ao ponto (coluna "Obras relacionadas" da planilha), com link para a ficha.
+  function obrasDoPontoHtml(p){
+    var ids = p.obras || [];
+    if(!ids.length) return '<div class="rr-obras"><div class="rr-obras-t">Obras relacionadas</div><div class="rr-obras-vazio">Nenhuma obra ligada a este ponto.</div></div>';
+    return '<div class="rr-obras"><div class="rr-obras-t">Obras relacionadas</div>' + ids.map(function(id){
+      var o = PROJECTS.find(function(x){ return x.id === "obra-" + id; });
+      if(!o) return '<div class="rr-obra">Obra ' + escHtml(id) + ' <span class="rr-obras-vazio">(não está na aba "Obras")</span></div>';
+      return '<div class="rr-obra" onclick="openFichaById(\'' + o.id + '\')" title="Abrir a ficha da obra">' +
+        '<span class="rr-obra-n">' + escHtml(o.title) + '</span><span class="rr-obra-s">' + escHtml(STATUS_LABEL[o.status] || "") + ' ›</span></div>';
+    }).join("") + '</div>';
+  }
+  // Pontos críticos ligados a uma obra (inverso da coluna "Obras relacionadas").
+  function pontosDaObra(obraId){
+    var num = String(obraId).replace(/^obra-/, "");
+    return (PONTOS_LISTA || []).filter(function(pc){ return (pc.obras || []).indexOf(num) > -1; });
+  }
+  /* ANIMAÇÃO DO CLIQUE NO PONTO (15/10/2026, prévia em docs/prototipos/animacao_ligacao.html):
+     zoom que enquadra o ponto e as obras ligadas (700 ms) → gota dá um salto (450 ms) e a linha corre
+     do ponto até a obra (600 ms) → pulso na obra (700 ms). Ponto sem obra: zoom, salto e pulso na cor
+     do risco. Quem pede menos movimento no sistema (prefers-reduced-motion) vê tudo direto, sem animação. */
+  var SEM_ANIMACAO = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var animacoes = [];
+  // Interrompe as animações e devolve as gotas ao tamanho normal (um salto cortado no meio não fica grande).
+  function pararAnimacoes(){
+    animacoes.forEach(cancelAnimationFrame); animacoes = [];
+    pontosLayer.graphics.forEach(function(g){ var pc = PONTOS_POR_ID[g.attributes.id]; if(pc) g.symbol = simboloPonto(pc.indice); });
+  }
+  function suave(t){ return 1 - Math.pow(1 - t, 3); }
+  // Chama passo(t) com t de 0 a 1 ao longo de ms milissegundos; depois chama fim().
+  function animar(ms, passo, fim){
+    if(SEM_ANIMACAO){ passo(1); if(fim) fim(); return; }
+    var t0 = null;
+    function quadro(ts){
+      if(t0 === null) t0 = ts;
+      var t = Math.min(1, (ts - t0) / ms);
+      passo(t);
+      if(t < 1) animacoes.push(requestAnimationFrame(quadro)); else if(fim) fim();
+    }
+    animacoes.push(requestAnimationFrame(quadro));
+  }
+  function obrasDoPonto(pc){
+    return (pc.obras || []).map(function(id){ return PROJECTS.find(function(x){ return x.id === "obra-" + id; }); })
+      .filter(function(o){ return o && o._ponto; });  // obra sem coordenada na aba "Obras": sem linha
+  }
+  function pulsoEm(lon, lat, rgb){
+    var g = new Graphic({ geometry:{ type:"point", longitude:lon, latitude:lat },
+      symbol:{ type:"simple-marker", style:"circle", size:30, color:[0,0,0,0], outline:{ color:rgb.concat(1), width:3 } } });
+    ligacoesLayer.add(g);
+    animar(700, function(t){
+      var e = suave(t);
+      g.symbol = { type:"simple-marker", style:"circle", size:30 + 34 * e, color:[0,0,0,0], outline:{ color:rgb.concat(1 - t), width:3 } };
+    }, function(){ ligacoesLayer.remove(g); });
+  }
+  function saltarPonto(pc){
+    var g = pontosLayer.graphics.find(function(gr){ return gr.attributes.id === pc.id; });
+    if(!g) return;
+    var base = simboloPonto(pc.indice);
+    animar(450, function(t){
+      var h = Math.sin(Math.PI * t) * Math.exp(-2 * t);   // sobe e desce, amortecido
+      var s = 1 + 0.35 * h;
+      g.symbol = { type:"picture-marker", url: base.url, width: base.width * s, height: base.height * s, yoffset: 10 * h };
+    }, function(){ g.symbol = base; });
+  }
+  function desenharLigacoes(){
+    pararAnimacoes();
+    ligacoesLayer.removeAll();
+    if(!cartaoPonto) return;
+    var pc = cartaoPonto;
+    if(pc.lat == null || pc.lon == null) return;
+    var obrasPc = obrasDoPonto(pc);
+    saltarPonto(pc);
+    if(!obrasPc.length){ var c = corIndice(pc.indice); pulsoEm(pc.lon, pc.lat, [parseInt(c.substr(1,2),16), parseInt(c.substr(3,2),16), parseInt(c.substr(5,2),16)]); return; }
+    obrasPc.forEach(function(o){
+      var linha = new Graphic({
+        geometry: { type:"polyline", paths:[[[pc.lon, pc.lat], [pc.lon, pc.lat]]], spatialReference:{ wkid:4326 } },
+        symbol: { type:"simple-line", color:[51,65,85,0.85], width:2, style:"dash" },
+        attributes: { ponto: pc.id, obra: o.id }
+      });
+      ligacoesLayer.add(linha);
+      animar(600, function(t){
+        var e = suave(t);
+        linha.geometry = { type:"polyline", spatialReference:{ wkid:4326 },
+          paths:[[[pc.lon, pc.lat], [pc.lon + (o.pos[0] - pc.lon) * e, pc.lat + (o.pos[1] - pc.lat) * e]]] };
+      }, function(){ pulsoEm(o.pos[0], o.pos[1], [51,65,85]); });
+    });
+  }
+  // Área do mapa que não fica atrás dos painéis (lista de intervenções à esquerda, KPIs no topo,
+  // lista de pontos à direita), em pixels.
+  function areaLivre(){
+    var cont = view.container.getBoundingClientRect(), L = 0, R = 0, T = 0;
+    // As duas listas ficam à esquerda (16/10/2026); conta a mais larga que estiver aberta.
+    document.querySelectorAll(".list-panel").forEach(function(el){
+      if(el.offsetWidth && !el.classList.contains("recolhida")) L = Math.max(L, el.getBoundingClientRect().right - cont.left);
+    });
+    var topo = document.getElementById("kpiStrip");
+    if(topo && topo.offsetHeight) T = Math.max(0, topo.getBoundingClientRect().bottom - cont.top);
+    if(view.width - L - R < 200){ L = 0; R = 0; }   // tela estreita: ignora os painéis
+    return { L:L + 30, R:R + 30, T:T + 30, B:30 };
+  }
+  // Zoom que enquadra o ponto e as obras ligadas a ele na área livre (o ponto sozinho: zoom 16).
+  function focarPonto(pc){
+    var lons = [pc.lon], lats = [pc.lat];
+    obrasDoPonto(pc).forEach(function(o){ lons.push(o.pos[0]); lats.push(o.pos[1]); });
+    var x0 = Math.min.apply(null, lons), x1 = Math.max.apply(null, lons), y0 = Math.min.apply(null, lats), y1 = Math.max.apply(null, lats);
+    // Zoom mais aberto (pedido de Pedro, 15/10/2026): folga de 40% em volta e no mínimo ~2 km de largura.
+    var fx = (x1 - x0) * 0.4, fy = (y1 - y0) * 0.4;
+    x0 -= fx; x1 += fx; y0 -= fy; y1 += fy;
+    var MIN = 0.018;   // ~2 km: não aproxima mais que isso
+    if(x1 - x0 < MIN){ var cx = (x0 + x1) / 2; x0 = cx - MIN / 2; x1 = cx + MIN / 2; }
+    if(y1 - y0 < MIN){ var cy = (y0 + y1) / 2; y0 = cy - MIN / 2; y1 = cy + MIN / 2; }
+    var a = areaLivre(), W = view.width, H = view.height;
+    var fw = Math.max(0.2, (W - a.L - a.R) / W), fh = Math.max(0.2, (H - a.T - a.B) / H);
+    var tw = (x1 - x0) / fw, th = (y1 - y0) / fh;
+    var alvo = new Extent({ spatialReference:{ wkid:4326 },
+      xmin: x0 - tw * a.L / W, xmax: x0 - tw * a.L / W + tw,
+      ymax: y1 + th * a.T / H, ymin: y1 + th * a.T / H - th });
+    return view.goTo(alvo, { duration: SEM_ANIMACAO ? 0 : 700, easing: "in-out-cubic" });
+  }
+  // Clique no ponto (mapa ou lista): zoom, depois cartão e animação.
+  function selecionarPonto(pc, geom){
+    fecharCartao();
+    function abrir(){ abrirCartao(pc, geom); }
+    focarPonto(pc).then(abrir, abrir);
+  }
+  function popupPonto(p){
+    var linhas = "";
+    GRUPOS_SUB.forEach(function(g, gi){
+      var notaCrit = { Probabilidade:p.P, "Exposição":p.E, Vulnerabilidade:p.V, Impacto:p.I }[g.nome];
+      var cls = "rr-g" + (gi % 2);
+      linhas += '<tr class="rr-dim ' + cls + '" data-g="' + gi + '" title="Mostrar ou esconder as variáveis"><td><span class="rr-seta">▸</span><span class="rr-ini">' + g.nome.charAt(0) + '</span>' + g.nome +
+                '</td><td>' + fmtN(notaCrit, 1) + '</td></tr>';
+      g.cods.forEach(function(c){
+        if(p.notas[c] == null) return;
+        linhas += '<tr class="rr-subl ' + cls + '" data-g="' + gi + '"><td>' + escHtml(NOMES_PLANILHA[c] || NOMES_SUB[c]) + '</td><td>' + p.notas[c] + '</td></tr>';
+      });
+    });
+    return '' +
+      '<div class="rr-pop">' +
+      '<div class="rr-titulo">' + escHtml(p.trecho) + '</div>' +
+      '<div class="rr-fatos">' +
+        '<div class="rr-kpi" style="border-top-color:' + corIndice(p.indice) + '"><div class="rr-kpi-v">' + fmtN(p.indice, 3) + '</div>' +
+          '<div class="rr-kpi-r">Índice de risco</div><div class="rr-kpi-n">de 0 a 1</div></div>' +
+        '<div class="rr-kpi"><div class="rr-kpi-v">' + (p.posicao != null ? p.posicao + 'º' : '—') + '</div>' +
+          '<div class="rr-kpi-r">Posição no ranking</div><div class="rr-kpi-n">de 21 pontos</div></div>' +
+      '</div>' +
+      obrasDoPontoHtml(p) +
+      '<table class="rr-tab"><tr><th>Dimensão / variável</th><th>Avaliação<br><span class="rr-th-n">(nota 1–5)</span></th></tr>' + linhas + '</table>' +
+      '<div class="rr-pe">Avaliação de 1 a 5 (5 = mais crítico) · Lat ' + fmtN(p.lat, 6) + ' · Lon ' + fmtN(p.lon, 6) +
+        ' (' + escHtml(p.precisao).toLowerCase() + ')</div>' +
+      '</div>';
+  }
+  /* ---------------------------------------------------------------------
+     CARTÃO DO PONTO CRÍTICO: abre à direita do ponto, centralizado na altura
+     dele (o popup do ArcGIS só abre nos cantos). Vai para a esquerda se não
+     couber, acompanha o mapa e fecha no ×, com Esc ou clicando fora.
+     --------------------------------------------------------------------- */
+  var PONTOS_POR_ID = {};
+  var cartao = null, cartaoPonto = null, cartaoGeom = null;
+  function criarCartao(){
+    if(getComputedStyle(view.container).position === "static") view.container.style.position = "relative";
+    cartao = document.createElement("div");
+    cartao.className = "rr-card";
+    cartao.innerHTML =
+      '<div class="rr-card-seta"></div>' +
+      '<div class="rr-card-in">' +
+        '<div class="rr-card-cab"><span>Ponto crítico de alagamento · RPA 6</span>' +
+          '<button type="button" class="rr-card-x" title="Fechar">×</button></div>' +
+        '<div class="rr-card-corpo"></div>' +
+        '<div class="rr-card-acoes"><button type="button" data-a="zoom">Aproximar</button>' +
+          '<button type="button" data-a="gmaps">Abrir no Google Maps ↗</button></div>' +
+      '</div>';
+    view.container.appendChild(cartao);
+    ["click", "dblclick", "pointerdown", "pointerup", "mousedown", "wheel"].forEach(function(t){
+      cartao.addEventListener(t, function(e){ e.stopPropagation(); });
+    });
+    cartao.querySelector(".rr-card-x").addEventListener("click", fecharCartao);
+    cartao.querySelector(".rr-card-corpo").addEventListener("click", function(e){
+      var tr = e.target.closest("tr.rr-dim");
+      if(!tr) return;
+      var abrir = !tr.classList.contains("aberto");
+      tr.classList.toggle("aberto", abrir);
+      cartao.querySelectorAll('tr.rr-subl[data-g="' + tr.getAttribute("data-g") + '"]').forEach(function(r){ r.classList.toggle("aberto", abrir); });
+      posicionarCartao();
+    });
+    cartao.querySelector('[data-a="zoom"]').addEventListener("click", function(){
+      if(cartaoGeom) view.goTo({ target: cartaoGeom, zoom: Math.max(view.zoom, 17) }, { duration: 400 });
+    });
+    cartao.querySelector('[data-a="gmaps"]').addEventListener("click", function(){
+      if(cartaoPonto) window.open("https://www.google.com/maps/search/?api=1&query=" + cartaoPonto.lat + "," + cartaoPonto.lon, "_blank", "noopener");
+    });
+  }
+  function posicionarCartao(){
+    if(!cartao || !cartaoGeom || cartao.style.display === "none") return;
+    var pt = view.toScreen(cartaoGeom);
+    if(!pt) return;
+    var W = view.width, H = view.height, gap = 36, m = 8;  // gap = distância entre o ponto e o cartão (px)
+    // A lista de pontos críticos ocupa a direita do mapa: o cartão não passa por cima dela.
+    var lista = document.querySelector(".pc-panel");
+    if(lista && lista.offsetWidth && !lista.classList.contains("recolhida")){
+      var esq = lista.getBoundingClientRect().left - view.container.getBoundingClientRect().left;
+      if(esq > W / 2) W = esq - 10;
+    }
+    cartao.querySelector(".rr-card-in").style.maxHeight = Math.floor(H * 0.85) + "px";
+    var w = cartao.offsetWidth, h = cartao.offsetHeight;
+    var direita = (pt.x + gap + w <= W - m) || (pt.x - gap - w < m);
+    var left = direita ? pt.x + gap : pt.x - gap - w;
+    left = Math.max(m, Math.min(left, W - w - m));
+    var top = Math.max(m, Math.min(pt.y - h / 2, H - h - m));
+    cartao.style.left = left + "px";
+    cartao.style.top = top + "px";
+    cartao.classList.toggle("lado-esq", !direita);
+    cartao.querySelector(".rr-card-seta").style.top = Math.max(18, Math.min(pt.y - top, h - 18)) + "px";
+    cartao.style.visibility = (pt.x < 0 || pt.y < 0 || pt.x > W || pt.y > H) ? "hidden" : "visible";
+  }
+  function abrirCartao(p, geom){
+    if(!cartao) criarCartao();
+    cartaoPonto = p; cartaoGeom = geom;
+    var corpo = cartao.querySelector(".rr-card-corpo");
+    corpo.innerHTML = popupPonto(p);
+    corpo.scrollTop = 0;
+    cartao.style.display = "block";
+    posicionarCartao();
+    marcarPontoNaLista(p.id);
+    desenharLigacoes();
+  }
+  function fecharCartao(){
+    if(cartao) cartao.style.display = "none";
+    cartaoPonto = null; cartaoGeom = null;
+    marcarPontoNaLista(null);
+    desenharLigacoes();
+  }
+  reactiveUtils.watch(function(){ return view.extent; }, posicionarCartao);
+  window.addEventListener("resize", posicionarCartao);
+  document.addEventListener("keydown", function(e){ if(e.key === "Escape") fecharCartao(); });
+
+  function desenharPontos(res){
+    if(!res || res.erro){
+      console.error("Pontos críticos: ", res && res.erro);
+      pontosLayer.title = PONTOS_TITULO + " — erro ao ler a planilha";
+      PONTOS_LISTA = null;
+      document.getElementById("pcList").innerHTML = '<div class="pc-msg">Não foi possível ler os pontos da planilha.</div>';
+      document.getElementById("pcCount").textContent = "";
+      buildLayerToggle();
+      return;
+    }
+    pontosLayer.removeAll();
+    fecharCartao();
+    NOMES_PLANILHA = res.nomes || {};
+    PONTOS_POR_ID = {};
+    res.pontos.forEach(function(p){
+      if(p.lat == null || p.lon == null) return;
+      pontosLayer.add(new Graphic({
+        geometry: { type:"point", longitude:p.lon, latitude:p.lat },
+        symbol: simboloPonto(p.indice),
+        attributes: { id: p.id }
+      }));
+      PONTOS_POR_ID[p.id] = p;
+    });
+    PONTOS_LISTA = res.pontos.slice().sort(function(a, b){
+      var pa = a.posicao == null ? Infinity : a.posicao, pb = b.posicao == null ? Infinity : b.posicao;
+      return pa - pb || a.id - b.id;
+    });
+    PONTOS_LIDO_EM = res.lidoEm || null;
+    renderPontosLista();
+    renderKpiStrip();
+    desenharLigacoes();
+    if(document.getElementById("rkModal").classList.contains("open")) renderRanking();
+    console.log("Pontos críticos carregados da planilha: " + res.pontos.length + " (" + res.lidoEm + ")");
+    buildLayerToggle();
+  }
+
+  /* ---------------------------------------------------------------------
+     LISTA DE PONTOS CRÍTICOS (direita): um cartão por ponto, na ordem do
+     ranking. Clicar aproxima o mapa e abre o cartão do ponto. A busca do
+     topo também filtra esta lista (trecho ou bairro).
+     --------------------------------------------------------------------- */
+  var PONTOS_LISTA = null;   // null = ainda carregando (ou erro)
+  // Pontos que passam pela busca do topo (trecho ou bairro). Usado pela lista e pelos KPIs.
+  function pontosFiltrados(){
+    if(!PONTOS_LISTA) return null;
+    var q = document.getElementById("searchInput").value.trim().toLowerCase();
+    return PONTOS_LISTA.filter(function(p){
+      return !q || p.trecho.toLowerCase().indexOf(q) > -1 || p.bairro.toLowerCase().indexOf(q) > -1;
+    });
+  }
+  function renderPontosLista(){
+    if(!PONTOS_LISTA) return;
+    var box = document.getElementById("pcList");
+    var lista = pontosFiltrados();
+    document.getElementById("pcCount").textContent = lista.length + (lista.length === 1 ? " ponto" : " pontos");
+    if(!lista.length){
+      box.innerHTML = '<div class="pc-msg">Nenhum ponto crítico encontrado para a busca.</div>';
+      return;
+    }
+    box.innerHTML = lista.map(function(p){
+      var semCoord = p.lat == null || p.lon == null;
+      return '<div class="pc-card tinta' + (semCoord ? ' sem-coord' : '') + (cartaoPonto && cartaoPonto.id === p.id ? ' active' : '') +
+          '" data-id="' + p.id + '" style="' + estiloTinta(corIndice(p.indice)) + '"' +
+          (semCoord ? ' title="Ponto sem coordenada na planilha"' : '') + '>' +
+        '<div class="pc-card-top"><span class="pc-pos">' + (p.posicao != null ? p.posicao + 'º' : '—') + '</span>' +
+          '<span class="pc-indice">Índice de risco <b>' + fmtN(p.indice, 3) + '</b></span></div>' +
+        '<div class="pc-trecho">' + escHtml(p.trecho) + '</div>' +
+        '<div class="pc-meta"><span>' + escHtml(p.bairro) + (p.tipo ? ' · ' + escHtml(p.tipo) : '') + '</span>' +
+          (semCoord ? '<span class="pc-tag">Sem coordenada</span>' :
+           /aproximad/i.test(p.precisao) ? '<span class="pc-tag">Local aproximado</span>' : '') + '</div>' +
+      '</div>';
+    }).join("");
+  }
+  function marcarPontoNaLista(id){
+    document.querySelectorAll("#pcList .pc-card").forEach(function(el){
+      var ativo = id != null && el.getAttribute("data-id") === String(id);
+      el.classList.toggle("active", ativo);
+      if(ativo) el.scrollIntoView({ block:"nearest", behavior:"smooth" });
+    });
+  }
+  // Recolher e abrir as listas (pontos críticos à direita; intervenções à esquerda desde 15/10/2026).
+  [[".pc-panel", "pcRecolher", "pc-rec"], [".list-panel:not(.pc-panel)", "obrasRecolher", "obras-rec"]].forEach(function(par){
+    var painel = document.querySelector(par[0]), btn = document.getElementById(par[1]);
+    if(!painel || !btn) return;
+    btn.addEventListener("click", function(){
+      var recolhida = painel.classList.toggle("recolhida");
+      btn.setAttribute("aria-expanded", String(!recolhida));
+      btn.title = recolhida ? "Abrir a lista" : "Recolher a lista";
+      var grade = document.querySelector(".overlay-grid");
+      if(grade) grade.classList.toggle(par[2], recolhida);   // a outra lista ocupa a altura liberada
+      // As duas listas recolhidas: Mapa base e Camadas usam a faixa de baixo inteira.
+      var pilha = document.querySelector(".map-br-stack");
+      if(pilha) pilha.classList.toggle("livre-esq", document.querySelectorAll(".list-panel.recolhida").length === 2);
+      posicionarCartao();
+    });
+  });
+  document.getElementById("pcList").addEventListener("click", function(e){
+    var el = e.target.closest(".pc-card");
+    if(!el) return;
+    var p = PONTOS_POR_ID[el.getAttribute("data-id")];
+    if(!p) return;  // sem coordenada: não está no mapa
+    var g = pontosLayer.graphics.find(function(gr){ return gr.attributes.id === p.id; });
+    if(!g) return;
+    selecionarPonto(p, g.geometry);
+  });
+  /* ---------------------------------------------------------------------
+     RANKING DOS PONTOS CRÍTICOS (29/10/2026): tabela dos pontos na ordem da
+     coluna "Posição" da planilha, com download em CSV, cópia para colar no
+     Excel/Sheets e versão para imprimir ou salvar em PDF. Mostra sempre todos
+     os pontos (não segue a busca do topo). O CSV leva também as 18 variáveis.
+     --------------------------------------------------------------------- */
+  var PONTOS_LIDO_EM = null;
+  function classeIndice(i){
+    if(i == null) return null;
+    for(var k=0;k<CLASSES_INDICE.length;k++){ if(i < CLASSES_INDICE[k].max) return CLASSES_INDICE[k]; }
+    return CLASSES_INDICE[CLASSES_INDICE.length-1];
+  }
+  function localPonto(p){ return p.lat == null || p.lon == null ? "Sem coordenada" : (p.precisao || ""); }
+  function nomesObras(p){
+    return (p.obras || []).map(function(id){
+      var o = (typeof PROJECTS !== "undefined" ? PROJECTS : []).find(function(x){ return x.id === "obra-" + id; });
+      return o ? id + " – " + o.title : String(id);
+    });
+  }
+  function dataHora(iso){
+    if(!iso) return "";
+    var d = new Date(iso);
+    return isNaN(d) ? String(iso) : d.toLocaleDateString("pt-BR") + " " + d.toLocaleTimeString("pt-BR", { hour:"2-digit", minute:"2-digit" });
+  }
+  // Colunas do ranking: [título, valor(p), casas decimais, só no CSV].
+  function colunasRanking(){
+    var cols = [
+      ["Posição", function(p){ return p.posicao; }, 0],
+      ["ID", function(p){ return p.id; }, 0],
+      ["Trecho", function(p){ return p.trecho; }],
+      ["Bairro", function(p){ return p.bairro; }],
+      ["Tipo", function(p){ return p.tipo; }],
+      ["Grupo", function(p){ return p.grupo; }, null, true],
+      ["Probabilidade", function(p){ return p.P; }, 1],
+      ["Exposição", function(p){ return p.E; }, 1],
+      ["Vulnerabilidade", function(p){ return p.V; }, 1],
+      ["Impacto", function(p){ return p.I; }, 1],
+      ["Consequência", function(p){ return p.C; }, 2],
+      ["Risco (1–25)", function(p){ return p.risco; }, 2],
+      ["Índice de risco (0–1)", function(p){ return p.indice; }, 3],
+      ["Classe do índice", function(p){ var c = classeIndice(p.indice); return c ? c.rotulo : null; }],
+      ["Local", localPonto],
+      ["Notas preenchidas", function(p){ return p.preenchidas; }, 0],
+      ["Obras relacionadas", function(p){ return nomesObras(p).join("; "); }]
+    ];
+    GRUPOS_SUB.forEach(function(g){
+      g.cods.forEach(function(c){
+        cols.push([c + " " + (NOMES_PLANILHA[c] || NOMES_SUB[c]), function(p){ return p.notas ? p.notas[c] : null; }, null, true]);
+      });
+    });
+    cols.push(["Latitude", function(p){ return p.lat; }, 6, true], ["Longitude", function(p){ return p.lon; }, 6, true]);
+    return cols;
+  }
+  // Texto da célula: números com vírgula decimal (casas fixas quando a coluna pede).
+  function celulaTexto(col, p){
+    var v = col[1](p);
+    if(v == null || v === "") return "";
+    if(typeof v === "number") return col[2] == null ? String(v).replace(".", ",") : v.toFixed(col[2]).replace(".", ",");
+    return String(v);
+  }
+  // Tabela em texto: sep = ";" para CSV (Excel em português), "\t" para colar.
+  function rankingTexto(sep){
+    var cols = colunasRanking();
+    function campo(t){
+      t = String(t).replace(/\r?\n/g, " ");
+      return sep === "\t" ? t.replace(/\t/g, " ") : (/[";]/.test(t) ? '"' + t.replace(/"/g, '""') + '"' : t);
+    }
+    var linhas = [cols.map(function(c){ return campo(c[0]); }).join(sep)];
+    (PONTOS_LISTA || []).forEach(function(p){
+      linhas.push(cols.map(function(c){ return campo(celulaTexto(c, p)); }).join(sep));
+    });
+    return linhas.join("\r\n");
+  }
+  function avisoRanking(){
+    return (NOTAS_DE_TESTE ? "Notas de teste: a planilha ainda sorteia as notas e o ranking muda a cada recálculo. " : "") +
+      "Lido da planilha em " + (dataHora(PONTOS_LIDO_EM) || "—") + ".";
+  }
+  var CLASSE_COLUNA_RANKING = { "Trecho":"rk-largo", "Obras relacionadas":"rk-largo", "Classe do índice":"rk-nowrap", "Local":"rk-nowrap" };
+  function classeColuna(c){
+    var cls = [c[2] != null ? "num" : "", CLASSE_COLUNA_RANKING[c[0]] || ""].join(" ").trim();
+    return cls ? ' class="' + cls + '"' : '';
+  }
+  function tabelaRankingHtml(){
+    var cols = colunasRanking().filter(function(c){ return !c[3]; });
+    return '<table class="rk-tab"><thead><tr>' + cols.map(function(c){
+        return '<th' + classeColuna(c) + '>' + escHtml(c[0]) + '</th>'; }).join("") + '</tr></thead><tbody>' +
+      (PONTOS_LISTA || []).map(function(p){
+        return '<tr>' + cols.map(function(c){
+          var t = escHtml(celulaTexto(c, p));
+          if(c[0] === "Classe do índice" && t) t = '<span class="rk-cor" style="background:' + corIndice(p.indice) + '"></span>' + t;
+          return '<td' + classeColuna(c) + '>' + (t || '—') + '</td>';
+        }).join("") + '</tr>';
+      }).join("") + '</tbody></table>';
+  }
+  function renderRanking(){
+    var corpo = document.getElementById("rkCorpo");
+    var ok = PONTOS_LISTA && PONTOS_LISTA.length;
+    document.querySelectorAll("#rkModal .rk-acoes button").forEach(function(b){ b.disabled = !ok; });
+    if(!ok){
+      corpo.innerHTML = '<div class="pc-msg">' + (PONTOS_LISTA ? 'Nenhum ponto na planilha.' : 'Os pontos ainda não foram lidos da planilha.') + '</div>';
+      return;
+    }
+    document.getElementById("rkAviso").textContent = avisoRanking();
+    corpo.innerHTML = tabelaRankingHtml();
+  }
+  function nomeArquivoRanking(ext){
+    return "ranking_pontos_criticos_RPA6_" + new Date().toISOString().slice(0, 10) + (NOTAS_DE_TESTE ? "_notas-de-teste" : "") + "." + ext;
+  }
+  function baixarRankingCsv(){
+    // BOM no começo: o Excel abre os acentos certos.
+    var blob = new Blob(["﻿" + rankingTexto(";")], { type:"text/csv;charset=utf-8" });
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = nomeArquivoRanking("csv");
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function(){ URL.revokeObjectURL(a.href); }, 10000);
+  }
+  function avisarRanking(msg){
+    var el = document.getElementById("rkStatus");
+    el.textContent = msg;
+    clearTimeout(avisarRanking.t);
+    avisarRanking.t = setTimeout(function(){ el.textContent = ""; }, 4000);
+  }
+  // Copia como texto separado por tabulação: cola em colunas no Excel e no Google Sheets.
+  function copiarRanking(){
+    var texto = rankingTexto("\t");
+    function antigo(){
+      var ta = document.createElement("textarea");
+      ta.value = texto; ta.style.position = "fixed"; ta.style.opacity = "0";
+      document.body.appendChild(ta); ta.select();
+      var ok = false;
+      try { ok = document.execCommand("copy"); } catch(e){}
+      ta.remove();
+      avisarRanking(ok ? "Tabela copiada. Cole no Excel ou no Google Sheets." : "Não foi possível copiar. Use “Baixar CSV”.");
+    }
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(texto).then(function(){ avisarRanking("Tabela copiada. Cole no Excel ou no Google Sheets."); }, antigo);
+    } else antigo();
+  }
+  // Abre a tabela numa página própria, que já chama a impressão (dá para salvar em PDF).
+  function imprimirRanking(){
+    var html = '<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>' + escHtml(nomeArquivoRanking("pdf").replace(/\.pdf$/, "")) + '</title>' +
+      '<style>@page{size:A4 landscape;margin:12mm;}body{font-family:Inter,Arial,sans-serif;color:#1e293b;margin:0;padding:16px;}' +
+      'h1{font-size:16px;margin:0 0 4px;color:#0869A6;}p{font-size:11px;color:#475569;margin:0 0 10px;}' +
+      '.rk-tab{border-collapse:collapse;width:100%;font-size:9.5px;}.rk-tab th,.rk-tab td{border:1px solid #cbd5e1;padding:3px 5px;text-align:left;vertical-align:top;}' +
+      '.rk-tab th{background:#F2F2F2;}.rk-tab .num,.rk-tab .rk-nowrap{text-align:right;white-space:nowrap;}.rk-tab .rk-nowrap{text-align:left;}.rk-tab .rk-largo{min-width:140px;}' +
+      '.rk-cor{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px;-webkit-print-color-adjust:exact;print-color-adjust:exact;}' +
+      'button{margin-bottom:10px;padding:6px 12px;font:inherit;cursor:pointer;}@media print{button{display:none;}}</style></head><body>' +
+      '<button onclick="print()">Imprimir / salvar em PDF</button>' +
+      '<h1>Recife Resiliente — ranking dos pontos críticos da RPA 6</h1>' +
+      '<p>' + escHtml(avisoRanking()) + ' Risco = Probabilidade × Consequência (1 a 25); índice = (risco − 1) ÷ 24.</p>' +
+      tabelaRankingHtml() + '<scr' + 'ipt>window.onload=function(){print();};</scr' + 'ipt></body></html>';
+    var url = URL.createObjectURL(new Blob([html], { type:"text/html" }));
+    var w = window.open(url, "_blank");
+    if(!w) avisarRanking("O navegador bloqueou a nova janela. Libere pop-ups para este site.");
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 60000);
+  }
+  function abrirRanking(){
+    renderRanking();
+    document.getElementById("rkModal").classList.add("open");
+  }
+  function fecharRanking(){ document.getElementById("rkModal").classList.remove("open"); }
+  document.getElementById("pcRanking").addEventListener("click", abrirRanking);
+  document.getElementById("rkFechar").addEventListener("click", fecharRanking);
+  document.getElementById("rkModal").addEventListener("click", function(e){ if(e.target.id === "rkModal") fecharRanking(); });
+  document.addEventListener("keydown", function(e){ if(e.key === "Escape") fecharRanking(); });
+  document.getElementById("rkCsv").addEventListener("click", baixarRankingCsv);
+  document.getElementById("rkCopiar").addEventListener("click", copiarRanking);
+  document.getElementById("rkImprimir").addEventListener("click", imprimirRanking);
+
+  if(typeof google !== "undefined" && google.script && google.script.run){
+    google.script.run
+      .withSuccessHandler(desenharPontos)
+      .withFailureHandler(function(e){ desenharPontos({ erro: String(e && e.message ? e.message : e) }); })
+      .getPontosCriticos();
+  }
+

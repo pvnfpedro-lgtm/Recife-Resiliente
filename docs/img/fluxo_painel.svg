@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1260" height="560" viewBox="0 0 1260 560" font-family="DejaVu Sans, sans-serif">
+<defs><marker id="s" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#334155"/></marker></defs>
+<rect width="1260" height="560" fill="#fff"/>
+<text x="30" y="34" font-size="20" font-weight="bold" fill="#0869A6">Fluxo de dados do painel Recife Resiliente</text>
+<text x="30" y="72" font-size="12" font-weight="bold" fill="#5496BF" letter-spacing="1">ONDE O DADO NASCE</text>
+<text x="350" y="72" font-size="12" font-weight="bold" fill="#5496BF" letter-spacing="1">ONDE FICA</text>
+<text x="660" y="72" font-size="12" font-weight="bold" fill="#5496BF" letter-spacing="1">O QUE O PAINEL LÊ</text>
+<text x="980" y="72" font-size="12" font-weight="bold" fill="#5496BF" letter-spacing="1">PAINEL</text>
+<rect x="30" y="95" width="240" height="80" rx="8" fill="#F2F2F2" stroke="#5496BF" stroke-width="1.5"/>
+<text x="150.0" y="127.0" font-size="15" font-weight="bold" fill="#334155" text-anchor="middle">ArcGIS Pro</text>
+<text x="150.0" y="147.0" font-size="12.5" fill="#334155" text-anchor="middle">camada 2. Obras</text>
+<text x="150.0" y="164.0" font-size="12.5" fill="#334155" text-anchor="middle">(você insere as obras)</text>
+<rect x="350" y="95" width="240" height="80" rx="8" fill="#F2F2F2" stroke="#5496BF" stroke-width="1.5"/>
+<text x="470.0" y="127.0" font-size="15" font-weight="bold" fill="#334155" text-anchor="middle">Portal ESIG</text>
+<text x="470.0" y="147.0" font-size="12.5" fill="#334155" text-anchor="middle">camada de obras publicada</text>
+<rect x="660" y="85" width="240" height="72" rx="8" fill="#F2F2F2" stroke="#5496BF" stroke-width="1.5"/>
+<text x="780.0" y="113.0" font-size="15" font-weight="bold" fill="#334155" text-anchor="middle">WebMap d19385…</text>
+<text x="780.0" y="133.0" font-size="12.5" fill="#334155" text-anchor="middle">seu mapa (edição)</text>
+<text x="780.0" y="150.0" font-size="12.5" fill="#334155" text-anchor="middle">não aparece no painel</text>
+<rect x="660" y="170" width="240" height="62" rx="8" fill="#F2F2F2" stroke="#5496BF" stroke-width="1.5"/>
+<text x="780.0" y="193.0" font-size="15" font-weight="bold" fill="#334155" text-anchor="middle">WebMap df725…</text>
+<text x="780.0" y="213.0" font-size="12.5" fill="#334155" text-anchor="middle">mapa que o painel carrega</text>
+<rect x="30" y="285" width="240" height="80" rx="8" fill="#F2F2F2" stroke="#5496BF" stroke-width="1.5"/>
+<text x="150.0" y="317.0" font-size="15" font-weight="bold" fill="#334155" text-anchor="middle">Google Sheets</text>
+<text x="150.0" y="337.0" font-size="12.5" fill="#334155" text-anchor="middle">aba Notas dos pontos</text>
+<text x="150.0" y="354.0" font-size="12.5" fill="#334155" text-anchor="middle">(notas de TESTE)</text>
+<rect x="30" y="420" width="240" height="80" rx="8" fill="#F2F2F2" stroke="#5496BF" stroke-width="1.5"/>
+<text x="150.0" y="452.0" font-size="15" font-weight="bold" fill="#334155" text-anchor="middle">GitHub</text>
+<text x="150.0" y="472.0" font-size="12.5" fill="#334155" text-anchor="middle">código do painel</text>
+<text x="150.0" y="489.0" font-size="12.5" fill="#334155" text-anchor="middle">(pasta appscript/)</text>
+<rect x="350" y="420" width="240" height="80" rx="8" fill="#F2F2F2" stroke="#5496BF" stroke-width="1.5"/>
+<text x="470.0" y="452.0" font-size="15" font-weight="bold" fill="#334155" text-anchor="middle">Apps Script</text>
+<text x="470.0" y="472.0" font-size="12.5" fill="#334155" text-anchor="middle">projeto do painel</text>
+<rect x="980" y="85" width="250" height="415" rx="10" fill="#fff" stroke="#0869A6" stroke-width="2.5"/>
+<text x="1105" y="112" font-size="16" font-weight="bold" fill="#0869A6" text-anchor="middle">Painel</text>
+<rect x="995" y="128" width="220" height="72" rx="8" fill="#fff" stroke="#5496BF" stroke-width="1.5"/>
+<text x="1105.0" y="156.0" font-size="15" font-weight="bold" fill="#334155" text-anchor="middle">Mapa</text>
+<text x="1105.0" y="176.0" font-size="12.5" fill="#334155" text-anchor="middle">camadas do WebMap df725</text>
+<rect x="995" y="215" width="220" height="72" rx="8" fill="#fff" stroke="#5496BF" stroke-width="1.5"/>
+<text x="1105.0" y="243.0" font-size="15" font-weight="bold" fill="#334155" text-anchor="middle">Pontos críticos</text>
+<text x="1105.0" y="263.0" font-size="12.5" fill="#334155" text-anchor="middle">21 pontos + círculo 300 m</text>
+<rect x="995" y="302" width="220" height="86" rx="8" fill="#fff" stroke="#e31a1c" stroke-width="1.5"/>
+<text x="1105.0" y="337.0" font-size="15" font-weight="bold" fill="#334155" text-anchor="middle">Lista, KPIs, aba 02</text>
+<text x="1105.0" y="357.0" font-size="12.5" fill="#334155" text-anchor="middle">8 obras FICTÍCIAS</text>
+<text x="1105.0" y="374.0" font-size="12.5" fill="#334155" text-anchor="middle">escritas no código</text>
+<rect x="995" y="403" width="220" height="82" rx="8" fill="#fff" stroke="#5496BF" stroke-width="1.5"/>
+<text x="1105.0" y="436.0" font-size="15" font-weight="bold" fill="#334155" text-anchor="middle">Endereços</text>
+<text x="1105.0" y="456.0" font-size="12.5" fill="#334155" text-anchor="middle">/dev: teste (editores)</text>
+<text x="1105.0" y="473.0" font-size="12.5" fill="#334155" text-anchor="middle">/exec @9: versão publicada</text>
+<path d="M270 135 L345 135" fill="none" stroke="#334155" stroke-width="1.6" stroke-dasharray="6 4" marker-end="url(#s)"/>
+<text x="308" y="190" font-size="11.5" fill="#334155" text-anchor="middle" font-style="italic">Compartilhar como</text>
+<text x="308" y="205" font-size="11.5" fill="#334155" text-anchor="middle" font-style="italic">camada da Web</text>
+<path d="M590 125 L655 116" fill="none" stroke="#334155" stroke-width="1.6" stroke-dasharray="6 4" marker-end="url(#s)"/>
+<path d="M590 145 L655 200" fill="none" stroke="#334155" stroke-width="1.6" stroke-dasharray="6 4" marker-end="url(#s)"/>
+<text x="585" y="215" font-size="11.5" fill="#334155" text-anchor="middle" font-style="italic">adicionar</text>
+<text x="585" y="230" font-size="11.5" fill="#334155" text-anchor="middle" font-style="italic">a camada</text>
+<path d="M900 201 L990 164" fill="none" stroke="#334155" stroke-width="1.6"  marker-end="url(#s)"/>
+<path d="M270 325 L990 251" fill="none" stroke="#334155" stroke-width="1.6"  marker-end="url(#s)"/>
+<text x="630" y="278" font-size="11.5" fill="#334155" text-anchor="middle" font-style="italic">Código.js lê a planilha</text>
+<path d="M270 460 L345 460" fill="none" stroke="#334155" stroke-width="1.6"  marker-end="url(#s)"/>
+<text x="308" y="400" font-size="11.5" fill="#334155" text-anchor="middle" font-style="italic">clasp push (só com</text>
+<text x="308" y="415" font-size="11.5" fill="#334155" text-anchor="middle" font-style="italic">sua aprovação)</text>
+<path d="M590 460 L990 444" fill="none" stroke="#334155" stroke-width="1.6"  marker-end="url(#s)"/>
+<text x="790" y="440" font-size="11.5" fill="#334155" text-anchor="middle" font-style="italic">/exec só muda ao publicar nova versão</text>
+<line x1="30" y1="540" x2="70" y2="540" stroke="#334155" stroke-width="1.6"/><text x="78" y="544" font-size="12" fill="#334155">funcionando</text>
+<line x1="180" y1="540" x2="220" y2="540" stroke="#334155" stroke-width="1.6" stroke-dasharray="6 4"/><text x="228" y="544" font-size="12" fill="#334155">a fazer / não conectado</text>
+<rect x="420" y="532" width="22" height="14" rx="3" fill="#fff" stroke="#e31a1c" stroke-width="1.5"/><text x="450" y="544" font-size="12" fill="#334155">dado de exemplo</text>
+</svg>
