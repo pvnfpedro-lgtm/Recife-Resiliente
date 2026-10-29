@@ -54,8 +54,9 @@ não conectado.
 - **Teste (HEAD, sempre o código mais recente):**
   https://script.google.com/macros/s/AKfycbwHvKBxXuhdg200oKKwCvdF4uZPHBWsiEE9kTqK5TI/dev
   (só abre para quem é editor do projeto).
-- Versões publicadas: 9 implantações; a mais recente é a @9 "Primeira versão
-  que deu certo". O `clasp push` não altera nenhuma delas.
+- Versões publicadas: 9 implantações. A do link compartilhado
+  (`AKfycbxXh5…/exec`, antes "Primeira versão que deu certo") passou para a **versão 10**
+  ("Ranking dos pontos críticos e código dividido", 29/10/2026), publicada por Pedro. O `clasp push` não altera nenhuma delas.
 - 02/10/2026: primeiro `clasp push` (pontos críticos lidos da planilha,
   sem HidroData).
 - 03/10/2026: `clasp push` com as variáveis de 03/10 (nomes novos; I3, V5
