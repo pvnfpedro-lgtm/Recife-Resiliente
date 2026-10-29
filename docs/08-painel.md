@@ -203,8 +203,8 @@ mapa), local (exato/aproximado/sem coordenada), notas preenchidas e obras relaci
 - O aviso "notas de teste" (ranking e KPIs) depende de `NOTAS_DE_TESTE` em `JsPontosCriticos.html`:
   mudar para `false` quando entrarem as notas reais.
 - Testado fora do Apps Script, com o ArcGIS simulado e dados fictícios: tabela, CSV, impressão, Esc e
-  tela de celular. **Não testado no Apps Script:** se o navegador bloquear o download ou a nova janela
-  dentro do iframe do Apps Script, o botão "Copiar tabela" continua funcionando.
+  tela de celular. Conferido por Pedro na URL de teste em 29/10/2026: painel abre, tabela, CSV e
+  impressão funcionam dentro do Apps Script.
 
 ## Arquivos do painel (desde 29/10/2026)
 O `Index.html` tinha cerca de 3.100 linhas. Foi dividido sem mudar o que a página mostra:
