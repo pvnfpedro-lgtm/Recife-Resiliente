@@ -189,7 +189,7 @@ não conectado.
 - Liberar `*.arcgis.com` e `esigportal2.recife.pe.gov.br` na rede do
   ambiente para testar o painel antes de cada envio.
 
-## Ranking dos pontos críticos (29/10/2026, código; `clasp push` só após aprovação)
+## Ranking dos pontos críticos (29/10/2026; `clasp push` feito com aprovação de Pedro, junto com a divisão dos arquivos)
 Botão **"Ranking"** no título da lista de pontos críticos. Abre uma tabela com todos os pontos na
 ordem da coluna "Posição" da planilha (não segue a busca do topo): posição, ID, trecho, bairro, tipo,
 notas das 4 dimensões, consequência, risco (1–25), índice (0–1), classe do índice (mesmas cores do
