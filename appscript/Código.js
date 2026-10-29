@@ -6,6 +6,13 @@ function doGet() {
     .addMetaTag('viewport', 'width=device-width, initial-scale=1');
 }
 
+/* Junta os arquivos do painel no Index (<?!= include('Estilos'); ?>), desde 29/10/2026.
+   getRawContent devolve o texto como está, sem interpretar: os pedaços de script
+   não são HTML completo. Para montar a página fora do Apps Script: scripts/montar_painel.py. */
+function include(nome) {
+  return HtmlService.createTemplateFromFile(nome).getRawContent();
+}
+
 /* =====================================================================
    PONTOS CRÍTICOS — leitura da planilha de notas (TESTE)
    A planilha precisa ser nativa do Google Sheets (não .xlsx no Drive).

@@ -1,0 +1,695 @@
+/* Script do painel, parte 4 de 4: página 1 (KPIs e lista), filtros, abas, páginas 2 e 3 e início; fecha o require().
+   Não é um arquivo independente: o Index junta as 4 partes num único bloco de script. */
+  /* =====================================================================
+     PÁGINA 1 — KPIs + lista
+     ===================================================================== */
+  var kpiStripEl = document.getElementById("kpiStrip");
+  function renderKpiStrip(){
+    var list = filteredProjects();
+    var totalInvest = list.reduce(function(s,p){return s+(p.investNum||0);},0);
+    var concluidas = list.filter(function(p){return p.status==="concluido";}).length;
+    var bairros = new Set(list.map(function(p){return p.bairro;}).filter(function(x){ return x && x !== "—"; })).size;
+    kpiStripEl.innerHTML =
+      kpiTile("Investimento Total", "R$ " + totalInvest.toLocaleString("pt-BR",{minimumFractionDigits:1,maximumFractionDigits:1}), "Mi") +
+      kpiTile("Obras Concluídas", concluidas, "/ " + list.length) +
+      kpiTile("Bairros com Obras", bairros, "") +
+      kpiPontos();
+  }
+  function kpiTile(label, value, small, cls, title){
+    return '<div class="kpi-tile' + (cls ? ' ' + cls : '') + '"' + (title ? ' title="' + title + '"' : '') + '><div class="kpi-label">'+label+'</div><div class="kpi-value">'+value+(small?' <small>'+small+'</small>':'')+'</div></div>';
+  }
+  /* KPIs dos pontos críticos (14/10/2026), ao lado dos de obras. Seguem a busca do topo.
+     Risco alto = risco ≥ CORTE_RISCO (9 = 3 × 3, corte da matriz em 02-metodologia).
+     Enquanto as notas da planilha forem de teste, o rótulo avisa. */
+  function kpiPontos(){
+    var lista = pontosFiltrados();
+    if(!lista) return "";
+    var total = PONTOS_LISTA.length;
+    var alto = lista.filter(function(p){ return p.risco != null && p.risco >= CORTE_RISCO; }).length;
+    var conferir = lista.filter(function(p){ return p.lat == null || p.lon == null || /aproximad/i.test(p.precisao); }).length;
+    var teste = ' <span class="kpi-teste">notas de teste</span>';
+    return '<div class="kpi-sep"></div>' +
+      kpiTile("Pontos Críticos", lista.length, lista.length === total ? "" : "/ " + total, "kpi-pc") +
+      kpiTile("Risco Alto" + teste, alto, "/ " + lista.length, "kpi-pc", "Risco (Probabilidade × Consequência) igual ou acima de " + CORTE_RISCO) +
+      kpiTile("Local a Conferir", conferir, "/ " + lista.length, "kpi-pc", "Coordenada aproximada ou ausente na planilha");
+  }
+
+  var listEl = document.getElementById("projectList");
+  var countEl = document.getElementById("listCount");
+  var searchInput = document.getElementById("searchInput");
+
+  function renderProjectList(){
+    var visible = filteredProjects();
+    PROJECTS.forEach(function(p){
+      var vis = visible.indexOf(p) > -1;
+      p._graphic.visible = vis;
+      if(p._ponto) p._ponto.visible = vis;
+    });
+    countEl.textContent = visible.length + (visible.length===1 ? " item" : " itens");
+    listEl.innerHTML = "";
+    if(OBRAS_ESTADO !== "ok"){
+      var msg = { carregando:"Carregando as obras do mapa…", "sem-camada":"Nenhuma camada de obras encontrada no mapa. O nome da camada precisa conter “obra”.", erro:"Não foi possível ler a camada de obras do mapa.", "sem-planilha":"Não foi possível ler a aba “Obras” da planilha." }[OBRAS_ESTADO];
+      listEl.innerHTML = '<div class="empty-state">' + msg + '</div>';
+      return;
+    }
+    if(visible.length===0){
+      listEl.innerHTML = '<div class="empty-state">Nenhuma intervenção encontrada para os filtros aplicados.</div>';
+      return;
+    }
+    visible.forEach(function(p){
+      var b = baciaOf(p.bacia), sub = subOf(p.bacia,p.subbacia);
+      var card = document.createElement("div");
+      card.className = "project-card tinta" + (selected && selected.id===p.id ? " active" : "");
+      card.setAttribute("style", estiloTinta(COR_STATUS_OBRA[p.status] || COR_STATUS_OBRA.nao_planejado));
+      card.setAttribute("data-id", p.id);
+      card.innerHTML =
+        '<div class="project-card-top">' +
+          '<div class="pill-row"><span class="status-pill ' + statusClass(p.status) + '">' + STATUS_LABEL[p.status] + '</span></div>' +
+          '<span class="project-code">' + esc(p.code) + '</span>' +
+        '</div>' +
+        '<div class="project-title">' + esc(p.title) + '</div>' +
+        '<div class="project-meta"><b>' + esc(p.bairro) + '</b>' + (b ? ' &middot; ' + esc(b.nome) : '') + (sub? ' — '+esc(sub.nome) : '') + '</div>' +
+        progressBar(p) +
+        ((p.x.inicio || p.x.fim) ? '<div class="pcard-line"><span>Início: <b>' + fmtMes(p.x.inicio) + '</b></span><span>Término: <b>' + fmtMes(p.x.fim) + '</b></span></div>'
+                                 : '<div class="pcard-line"><span>Prazo: <b>a informar</b></span></div>') +
+        '<div class="pcard-line"><span><b>' + esc(p.invest) + '</b>' + (medidoMi(p) != null ? ' (medido ' + fmtMi(medidoMi(p)) + ')' : '') + '</span><span>' + esc(p.x.empresa || p.x.orgao || '') + '</span></div>' +
+        '<div class="project-card-actions">' +
+          '<button class="streetview-btn" data-id="'+p.id+'" title="Ver Street View deste ponto">Street View</button>' +
+          '<button class="link-ficha" data-id="'+p.id+'">Ver ficha completa →</button>' +
+        '</div>';
+      card.addEventListener("click", function(e){
+        if(e.target.classList.contains("link-ficha") || e.target.classList.contains("streetview-btn")) return;
+        selectProject(p, false);
+      });
+      listEl.appendChild(card);
+    });
+    listEl.querySelectorAll(".link-ficha").forEach(function(btn){
+      btn.addEventListener("click", function(){
+        var p = PROJECTS.find(function(pr){return pr.id===btn.getAttribute("data-id");});
+        openFicha(p);
+      });
+    });
+    listEl.querySelectorAll(".streetview-btn").forEach(function(btn){
+      btn.addEventListener("click", function(){
+        var p = PROJECTS.find(function(pr){return pr.id===btn.getAttribute("data-id");});
+        var c = streetViewCoords(p);
+        openStreetView(c.lat, c.lng);
+      });
+    });
+  }
+
+  /* =====================================================================
+     FILTROS GLOBAIS (bacia / sub-bacia / status)
+     ===================================================================== */
+  var elBacia = document.getElementById("filterBacia");
+  var elSub = document.getElementById("filterSubbacia");
+  var elStatus = document.getElementById("filterStatus");
+  var elCount = document.getElementById("fcount");
+
+  function buildFilterBar(){
+    elBacia.innerHTML = '<option value="">Todas as bacias</option>' + BACIAS.map(function(b){ return '<option value="'+b.id+'">'+b.nome+'</option>'; }).join("");
+    buildSubOptions();
+    elBacia.addEventListener("change", function(){ state.bacia = elBacia.value; state.subbacia=""; buildSubOptions(); renderAll(); });
+    elSub.addEventListener("change", function(){ state.subbacia = elSub.value; renderAll(); });
+    elStatus.addEventListener("change", function(){ state.status = elStatus.value; renderAll(); });
+    document.getElementById("freset").addEventListener("click", function(){
+      state = { bacia:"", subbacia:"", status:"" };
+      elBacia.value=""; elStatus.value=""; buildSubOptions(); searchInput.value=""; renderAll();
+    });
+    searchInput.addEventListener("input", renderAll);
+  }
+  function buildSubOptions(){
+    var b = baciaOf(state.bacia);
+    if(!b || b.subbacias.length===0){ elSub.innerHTML = '<option value="">—</option>'; elSub.disabled = true; }
+    else {
+      elSub.disabled = false;
+      elSub.innerHTML = '<option value="">Todas as sub-bacias</option>' + b.subbacias.map(function(s){ return '<option value="'+s.id+'">'+s.nome+'</option>'; }).join("");
+    }
+    elSub.value = state.subbacia || "";
+  }
+
+  /* =====================================================================
+     TABS
+     ===================================================================== */
+  document.querySelectorAll(".tab").forEach(function(tab){
+    tab.addEventListener("click", function(){
+      var n = tab.getAttribute("data-tab");
+      document.querySelectorAll(".tab").forEach(function(t){ t.setAttribute("aria-selected", t===tab ? "true":"false"); });
+      document.querySelectorAll("section.page").forEach(function(s){ s.classList.remove("active"); });
+      document.getElementById("page-"+n).classList.add("active");
+    });
+  });
+  function goTab(n){ document.querySelector('.tab[data-tab="'+n+'"]').click(); }
+  document.getElementById("btnBack").addEventListener("click", function(){ goTab("1"); });
+
+  /* =====================================================================
+     PÁGINA 2 — Físico-Financeiro
+     ===================================================================== */
+  function avg(arr){ return arr.length ? arr.reduce(function(s,v){return s+v;},0)/arr.length : 0; }
+
+  function avisoPagina2(mostrar){
+    var root = document.querySelector("#page-2 .page-scroll");
+    var av = document.getElementById("p2Aviso");
+    if(!av){
+      av = document.createElement("div");
+      av.id = "p2Aviso"; av.className = "p2-card";
+      av.style.cssText = "max-width:640px;margin:40px auto;text-align:center;";
+      av.innerHTML = '<h3>Sem dados de acompanhamento físico-financeiro</h3>' +
+        '<div class="p2-sub" style="margin-top:8px">As obras do mapa ainda não têm andamento físico, medições, prazos nem cronograma. ' +
+        'Esta aba volta a mostrar os gráficos quando esses dados chegarem (pedido à URB, pendência 11).</div>';
+      root.insertBefore(av, root.firstChild);
+    }
+    av.style.display = mostrar ? "" : "none";
+    Array.prototype.forEach.call(root.children, function(el){ if(el !== av) el.style.display = mostrar ? "none" : ""; });
+  }
+  function renderPage2(){
+    var list = filteredProjects();
+    if(!list.some(function(p){ return p.pctFisico != null; })){ avisoPagina2(true); return; }
+    avisoPagina2(false);
+    var avgFisico = avg(list.map(function(p){return p.pctFisico;}));
+    var avgFin = avg(list.map(function(p){return p.pctFinanceiro;}));
+    var previstoAtual = 57;
+    var spi = previstoAtual ? avgFisico/previstoAtual : 0;
+    var spiStatus = spi>=0.95 ? "saudavel" : (spi>=0.75 ? "atencao" : "critico");
+
+    document.getElementById("spiValue").textContent = spi.toFixed(2);
+    var spiLbl = document.getElementById("spiStatus");
+    spiLbl.className = "stlabel"; spiLbl.style.color = "var(--"+spiStatus+")";
+    spiLbl.innerHTML = '<i style="width:6px;height:6px;border-radius:50%;background:currentColor;display:inline-block"></i>' + SCHED_LABEL[spiStatus];
+    drawRing(document.getElementById("svgSpi"), spi, cssVar("--"+spiStatus));
+
+    document.getElementById("pctFisicoGlobal").textContent = avgFisico.toFixed(0)+"%";
+    document.getElementById("pctFisicoBar").style.width = avgFisico+"%";
+    document.getElementById("pctFinanceiroGlobal").textContent = avgFin.toFixed(0)+"%";
+    document.getElementById("pctFinanceiroBar").style.width = avgFin+"%";
+
+    drawCurve(list);
+    drawRisk(list);
+    renderTable(list);
+  }
+  function drawRing(svg, frac, color){
+    var r=26, c=2*Math.PI*r, pct=Math.max(0,Math.min(1,frac));
+    svg.innerHTML =
+      '<circle cx="32" cy="32" r="'+r+'" fill="none" stroke="#eef1f4" stroke-width="7"/>' +
+      '<circle cx="32" cy="32" r="'+r+'" fill="none" stroke="'+color+'" stroke-width="7" stroke-linecap="round" ' +
+        'stroke-dasharray="'+c+'" stroke-dashoffset="'+(c*(1-pct))+'" transform="rotate(-90 32 32)"/>';
+  }
+
+  var MESES = ["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"];
+  var PREVISTO = [4,9,15,22,30,39,48,57,67,77,88,100];
+  var REALIZADO = [3,7,11,16,22,29,37,46];
+  function drawCurve(list){
+    var svg = document.getElementById("svgCurve");
+    var W=640,H=260, padL=36,padR=16,padT=16,padB=30, innerW=W-padL-padR, innerH=H-padT-padB, n=MESES.length;
+    function X(i){ return padL + innerW*(i/(n-1)); }
+    function Y(v){ return padT + innerH*(1 - v/100); }
+    var parts=[];
+    [0,25,50,75,100].forEach(function(v){
+      parts.push('<line x1="'+padL+'" y1="'+Y(v)+'" x2="'+(W-padR)+'" y2="'+Y(v)+'" stroke="#eef1f4" stroke-width="1"/>');
+      parts.push('<text x="'+(padL-8)+'" y="'+(Y(v)+3)+'" text-anchor="end" font-size="10" fill="#94a3b8">'+v+'%</text>');
+    });
+    MESES.forEach(function(m,i){ parts.push('<text x="'+X(i)+'" y="'+(H-8)+'" text-anchor="middle" font-size="10" fill="#94a3b8">'+m+'</text>'); });
+    var prevPath = PREVISTO.map(function(v,i){ return (i===0?"M":"L")+X(i)+" "+Y(v); }).join(" ");
+    parts.push('<path d="'+prevPath+'" fill="none" stroke="#64748b" stroke-width="2.5" stroke-dasharray="5 5" stroke-linecap="round"/>');
+    var realPts = REALIZADO.map(function(v,i){return [X(i),Y(v)];});
+    var realPath = realPts.map(function(p,i){ return (i===0?"M":"L")+p[0]+" "+p[1]; }).join(" ");
+    parts.push('<path d="'+realPath+'" fill="none" stroke="'+cssVar("--accent")+'" stroke-width="3" stroke-linecap="round"/>');
+    realPts.forEach(function(p){ parts.push('<circle cx="'+p[0]+'" cy="'+p[1]+'" r="3" fill="'+cssVar("--accent")+'"/>'); });
+    var curI = REALIZADO.length-1;
+    parts.push('<circle cx="'+X(curI)+'" cy="'+Y(REALIZADO[curI])+'" r="6" fill="none" stroke="'+cssVar("--atencao")+'" stroke-width="2.5"/>');
+    svg.innerHTML = parts.join("");
+  }
+
+  function drawRisk(list){
+    var svg = document.getElementById("svgRisk");
+    var W=640,H=300, padL=42,padR=20,padT=16,padB=36, innerW=W-padL-padR, innerH=H-padT-padB;
+    var maxAtraso = Math.max.apply(null, list.map(function(p){return p.atrasoDias;}).concat([10]));
+    var maxInv = Math.max.apply(null, PROJECTS.map(function(p){return p.investNum;}));
+    function X(v){ return padL + innerW*(v/maxAtraso); }
+    function Y(v){ return padT + innerH*(1-(v-1)/3); }
+    var parts=[];
+    [1,2,3,4].forEach(function(v){
+      parts.push('<line x1="'+padL+'" y1="'+Y(v)+'" x2="'+(W-padR)+'" y2="'+Y(v)+'" stroke="#eef1f4" stroke-width="1"/>');
+      parts.push('<text x="'+(padL-8)+'" y="'+(Y(v)+3)+'" text-anchor="end" font-size="10" fill="#94a3b8">'+sevLabel(v)+'</text>');
+    });
+    parts.push('<text x="'+(padL+innerW/2)+'" y="'+(H-2)+'" text-anchor="middle" font-size="10.5" fill="#94a3b8">dias de atraso</text>');
+    list.forEach(function(p){
+      var r = 6 + Math.sqrt(p.investNum/maxInv)*20;
+      var col = cssVar("--"+schedStatus(p));
+      parts.push('<circle class="riskpt" data-id="'+p.id+'" cx="'+X(p.atrasoDias)+'" cy="'+Y(p.severidade)+'" r="'+r+'" fill="'+col+'" opacity=".75" stroke="#fff" stroke-width="2" style="cursor:pointer"/>');
+    });
+    svg.innerHTML = parts.join("");
+    svg.querySelectorAll(".riskpt").forEach(function(el){
+      el.addEventListener("click", function(){ openFicha(PROJECTS.find(function(p){return p.id===el.getAttribute("data-id");})); });
+    });
+    document.getElementById("riskLegend").innerHTML = ["saudavel","atencao","critico"].map(function(k){
+      return '<span class="it"><span class="sw-dot" style="background:'+cssVar("--"+k)+'"></span>'+SCHED_LABEL[k]+'</span>';
+    }).join("");
+  }
+
+  var sortState = { key:"atrasoDias", dir:"desc" };
+  function renderTable(list){
+    var rows = list.slice();
+    var key=sortState.key, dir=sortState.dir;
+    rows.sort(function(a,b){
+      var av,bv;
+      if(key==="bacia"){ av=baciaOf(a.bacia).nome; bv=baciaOf(b.bacia).nome; }
+      else if(key==="subbacia"){ av=(subOf(a.bacia,a.subbacia)||{nome:""}).nome; bv=(subOf(b.bacia,b.subbacia)||{nome:""}).nome; }
+      else if(key==="status"){ var rk={critico:0,atencao:1,saudavel:2}; av=rk[schedStatus(a)]; bv=rk[schedStatus(b)]; }
+      else { av=a[key]; bv=b[key]; }
+      if(typeof av==="string"){ av=av.toLowerCase(); bv=bv.toLowerCase(); }
+      if(av<bv) return dir==="asc"?-1:1;
+      if(av>bv) return dir==="asc"?1:-1;
+      return 0;
+    });
+    document.getElementById("contractsBody").innerHTML = rows.map(function(p){
+      var b=baciaOf(p.bacia), sub=subOf(p.bacia,p.subbacia), sc=schedStatus(p);
+      return '<tr data-id="'+p.id+'">' +
+        '<td><span class="bacia-tag"><i style="background:'+cssVar(b.cor.replace("var(","").replace(")",""))+'"></i>'+esc(b.nome.replace("Rio ",""))+'</span></td>' +
+        '<td>'+(sub?esc(sub.nome):"—")+'</td>' +
+        '<td>'+esc(p.title)+'</td>' +
+        '<td><span class="mini-bar"><span style="width:'+p.pctFisico+'%"></span></span>'+p.pctFisico+'%</td>' +
+        '<td><span class="mini-bar"><span style="width:'+p.pctFinanceiro+'%"></span></span>'+p.pctFinanceiro+'%</td>' +
+        '<td>'+(p.atrasoDias>0?p.atrasoDias+"d":"—")+'</td>' +
+        '<td><span class="status-pill '+sc+'"><i></i>'+SCHED_LABEL[sc]+'</span></td>' +
+      '</tr>';
+    }).join("");
+    document.querySelectorAll("table.contracts tbody tr").forEach(function(tr){
+      tr.addEventListener("click", function(){ openFicha(PROJECTS.find(function(p){return p.id===tr.getAttribute("data-id");})); });
+    });
+    document.querySelectorAll("table.contracts th[data-sort]").forEach(function(th){
+      var k = th.getAttribute("data-sort");
+      th.onclick = function(){ if(sortState.key===k){sortState.dir=sortState.dir==="asc"?"desc":"asc";} else {sortState.key=k;sortState.dir="asc";} renderTable(filteredProjects()); };
+    });
+  }
+
+  /* =====================================================================
+     PÁGINA 3 — Ficha do Ponto (drill-through)
+     ===================================================================== */
+  window.openFichaById = function(id){ var p = PROJECTS.find(function(x){return x.id===id;}); if(p) openFicha(p); }; // usado pelo popup
+  /* Dados complementares da ficha (ILUSTRATIVOS — serão substituídos pela base real).
+     Campo ausente => "—" ou estado vazio. Ver tej-003 como exemplo completo. */
+  var FICHA = {
+    "tej-003":{
+      contrato:"CT 013/2025", os:"2026-01-12", fiscal:"Eng. Fiscal — URB (exemplo)",
+      param:{ vazao:"42 m³/s", volume:"38.000 m³", secao:"Trapezoidal concretada" },
+      reuniao:"2026-09-16",
+      processos:[
+        { orgao:"PGM", sit:"ok", texto:"Não existe pendência no momento." },
+        { orgao:"CPF", sit:"ok", texto:"Não existe pendência no momento." },
+        { orgao:"CGM", sit:"ok", texto:"Não existe pendência no momento." },
+        { orgao:"Licenciamento", sit:"ok", texto:"Não existe pendência no momento." },
+        { orgao:"Publicação de Decretos", sit:null, texto:"" }
+      ],
+      encaminhamentos:[
+        { id:"7410", desc:"Articular com a COMPESA a remoção emergencial da tubulação no Trecho 2.", resp:["Sec. de Governo"], prazo:"2026-09-22", sit:"pendente", criadoPor:"Gestor do projeto (exemplo)", criadoEm:"2026-09-16" },
+        { id:"7411", desc:"Acelerar o ritmo de concretagem da calha com turno noturno.", resp:["Construtora XYZ","URB"], prazo:"2026-09-25", sit:"andamento", criadoPor:"Gestor do projeto (exemplo)", criadoEm:"2026-09-16" },
+        { id:"7412", desc:"Realizar vistoria comunitária no Bairro Coqueiral com a Defesa Civil.", resp:["Defesa Civil","SEPLAG"], prazo:"2026-09-18", sit:"cumprido", criadoPor:"Gestor do projeto (exemplo)", criadoEm:"2026-09-16" }
+      ],
+      pontos:[
+        { local:"Interferência da rede de água — Trecho 2", crit:"alta", status:"tratamento", nota:"Remoção da tubulação bloqueia a concretagem da calha", impacto:"+12 dias", resp:"COMPESA" },
+        { local:"Imóveis a desapropriar — margem esquerda", crit:"media", status:"aguardando", nota:"3 imóveis pendentes; laudo de avaliação já emitido", impacto:"+18 dias", resp:"URB / Jurídico" }
+      ]
+    },
+    "beb-014":{
+      contrato:"CT 021/2025", os:"2025-10-06", fiscal:"Eng. Fiscal — URB (exemplo)",
+    }
+  };
+  var ENTRAVE_TIPO = { licenca:"Licenciamento pendente", desapropriacao:"Desapropriação pendente", concessionarias:"Interferência de concessionária (energia/água)" };
+  var ENC_LABEL = { atrasado:"Atrasado", pendente:"Pendente", andamento:"Em andamento", cumprido:"Cumprido" };
+  var ENC_CLS = { atrasado:"critico", pendente:"atencao", andamento:"obra", cumprido:"saudavel" };
+  var ENC_ORDEM = { atrasado:0, pendente:1, andamento:2, cumprido:3 };
+  var PC_CRIT = { alta:["critico","Criticidade alta"], media:["atencao","Criticidade média"], baixa:["saudavel","Criticidade baixa"] };
+  var PC_STATUS = { tratamento:["atencao","Em tratamento"], aguardando:["critico","Aguardando"], resolvido:["saudavel","Resolvido"] };
+  var ETAPAS_GANTT = [
+    { n:"Mobilização", w:8 }, { n:"Licenciamento", w:12 }, { n:"Escavação", w:25, c:1 },
+    { n:"Concretagem de calha", w:35, c:1 }, { n:"Pavimentação e urbanização", w:15 }, { n:"Limpeza e entrega", w:5 }
+  ];
+  var DAY = 86400000;
+  function pd(iso){ return new Date(iso+"T00:00:00"); }
+  function fmtIso(iso){ return iso ? pd(iso).toLocaleDateString("pt-BR") : "—"; }
+  function fmtDt(d){ return d.toLocaleDateString("pt-BR"); }
+  function clamp(v,a,b){ return Math.max(a,Math.min(b,v)); }
+  function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+  function fx(p){ return FICHA[p.id] || {}; }
+
+  /* Cronograma de exemplo: distribui as etapas entre o início e o término ORIGINAL
+     (término atualizado menos o atraso) e o realizado acompanha o % físico. */
+  function buildGantt(p){
+    if(!p.x.inicio || !p.x.fim) return null;
+    var start = pd(p.x.inicio), end = pd(p.x.fim), origEnd = new Date(end.getTime() - p.atrasoDias*DAY);
+    var total = origEnd - start, cum = 0, etapas = [];
+    ETAPAS_GANTT.forEach(function(e){
+      etapas.push({
+        nome:e.n, crit:!!e.c, pct: clamp((p.pctFisico - cum)/e.w, 0, 1),
+        bi:new Date(start.getTime() + total*cum/100), bf:new Date(start.getTime() + total*(cum+e.w)/100)
+      });
+      cum += e.w;
+    });
+    return { start:start, origEnd:origEnd, end:end, etapas:etapas };
+  }
+  function previstoPct(p, g){
+    if(p.status==="concluido") return 100;
+    if(!g) return null;
+    return Math.round(clamp((Date.now() - g.start)/(g.origEnd - g.start), 0, 1)*100);
+  }
+
+  function iniciais(n){
+    var w = String(n).trim().split(/\s+/).filter(function(x){ return !/^(de|da|do|dos|das|e)$/i.test(x); });
+    if(w.length === 1) return w[0].slice(0,2).toUpperCase();
+    return ((w[0]||"")[0] || "").toUpperCase() + ((w[1]||"")[0] || "").toUpperCase();
+  }
+  function renderPrefeito(p){
+    var f = fx(p), box = document.getElementById("fEnc"), meta = document.getElementById("fEncMeta");
+    var hoje = new Date(); hoje.setHours(0,0,0,0);
+    var list = (f.encaminhamentos || []).map(function(x){
+      var dias = Math.round((pd(x.prazo) - hoje) / DAY);
+      var st = (x.sit !== "cumprido" && dias < 0) ? "atrasado" : x.sit;
+      return { x:x, st:st, dias:dias };
+    }).sort(function(a,b){ return ENC_ORDEM[a.st] - ENC_ORDEM[b.st]; });
+    var atrasados = list.filter(function(i){ return i.st === "atrasado"; }).length;
+    var abertos = list.filter(function(i){ return i.st !== "cumprido"; }).length;
+    meta.textContent = list.length ? ((f.reuniao ? "Reunião de " + fmtIso(f.reuniao) + " · " : "") + abertos + " em aberto de " + list.length + (atrasados ? " · " + atrasados + " atrasado" + (atrasados>1 ? "s" : "") : "")) : "";
+    document.getElementById("fEncCols").style.display = list.length ? "" : "none";
+    box.innerHTML = list.length ? list.map(function(i){
+      var x = i.x, cls = ENC_CLS[i.st], resp = [].concat(x.resp || []), due;
+      if(i.st === "cumprido") due = '<span>Cumprido</span>';
+      else if(i.st === "atrasado") due = '<span class="late">vencido há ' + (-i.dias) + (-i.dias===1 ? ' dia' : ' dias') + '</span>';
+      else if(i.dias === 0) due = '<span class="soon">vence hoje</span>';
+      else due = '<span' + (i.dias <= 3 ? ' class="soon"' : '') + '>em ' + i.dias + (i.dias===1 ? ' dia' : ' dias') + '</span>';
+      var l1 = [], l2 = "";
+      if(x.id) l1.push('<b>#' + esc(x.id) + '</b>');
+      if(f.reuniao) l1.push('Reunião de Monitoramento · ' + fmtIso(f.reuniao));
+      if(x.criadoPor) l2 = '<br>criado por <b>' + esc(x.criadoPor) + '</b>' + (x.criadoEm ? ' em ' + fmtIso(x.criadoEm) : '');
+      return '<div class="f-enc-row ' + cls + '">' +
+        '<div class="f-enc-rail"><span class="f-enc-dot"></span></div>' +
+        '<div class="f-enc-c-st"><span class="status-pill ' + cls + '"><i></i>' + ENC_LABEL[i.st] + '</span></div>' +
+        '<div><div class="f-enc-txt">' + esc(x.desc) + '</div><div class="f-enc-meta">' + l1.join(' · ') + l2 + '</div></div>' +
+        '<div class="f-enc-resp">' + resp.map(function(r){ return '<div class="f-resp"><span class="f-av">' + esc(iniciais(r)) + '</span><span>' + esc(r) + '</span></div>'; }).join("") + '</div>' +
+        '<div class="f-enc-due"><b>' + fmtIso(x.prazo) + '</b>' + due + '</div></div>';
+    }).join("") : '<div class="empty-state">Nenhum encaminhamento registrado para esta obra.</div>';
+  }
+
+  var PROC_SIT = { ok:["saudavel","Sem pendência"], pendencia:["atencao","Com pendência"] };
+  function renderProcessos(p){
+    var list = fx(p).processos || [], box = document.getElementById("fProc");
+    var pend = list.filter(function(x){ return x.sit === "pendencia"; }).length;
+    var semInfo = list.filter(function(x){ return !PROC_SIT[x.sit]; }).length;
+    document.getElementById("fProcMeta").textContent = list.length ? (pend ? pend + (pend===1 ? " com pendência" : " com pendências") : "Nenhuma pendência registrada") + (semInfo ? " · " + semInfo + " sem informação" : "") : "";
+    box.innerHTML = list.length ? list.map(function(x){
+      var s = PROC_SIT[x.sit] || ["neutro","Sem informação"];
+      return '<div class="f-proc-row"><span class="f-proc-org">' + esc(x.orgao) + '</span>' +
+        '<span><span class="status-pill ' + s[0] + '"><i></i>' + s[1] + '</span></span>' +
+        '<span class="f-proc-txt">' + (x.texto ? esc(x.texto) : '<span class="f-muted">—</span>') + '</span></div>';
+    }).join("") : '<div class="empty-state">Nenhum processo registrado para este projeto.</div>';
+  }
+  function renderPontos(p){
+    var list = fx(p).pontos, box = document.getElementById("fPc");
+    if(!list){
+      list = [];
+      Object.keys(ENTRAVE_TIPO).forEach(function(k){
+        if(p.entraves[k] !== "ok") list.push({ local:ENTRAVE_TIPO[k], crit:"media", status:p.entraves[k]==="pendente" ? "aguardando" : "tratamento" });
+      });
+    }
+    document.getElementById("fPcMeta").textContent = list.length ? list.length + (list.length===1 ? " ponto" : " pontos") : "";
+    box.innerHTML = list.length ? list.map(function(x){
+      var c = PC_CRIT[x.crit], s = PC_STATUS[x.status];
+      var foot = (x.impacto || x.resp) ? '<div class="f-enc-foot"><span>Impacto no cronograma: <b>' + esc(x.impacto || "—") + '</b></span><span>Destrava: <b>' + esc(x.resp || "—") + '</b></span></div>' : '';
+      return '<div class="f-pc ' + s[0] + '">' +
+        '<div class="f-pc-top"><span class="status-pill ' + c[0] + '">' + c[1] + '</span><span class="status-pill ' + s[0] + '"><i></i>' + s[1] + '</span></div>' +
+        '<div class="f-pc-local">' + esc(x.local) + '</div>' +
+        (x.nota ? '<div class="f-pc-nota">' + esc(x.nota) + '</div>' : '') + foot + '</div>';
+    }).join("") : '<div class="empty-state">Nenhum ponto crítico registrado para este projeto.</div>';
+  }
+
+  function renderHeader(p, g){
+    var b = baciaOf(p.bacia), sub = subOf(p.bacia,p.subbacia), f = fx(p);
+    var prev = previstoPct(p, g), medido = medidoMi(p);
+    document.getElementById("fCode").textContent = p.code;
+    document.getElementById("p3Title").textContent = p.title;
+    document.getElementById("fLoc").innerHTML = '<b>' + esc(b.nome) + '</b>' + (sub ? ' — ' + esc(sub.nome) : '') + ' · Bairro <b>' + esc(p.bairro) + '</b>';
+    document.getElementById("fPeople").innerHTML =
+      '<span>Executante<b>' + esc(p.x.empresa || '—') + '</b></span><span>Fiscal<b>' + esc(f.fiscal || '—') + '</b></span>';
+    document.getElementById("fStatusPill").className = "status-pill " + statusClass(p.status);
+    document.getElementById("fStatusPill").textContent = STATUS_LABEL[p.status];
+
+    var prazoBig, prazoTag = "";
+    if(p.status==="concluido") prazoBig = '<div class="f-big f-big-text ok">Concluído</div>';
+    else if(p.status==="licitacao") prazoBig = '<div class="f-big f-big-text mute">Em licitação</div>';
+    else if(p.atrasoDias<=0) prazoBig = '<div class="f-big f-big-text ok">No prazo</div>';
+    else {
+      var warn = p.atrasoDias <= 15;
+      prazoBig = '<div class="f-big ' + (warn ? 'warn' : 'bad') + '">+' + p.atrasoDias + '<small>dias</small></div>';
+      prazoTag = '<span class="status-pill ' + (warn ? 'atencao' : 'critico') + '"><i></i>' + (warn ? 'Atenção' : 'Crítico') + '</span>';
+    }
+    document.getElementById("fKpis").innerHTML =
+      '<div class="f-hero-col"><span class="k">Avanço físico · real</span>' +
+        '<div class="f-big">' + p.pctFisico + '<small>%</small></div>' +
+        '<div class="f-hero-bar"><div class="fill" style="width:' + p.pctFisico + '%"></div>' + (prev!=null ? '<div class="mark" style="left:' + prev + '%" title="Previsto"></div>' : '') + '</div>' +
+        '<span class="s">Previsto acumulado <b>' + (prev!=null ? prev + '%' : '—') + '</b></span></div>' +
+      '<div class="f-hero-col"><span class="k">Saúde do prazo</span>' + prazoBig + prazoTag +
+        '<span class="s">Término atualizado <b>' + fmtIso(p.x.fim) + '</b></span></div>' +
+      '<div class="f-hero-col"><span class="k">Saúde financeira · contratado</span>' +
+        '<div class="f-big">R$ ' + p.investNum.toFixed(1).replace(".", ",") + '<small>Mi</small></div>' +
+        '<div class="f-hero-bar"><div class="fill" style="width:' + p.pctFinanceiro + '%"></div></div>' +
+        '<span class="s">Medido/pago <b>' + fmtMi(medido) + '</b> · ' + p.pctFinanceiro + '%</span></div>';
+  }
+
+  function renderGantt(p, g){
+    var box = document.getElementById("fGantt"), hint = document.getElementById("fGanttHint"), leg = document.getElementById("fGanttLegend");
+    if(!g){
+      hint.textContent = "";
+      leg.innerHTML = "";
+      box.innerHTML = '<div class="empty-state">Cronograma disponível após a emissão da ordem de serviço.</div>';
+      return;
+    }
+    var shift = p.atrasoDias, now = Date.now();
+    var min = g.start.getTime(), max = Math.max(g.origEnd.getTime() + shift*DAY, g.end.getTime()), span = max - min;
+    function P(t){ return ((t - min) / span * 100).toFixed(2); }
+    hint.textContent = "Baseline (previsto) × realizado, por etapa · dados de exemplo enquanto o cronograma do MS Project não é importado";
+
+    var months = [], m = new Date(g.start.getFullYear(), g.start.getMonth(), 1);
+    while(m.getTime() <= max){ if(m.getTime() >= min) months.push(new Date(m)); m = new Date(m.getFullYear(), m.getMonth()+1, 1); }
+    var step = Math.ceil(months.length/10);
+    var scale = months.map(function(d,i){
+      return i % step === 0 ? '<span style="left:' + P(d.getTime()) + '%">' + MESES[d.getMonth()] + '/' + String(d.getFullYear()).slice(2) + '</span>' : '';
+    }).join("");
+    var under = months.map(function(d){ return '<i class="gt-line" style="left:' + P(d.getTime()) + '%"></i>'; }).join("");
+    var overlay = "", todayP = (now - min) / span * 100;
+    if(todayP >= 0 && todayP <= 100) overlay += '<div class="gt-today" style="left:' + todayP.toFixed(2) + '%"><b>Hoje · ' + fmtDt(new Date()).slice(0,5) + '</b></div>';
+
+    var rows = g.etapas.map(function(e){
+      var ri = e.bi.getTime() + shift*DAY, bw = P(e.bf.getTime()) - P(e.bi.getTime()), rw = e.pct * (e.bf - e.bi) / span * 100;
+      var late = e.pct < 1 && e.bf.getTime() < now, dLate = Math.round((now - e.bf.getTime())/DAY);
+      var cls = e.pct >= 1 ? "done" : (late ? "late" : "prog");
+      return '<div class="gt-row' + (late ? ' is-late' : '') + '">' +
+        '<div class="gt-lbl"><span class="gt-name">' + e.nome + (e.crit ? '<i class="gt-crit" title="Caminho crítico"></i>' : '') + '</span>' +
+          (late ? '<span class="gt-late">Atrasada · ' + dLate + ' d após o previsto</span>' : '') + '</div>' +
+        '<div class="gt-track"><span class="gt-base' + (e.crit ? ' crit' : '') + '" style="left:' + P(e.bi.getTime()) + '%;width:' + bw.toFixed(2) + '%"></span>' +
+          (e.pct > 0 ? '<span class="gt-real ' + cls + '" style="left:' + P(ri) + '%;width:' + rw.toFixed(2) + '%"></span>' : '') + '</div></div>';
+    }).join("");
+    box.innerHTML = '<div class="gt"><div class="gt-head"><div></div><div class="gt-scale">' + scale + '</div></div>' +
+      '<div class="gt-body"><div class="gt-overlay under">' + under + '</div><div class="gt-overlay">' + overlay + '</div>' + rows + '</div></div>';
+    leg.innerHTML =
+      '<span class="it"><span class="sw-line" style="border-color:#cbd5e1;border-top-width:5px"></span>Baseline</span>' +
+      '<span class="it"><span class="sw-line" style="border-color:' + cssVar("--accent") + ';border-top-width:5px"></span>Realizado</span>' +
+      '<span class="it"><span class="sw-dot" style="background:' + cssVar("--critico") + '"></span>Caminho crítico / etapa atrasada</span>' +
+      '<span class="it"><span class="sw-line dashed" style="border-color:' + cssVar("--critico") + '"></span>Hoje</span>';
+  }
+
+  function dlRows(rows){ return rows.map(function(r){ return '<div class="r"><span>' + r[0] + '</span><span>' + r[1] + '</span></div>'; }).join(""); }
+  function renderDados(p, g){
+    var f = fx(p), pr = f.param || {};
+    document.getElementById("p3Desc").textContent = p.desc;
+    document.getElementById("fParam").innerHTML = dlRows([
+      ["Extensão total", esc(p.x.extensao || "—")], ["Vazão de projeto", esc(pr.vazao || "—")],
+      ["Volume de escavação", esc(pr.volume || "—")], ["Tipo de seção", esc(pr.secao || p.x.solucao || "—")]
+    ]);
+    document.getElementById("fContrato").innerHTML = dlRows([
+      ["Nº do contrato", esc(f.contrato || "—")], ["Ordem de serviço", fmtIso(f.os)],
+      ["Início oficial", fmtIso(p.x.inicio)],
+      ["Término original", g ? fmtDt(g.origEnd) : "—"], ["Término atualizado", fmtIso(p.x.fim)]
+    ]);
+    document.getElementById("fFonte").innerHTML = dlRows([["Origem dos recursos", esc(p.x.fonte || "—")], ["Investimento total", p.invest]]);
+  }
+
+  var fotoIdx = 0;
+  function renderFotos(p){
+    var fotos = fx(p).fotos || [], box = document.getElementById("fFotos");
+    fotoIdx = 0;
+    function draw(){
+      if(!fotos.length){
+        box.innerHTML = '<div class="f-photo"><div class="f-photo-empty">Sem fotos por enquanto.<br>Elas serão exibidas aqui quando a base receber os registros de campo (Field Maps / Survey123).</div></div>';
+        return;
+      }
+      var ft = fotos[fotoIdx];
+      box.innerHTML = '<div class="f-photo"><img src="' + ft.url + '" alt="Foto de campo"><span class="stamp">' + fmtIso(ft.data) + '</span></div>' +
+        '<div class="f-carousel-nav"><button type="button" id="fFotoPrev">‹</button><span>' + (fotoIdx+1) + ' / ' + fotos.length + '</span><button type="button" id="fFotoNext">›</button></div>';
+      document.getElementById("fFotoPrev").onclick = function(){ fotoIdx = (fotoIdx - 1 + fotos.length) % fotos.length; draw(); };
+      document.getElementById("fFotoNext").onclick = function(){ fotoIdx = (fotoIdx + 1) % fotos.length; draw(); };
+    }
+    draw();
+  }
+  function renderDocs(p){
+    var docs = fx(p).docs || [
+      { nome:"Ordem de Serviço" }, { nome:"Relatórios mensais de medição", ext:"PDF" }, { nome:"Projeto executivo" }
+    ];
+    document.getElementById("fDocs").innerHTML = docs.map(function(d){
+      var tag = d.ext ? ' <small>' + d.ext + '</small>' : '';
+      return d.url ? '<a class="f-doc" href="' + d.url + '" target="_blank" rel="noopener">' + d.nome + tag + '</a>'
+                   : '<span class="f-doc off" title="Disponível quando a base tiver o link">' + d.nome + tag + '</span>';
+    }).join("");
+  }
+
+  /* Mini-mapa do trecho (satélite) com alternância para Street View embutido */
+  var miniView = null, miniLayer = null;
+  function updateMiniMap(p){
+    var box = document.getElementById("fMiniMap"), sv = document.getElementById("fMiniSv"), c = streetViewCoords(p);
+    sv.src = ""; sv.style.display = "none"; box.style.display = "block";
+    document.getElementById("fSegSat").classList.add("on"); document.getElementById("fSegSv").classList.remove("on");
+    document.getElementById("fSegSv").onclick = function(){
+      sv.src = "https://maps.google.com/maps?layer=c&cbll=" + c.lat + "," + c.lng + "&cbp=0,0,0,0,0&output=svembed";
+      sv.style.display = "block"; box.style.display = "none";
+      this.classList.add("on"); document.getElementById("fSegSat").classList.remove("on");
+    };
+    document.getElementById("fSegSat").onclick = function(){
+      sv.style.display = "none"; box.style.display = "block";
+      this.classList.add("on"); document.getElementById("fSegSv").classList.remove("on");
+    };
+    try{
+      if(!miniView){
+        miniLayer = new GraphicsLayer();
+        miniView = new MapView({ container: box, map: new EsriMap({ basemap:"satellite", layers:[miniLayer] }), zoom:15, center:[-34.90,-8.06], ui:{ components:[] } });
+      }
+      miniLayer.removeAll();
+      var g = new Graphic({
+        geometry: p.kind === "canal" ? { type:"polyline", paths:[p.path] } : { type:"point", longitude:p.pos[0], latitude:p.pos[1] },
+        symbol: p.kind === "canal" ? { type:"simple-line", color:[255,214,0,1], width:5, cap:"round" }
+                                   : { type:"simple-marker", style:"triangle", color:[239,68,68,1], size:16, outline:{ color:[255,255,255,1], width:1.6 } }
+      });
+      miniLayer.add(g);
+      miniView.when(function(){
+        var ext = p.kind === "canal" && g.geometry.extent;
+        miniView.goTo(ext ? ext.expand(1.8) : { center: (p.kind === "canal" ? p.path[Math.floor(p.path.length/2)] : p.pos), zoom: p.kind === "canal" ? 15 : 17 }, { animate:false });
+      });
+    } catch(err){
+      box.innerHTML = '<div class="empty-state" style="padding:16px;">Mini-mapa indisponível: ' + err.message + '</div>';
+    }
+  }
+
+  var ENTRAVE_LABEL = { ok:"ok", andamento:"em andamento", pendente:"pendente" };
+  function fmtData(iso){ if(!iso) return "a informar"; var d = String(iso).split("-"); return d.length === 3 ? d[2] + "/" + d[1] + "/" + d[0] : String(iso); }
+  function ganttEtapas(etapas){
+    var datas = [];
+    etapas.forEach(function(e){ ["inicio_previsto","termino_previsto","inicio_real","termino_real"].forEach(function(k){ if(e[k]) datas.push(new Date(e[k]).getTime()); }); });
+    if(!datas.length) return '<div class="p2-sub">As macroetapas estão cadastradas, mas ainda sem datas.</div>';
+    var hoje = Date.now(), ini = Math.min.apply(null, datas), fim = Math.max.apply(null, datas.concat([hoje]));
+    var span = Math.max(fim - ini, 86400000);
+    function pos(iso){ return ((new Date(iso).getTime() - ini) / span * 100).toFixed(2); }
+    function larg(a, b){ return Math.max(0.8, (new Date(b).getTime() - new Date(a).getTime()) / span * 100).toFixed(2); }
+    var linhas = etapas.map(function(e){
+      var atrasada = e.termino_previsto && ((e.termino_real && e.termino_real > e.termino_previsto) ||
+                     (!e.termino_real && new Date(e.termino_previsto).getTime() < hoje && (+e.pct_concluido || 0) < 100));
+      var critica = semAcento(e.caminho_critico) === "sim";
+      var prev = (e.inicio_previsto && e.termino_previsto) ? '<div style="position:absolute;top:3px;height:6px;border-radius:3px;background:rgba(51,65,85,.18);left:' + pos(e.inicio_previsto) + '%;width:' + larg(e.inicio_previsto, e.termino_previsto) + '%"></div>' : '';
+      var fimReal = e.termino_real || (e.inicio_real ? new Date(Math.min(hoje, fim)).toISOString().slice(0,10) : null);
+      var real = e.inicio_real ? '<div style="position:absolute;top:11px;height:6px;border-radius:3px;background:' + (atrasada ? 'var(--critico)' : '#334155') + ';left:' + pos(e.inicio_real) + '%;width:' + larg(e.inicio_real, fimReal) + '%"></div>' : '';
+      return '<div style="display:grid;grid-template-columns:minmax(140px,30%) 1fr 44px;gap:10px;align-items:center;padding:5px 0;border-bottom:1px solid var(--border)">' +
+        '<div style="font-size:12px;line-height:1.3">' + (critica ? '<b title="Caminho crítico" style="color:var(--critico)">● </b>' : '') + esc(e.macroetapa) + (atrasada ? ' <span style="color:var(--critico);font-size:10.5px;font-weight:700">atrasada</span>' : '') + '</div>' +
+        '<div style="position:relative;height:20px">' + prev + real + '</div>' +
+        '<div style="font-size:11px;text-align:right;color:var(--text-dim)">' + (e.pct_concluido != null ? Math.round(+e.pct_concluido) + '%' : '—') + '</div></div>';
+    }).join("");
+    return '<div>' + linhas + '</div>' +
+      '<div style="display:flex;gap:16px;font-size:11px;color:var(--text-dim);margin-top:8px">' +
+        '<span><i style="display:inline-block;width:14px;height:6px;border-radius:3px;background:rgba(51,65,85,.18);margin-right:5px"></i>Previsto</span>' +
+        '<span><i style="display:inline-block;width:14px;height:6px;border-radius:3px;background:#334155;margin-right:5px"></i>Realizado</span>' +
+        '<span><i style="display:inline-block;width:14px;height:6px;border-radius:3px;background:var(--critico);margin-right:5px"></i>Atrasado</span>' +
+        '<span><b style="color:var(--critico)">●</b> Caminho crítico</span></div>';
+  }
+  function fichaSimples(p){
+    var wrap = document.querySelector("#page-3 .f-wrap");
+    var sheet = wrap.querySelector(".f-sheet");
+    var box = document.getElementById("fSimples");
+    if(!box){ box = document.createElement("div"); box.id = "fSimples"; wrap.insertBefore(box, sheet); }
+    var b = baciaOf(p.bacia), sub = subOf(p.bacia, p.subbacia), x = p.x || {}, en = x.entraves || {};
+    function v(t){ return (t === null || t === undefined || t === "") ? "a informar" : t; }
+    var linhas = [
+      ["Bairro", p.bairro], ["Bacia", b ? b.nome + (sub ? " / " + sub.nome : "") : "a informar"],
+      ["Status", STATUS_LABEL[p.status]], ["Fase", v(x.fase)], ["Tipo", v(x.tipo)],
+      ["Órgão", v(x.orgao)], ["Empresa", v(x.empresa)],
+      ["Investimento", p.invest], ["Valor medido", x.valorMedido != null ? fmtMi(x.valorMedido > 1000 ? x.valorMedido / 1e6 : x.valorMedido) : "a informar"],
+      ["Fonte do recurso", v(x.fonte)],
+      ["Andamento físico", p.pctFisico != null ? p.pctFisico + "%" : "a informar"],
+      ["Início", fmtData(x.inicio)], ["Término previsto", fmtData(x.fimPrevisto)], ["Término atual", fmtData(x.fimAtual)],
+      ["Solução", v(x.solucao)], ["Extensão", v(x.extensao)],
+      ["População beneficiada", x.populacao != null ? fmtNum(x.populacao) : "a informar"],
+      ["Pontos críticos relacionados", (function(){
+        var l = pontosDaObra(p.id);
+        return l.length ? l.map(function(pc){ return pc.trecho + " (índice " + fmtN(pc.indice, 3) + ")"; }).join("; ") : "nenhum ponto ligado";
+      })()],
+      ["Licença", v(ENTRAVE_LABEL[en.licenca] || en.licenca)], ["Desapropriação", v(ENTRAVE_LABEL[en.desapropriacao] || en.desapropriacao)],
+      ["Concessionárias", v(ENTRAVE_LABEL[en.concessionarias] || en.concessionarias)],
+      ["Fonte da informação", v(x.fonteInfo)]
+    ];
+    var etapas = p.etapas || [];
+    box.innerHTML =
+      '<div class="p2-card f-head"><div class="f-code">' + esc(p.code) + (p.semDesenho ? ' · <span style="color:var(--critico)">sem desenho no mapa</span>' : '') + '</div>' +
+      '<h2 class="f-title">' + esc(p.title) + '</h2>' +
+      '<div class="p2-sub" style="margin:6px 0 14px">Dados da planilha de obras (aba "Obras") e desenho da camada de obras do mapa.</div>' +
+      '<div class="f-dl">' + linhas.map(function(l){ return '<div class="r"><span>' + esc(l[0]) + '</span><span>' + esc(String(l[1])) + '</span></div>'; }).join("") + '</div>' +
+      '<div style="margin-top:14px"><button class="streetview-btn" id="fSimplesSv" type="button">Street View</button></div></div>' +
+      '<div class="p2-card" style="margin-top:12px"><h3>Cronograma das macroetapas</h3>' +
+      (etapas.length ? ganttEtapas(etapas) : '<div class="p2-sub">Nenhuma macroetapa preenchida na aba "Cronograma das obras".</div>') + '</div>';
+    document.getElementById("fSimplesSv").onclick = function(){ var c = streetViewCoords(p); openStreetView(c.lat, c.lng); };
+    box.style.display = ""; sheet.style.display = "none";
+    document.getElementById("p3Crumbs").innerHTML = (b ? '<b>' + esc(b.nome) + '</b><span class="sep">/</span>' : '') + esc(p.bairro);
+    goTab("3");
+    document.querySelector("#page-3 .page-scroll").scrollTop = 0;
+  }
+  function openFicha(p){
+    if(!p) return;
+    selected = p;
+    if(p.real){ fichaSimples(p); return; }
+    var fs = document.getElementById("fSimples"); if(fs) fs.style.display = "none";
+    document.querySelector("#page-3 .f-sheet").style.display = "";
+    var b = baciaOf(p.bacia), sub = subOf(p.bacia,p.subbacia), g = buildGantt(p);
+
+    document.getElementById("p3Crumbs").innerHTML = '<b>'+esc(b.nome)+'</b>' + (sub?'<span class="sep">/</span>'+esc(sub.nome):'') + '<span class="sep">/</span>'+esc(p.bairro);
+    document.getElementById("p3StreetView").onclick = function(){ var c = streetViewCoords(p); openStreetView(c.lat, c.lng); };
+    renderHeader(p, g);
+    renderPrefeito(p);
+    renderPontos(p);
+    renderProcessos(p);
+    renderGantt(p, g);
+    renderDados(p, g);
+    renderFotos(p);
+    renderDocs(p);
+
+    var siblings = PROJECTS.filter(function(x){ return x.bacia===p.bacia && x.subbacia===p.subbacia && x.id!==p.id; });
+    document.getElementById("p3Siblings").innerHTML = siblings.length ? siblings.map(function(s){
+      var sc2 = schedStatus(s);
+      return '<button class="sib-chip" data-id="'+s.id+'"><i style="background:'+cssVar("--"+sc2)+'"></i>'+esc(s.title)+'</button>';
+    }).join("") : '<span style="font-size:12.5px;color:var(--text-faint)">Nenhum outro ponto cadastrado nesta sub-bacia.</span>';
+    document.querySelectorAll(".sib-chip").forEach(function(el){
+      el.addEventListener("click", function(){ openFicha(PROJECTS.find(function(x){return x.id===el.getAttribute("data-id");})); });
+    });
+
+    goTab("3");
+    document.querySelector("#page-3 .page-scroll").scrollTop = 0;
+    updateMiniMap(p);
+  }
+
+  /* =====================================================================
+     INIT
+     ===================================================================== */
+  function renderAll(){
+    elCount.textContent = OBRAS_ESTADO === "ok" ? (filteredProjects().length + " de " + PROJECTS.length + (PROJECTS.length === 1 ? " obra" : " obras")) : "";
+    renderKpiStrip();
+    renderProjectList();
+    renderPontosLista();
+    renderPage2();
+  }
+
+  buildFilterBar();
+  renderAll();
+});

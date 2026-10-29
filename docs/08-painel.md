@@ -189,6 +189,23 @@ não conectado.
 - Liberar `*.arcgis.com` e `esigportal2.recife.pe.gov.br` na rede do
   ambiente para testar o painel antes de cada envio.
 
+## Arquivos do painel (desde 29/10/2026)
+O `Index.html` tinha cerca de 3.100 linhas. Foi dividido sem mudar o que a página mostra:
+
+| Arquivo em `appscript/` | Conteúdo |
+|---|---|
+| `Index.html.html` | Cabeçalho, marcação das abas e chamadas `<?!= include('…'); ?>` |
+| `Estilos.html` | Todo o CSS (`<style>`) |
+| `JsBase.html` | Parte 1 do script: aviso de erro, abertura do `require()` do ArcGIS, bacias, dados, filtros |
+| `JsPontosCriticos.html` | Parte 2: pontos críticos lidos da planilha (mapa, cartão, lista) |
+| `JsMapa.html` | Parte 3: Street View, ArcGIS ↔ Google Maps, obras reais, legenda, mapa base |
+| `JsPaginas.html` | Parte 4: página 1, filtros, abas, páginas 2 e 3, início; fecha o `require()` |
+| `Código.js` | `doGet`, `include` e leitura da planilha |
+
+As 4 partes do script são pedaços de **um único** `require()`: não funcionam sozinhas e precisam ficar
+na ordem do Index. `python3 scripts/montar_painel.py` monta a página inteira (como o Apps Script
+entrega), para abrir no navegador ou conferir; `tests/test_montar_painel.py` confere os includes.
+
 ## Como trabalhar no código
 1. Editar os arquivos em `appscript/`; cada mudança vira um commit.
 2. Enviar ao Apps Script com `clasp push` **só depois da aprovação de Pedro**.

@@ -102,7 +102,7 @@ def icones():
 
 def js():
     """Objeto JavaScript com os ícones em data URI, para colar no painel
-    (appscript/Index.html.html, ICONES_OBRA)."""
+    (appscript/JsMapa.html, ICONES_OBRA)."""
     import base64
     linhas = []
     todos = dict(icones())

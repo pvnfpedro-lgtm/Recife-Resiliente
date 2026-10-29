@@ -1,0 +1,221 @@
+/* Script do painel, parte 1 de 4: tratamento de erro, abertura do require() do ArcGIS, bacias, dados e filtros.
+   Não é um arquivo independente: o Index junta as 4 partes num único bloco de script. */
+window.onerror = function(msg, src, line, col, err){
+  var box = document.getElementById("fatalError");
+  box.style.display = "block";
+  box.innerHTML = "<h2>Erro no painel</h2><p><b>" + msg + "</b></p><p>Linha " + line + ", coluna " + col + "</p>" +
+    "<p style='color:#64748b'>Abra o Console (F12) para o stack trace completo. Corrija e recarregue a página.</p>";
+  return false;
+};
+
+require([
+  "esri/WebMap",
+  "esri/views/MapView",
+  "esri/layers/GraphicsLayer",
+  "esri/Graphic",
+  "esri/PopupTemplate",
+  "esri/Map",
+  "esri/core/reactiveUtils",
+  "esri/widgets/Popup",
+  "esri/symbols/support/symbolUtils",
+  "esri/geometry/Extent",
+  "esri/layers/GroupLayer"
+], function(WebMap, MapView, GraphicsLayer, Graphic, PopupTemplate, EsriMap, reactiveUtils, Popup, symbolUtils, Extent, GroupLayer){
+  "use strict";
+
+  /* =====================================================================
+     ESTRUTURA DE BACIAS — Art. 9º do Plano Municipal de Drenagem (PMDR)
+     ===================================================================== */
+  var BACIAS = [
+    { id:"paratibe",   nome:"Rio Paratibe",   cor:"var(--b-paratibe)",   subbacias:[] },
+    { id:"beberibe",   nome:"Rio Beberibe",   cor:"var(--b-beberibe)",   subbacias:[
+        {id:"morno", nome:"Rio Morno"}, {id:"macacos", nome:"Riacho dos Macacos"}, {id:"peixinhos", nome:"Canal Vasco da Gama / Peixinhos"}
+    ]},
+    { id:"capibaribe", nome:"Rio Capibaribe", cor:"var(--b-capibaribe)", subbacias:[
+        {id:"dondon", nome:"Riacho Don-Don"}, {id:"camaragibe", nome:"Rio Camaragibe"}, {id:"derby", nome:"Canal Derby / Tacaruna"}, {id:"cavouco", nome:"Canal do Cavouco"}
+    ]},
+    { id:"tejipio",    nome:"Rio Tejipió",    cor:"var(--b-tejipio)",    subbacias:[
+        {id:"curado", nome:"Riacho do Curado"}, {id:"jiquia", nome:"Rio Jiquiá"}, {id:"moxoto", nome:"Rio Moxotó"},
+        {id:"jordao", nome:"Canal do Jordão"}, {id:"saoleopoldo", nome:"Canal São Leopoldo"}, {id:"malaria", nome:"Canal da Malária"}, {id:"setubal", nome:"Canal do Setubal"}
+    ]},
+    { id:"jaboatao",   nome:"Rio Jaboatão",   cor:"var(--b-jaboatao)",   subbacias:[
+        {id:"trescarneiros", nome:"Canal Três Carneiros"}
+    ]}
+  ];
+  function baciaOf(id){ return BACIAS.find(function(b){return b.id===id;}); }
+  function subOf(baciaId, subId){ var b=baciaOf(baciaId); if(!b||!subId) return null; return b.subbacias.find(function(s){return s.id===subId;}) || null; }
+  function cssVar(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+
+  /* =====================================================================
+     FONTE DE DADOS — mesmos 8 projetos originais, agora com bacia/sub-bacia
+     corrigidas conforme o Art. 9º (Jiquiá e Jordão são SUB-bacias do
+     Tejipió, não bacias) + campos novos para as Páginas 2 e 3.
+     Coordenadas geográficas seguem aproximadas (posicionamento de bairro).
+     ===================================================================== */
+  // Exemplos usados até 05/10/2026 (não aparecem mais no painel; ficam só como referência do formato).
+  var PROJECTS_FICTICIOS = [
+    { id:"tej-003", code:"PRJ-TEJ-003", title:"Requalificação e Revestimento do Canal do Tejipió",
+      bairro:"Coqueiral", bacia:"tejipio", subbacia:null, status:"obra", invest:"R$ 18,2 Mi", investNum:18.2,
+      desc:"Revestimento de 2,1 km de canal e reforço de margens para aumento de vazão.",
+      kind:"canal", path:[[-34.9560,-8.0960],[-34.9515,-8.0917],[-34.9470,-8.0870],[-34.9430,-8.0820]],
+      severidade:4, pctFisico:55, pctFinanceiro:50, atrasoDias:18, tipo:"Macrodrenagem", posicaoCurso:"baixo",
+      ocorrencias:9, ultimaOcorrencia:"2026-05-14",
+      entraves:{licenca:"ok", desapropriacao:"andamento", concessionarias:"ok"} },
+
+    { id:"jor-008", code:"PRJ-JOR-008", title:"Drenagem e Lagoa do Ibura",
+      bairro:"Ibura", bacia:"tejipio", subbacia:"jordao", status:"licitacao", invest:"R$ 9,7 Mi", investNum:9.7,
+      desc:"Implantação de bacia de amortecimento e rede de microdrenagem complementar.",
+      kind:"canal", path:[[-34.9390,-8.1150],[-34.9350,-8.1102],[-34.9300,-8.1050]],
+      severidade:3, pctFisico:0, pctFinanceiro:5, atrasoDias:45, tipo:"Reservatório", posicaoCurso:"baixo",
+      ocorrencias:5, ultimaOcorrencia:"2026-02-02",
+      entraves:{licenca:"andamento", desapropriacao:"pendente", concessionarias:"pendente"} },
+
+    { id:"cap-001", code:"PRJ-CAP-001", title:"Desassoreamento do Canal do Caxangá",
+      bairro:"Caxangá", bacia:"capibaribe", subbacia:null, status:"concluido", invest:"R$ 6,4 Mi", investNum:6.4,
+      desc:"Remoção de sedimentos e resíduos ao longo de 1,4 km, restaurando a capacidade original do canal.",
+      kind:"canal", path:[[-34.9550,-8.0490],[-34.9506,-8.0447],[-34.9460,-8.0400]],
+      severidade:2, pctFisico:100, pctFinanceiro:100, atrasoDias:0, tipo:"Macrodrenagem", posicaoCurso:"alto",
+      ocorrencias:2, ultimaOcorrencia:"2024-08-19",
+      entraves:{licenca:"ok", desapropriacao:"ok", concessionarias:"ok"} },
+
+    { id:"beb-014", code:"PRJ-BEB-014", title:"Contenção de Margens do Rio Beberibe",
+      bairro:"Peixinhos", bacia:"beberibe", subbacia:"peixinhos", status:"obra", invest:"R$ 14,9 Mi", investNum:14.9,
+      desc:"Estabilização de margens e ampliação da calha em trecho crítico de transbordamento.",
+      kind:"canal", path:[[-34.8960,-8.0140],[-34.8917,-8.0090],[-34.8870,-8.0040]],
+      severidade:4, pctFisico:62, pctFinanceiro:58, atrasoDias:9, tipo:"Macrodrenagem", posicaoCurso:"baixo",
+      ocorrencias:12, ultimaOcorrencia:"2026-06-28",
+      entraves:{licenca:"ok", desapropriacao:"pendente", concessionarias:"andamento"} },
+
+    { id:"jiq-006", code:"PRJ-JIQ-006", title:"Requalificação do Rio Jiquiá",
+      bairro:"Jiquiá", bacia:"tejipio", subbacia:"jiquia", status:"obra", invest:"R$ 11,3 Mi", investNum:11.3,
+      desc:"Recuperação de leito natural e implantação de parque linear de amortecimento.",
+      kind:"canal", path:[[-34.9325,-8.0920],[-34.9280,-8.0870],[-34.9235,-8.0820]],
+      severidade:3, pctFisico:38, pctFinanceiro:33, atrasoDias:27, tipo:"Macrodrenagem", posicaoCurso:"medio",
+      ocorrencias:7, ultimaOcorrencia:"2026-04-11",
+      entraves:{licenca:"ok", desapropriacao:"andamento", concessionarias:"ok"} },
+
+    { id:"cap-011", code:"PRJ-CAP-011", title:"Parque Linear do Capibaribe — Trecho Zona Norte",
+      bairro:"Dois Irmãos", bacia:"capibaribe", subbacia:"camaragibe", status:"concluido", invest:"R$ 22,1 Mi", investNum:22.1,
+      desc:"Renaturalização de margens e criação de área de várzea para retenção temporária de cheias.",
+      kind:"canal", path:[[-34.9480,-8.0245],[-34.9436,-8.0198],[-34.9390,-8.0150]],
+      severidade:2, pctFisico:100, pctFinanceiro:100, atrasoDias:0, tipo:"Reservatório", posicaoCurso:"alto",
+      ocorrencias:3, ultimaOcorrencia:"2025-01-30",
+      entraves:{licenca:"ok", desapropriacao:"ok", concessionarias:"ok"} },
+
+    { id:"tej-019", code:"PRJ-TEJ-019", title:"Ponto Crítico — Curado IV",
+      bairro:"Curado", bacia:"tejipio", subbacia:"curado", status:"licitacao", invest:"R$ 2,8 Mi", investNum:2.8,
+      desc:"Ponto de retenção recorrente. Projeto prevê galeria de macrodrenagem e poço de visita ampliado.",
+      kind:"ponto", pos:[-34.9614,-8.0745],
+      severidade:3, pctFisico:0, pctFinanceiro:3, atrasoDias:30, tipo:"Microdrenagem", posicaoCurso:"medio",
+      ocorrencias:6, ultimaOcorrencia:"2026-03-22",
+      entraves:{licenca:"pendente", desapropriacao:"pendente", concessionarias:"andamento"} },
+
+    { id:"jor-022", code:"PRJ-JOR-022", title:"Ponto Crítico — Vila da Paz",
+      bairro:"Jordão", bacia:"tejipio", subbacia:"jordao", status:"obra", invest:"R$ 3,1 Mi", investNum:3.1,
+      desc:"Alagamento recorrente por sub-dimensionamento de rede. Obra de ampliação de galerias em curso.",
+      kind:"ponto", pos:[-34.9330,-8.1220],
+      severidade:3, pctFisico:44, pctFinanceiro:40, atrasoDias:21, tipo:"Microdrenagem", posicaoCurso:"baixo",
+      ocorrencias:8, ultimaOcorrencia:"2026-05-30",
+      entraves:{licenca:"ok", desapropriacao:"andamento", concessionarias:"pendente"} }
+  ];
+
+  /* Campos complementares (DADOS ILUSTRATIVOS, mesmo status dos demais exemplos).
+     Serão substituídos pela base real. Campo ausente => o card mostra "—". */
+  var EXTRA = {
+    "tej-003":{ inicio:"2026-01-12", fim:"2026-11-30", fase:"Concretagem", empresa:"Construtora XYZ", fonte:"Tesouro Municipal", extensao:"2,1 km", solucao:"Calha trapezoidal concretada", pontosImpactados:4, populacao:38000 },
+    "jor-008":{ inicio:null, fim:"2027-06-30", fase:"Licitação", empresa:null, fonte:"Financiamento Caixa", extensao:"1 bacia + rede", solucao:"Bacia de amortecimento", pontosImpactados:3, populacao:22000 },
+    "cap-001":{ inicio:"2024-03-04", fim:"2024-12-20", fase:"Operacional", empresa:"Construtora XYZ", fonte:"Tesouro Municipal", extensao:"1,4 km", solucao:"Desassoreamento", pontosImpactados:2, populacao:15000 },
+    "beb-014":{ inicio:"2025-10-06", fim:"2026-12-15", fase:"Escavação", empresa:"Consórcio Beberibe", fonte:"PAC", extensao:"—", solucao:"Contenção de margens", pontosImpactados:5, populacao:41000 },
+    "jiq-006":{ inicio:"2026-02-16", fim:"2027-02-27", fase:"Serviços preliminares", empresa:"Construtora XYZ", fonte:"Financiamento Caixa", extensao:"—", solucao:"Parque linear de amortecimento", pontosImpactados:3, populacao:19000 },
+    "cap-011":{ inicio:"2023-05-08", fim:"2025-01-30", fase:"Operacional", empresa:"Consórcio Capibaribe", fonte:"PAC", extensao:"—", solucao:"Área de várzea", pontosImpactados:2, populacao:27000 },
+    "tej-019":{ inicio:null, fim:"2027-03-31", fase:"Licitação", empresa:null, fonte:"Tesouro Municipal", extensao:"—", solucao:"Galeria de macrodrenagem", pontosImpactados:1, populacao:6500 },
+    "jor-022":{ inicio:"2026-03-02", fim:"2026-12-18", fase:"Escavação", empresa:"Construtora XYZ", fonte:"Tesouro Municipal", extensao:"—", solucao:"Ampliação de galerias", pontosImpactados:1, populacao:8200 }
+  };
+  PROJECTS_FICTICIOS.forEach(function(p){ p.x = EXTRA[p.id] || {}; });
+  // Obras reais: lidas da camada de obras do WebMap (ver carregarObras). Começa vazio.
+  var PROJECTS = [];
+  var OBRAS_ESTADO = "carregando";  // carregando | ok | sem-camada | erro
+
+  function fmtMes(iso){ if(!iso) return "—"; var m=["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"]; var d=iso.split("-"); return m[+d[1]-1]+"/"+d[0]; }
+  function fmtMi(n){ return "R$ " + n.toFixed(1).replace(".",",") + " Mi"; }
+  function fmtNum(n){ return n==null ? "—" : n.toLocaleString("pt-BR"); }
+  var PRAZO_LABEL = { saudavel:"No prazo", atencao:"Em atenção", critico:"Atrasado" };
+  function progressBar(p){
+    if(p.pctFisico == null) return '<div class="pcard-line"><span>Andamento físico: <b>a informar</b></span></div>';
+    return '<div class="pbar"><div class="pbar-track"><div class="pbar-fill" style="width:'+p.pctFisico+'%"></div></div><span class="pbar-val">'+p.pctFisico+'%</span></div>';
+  }
+  function medidoMi(p){ return (p.investNum == null || p.pctFinanceiro == null) ? null : p.investNum * p.pctFinanceiro / 100; }
+
+  /* Etapas das obras (16/10/2026, decisão de Pedro): ordem do início ao fim. Coluna "status" da aba "Obras". */
+  var ETAPAS_OBRA = ["nao_planejado", "conceitual", "projeto", "licitacao", "obra", "concluido"];
+  var STATUS_LABEL = { nao_planejado:"Não planejado", conceitual:"Conceitual", projeto:"Em projeto",
+                       licitacao:"Em licitação", obra:"Em obra", concluido:"Concluída" };
+  var SCHED_LABEL = { saudavel:"Saudável", atencao:"Atenção", critico:"Crítico", neutro:"Sem dados" };
+
+  function statusClass(s){ return STATUS_LABEL[s] ? s : "nao_planejado"; }
+  function schedStatus(p){
+    if(p.status==="concluido") return "saudavel";
+    if(p.atrasoDias == null) return "neutro";
+    if(p.atrasoDias>=25) return "critico";
+    if(p.atrasoDias>=10) return "atencao";
+    return "saudavel";
+  }
+  function sevLabel(n){ return ["","Baixa","Média","Alta","Crítica"][n]; }
+
+  /* =====================================================================
+     ESTADO GLOBAL DE FILTROS (bacia / sub-bacia / status)
+     ===================================================================== */
+  var state = { bacia:"", subbacia:"", status:"" };
+
+  function matchesFilters(p){
+    var q = searchInput.value.trim().toLowerCase();
+    var okBacia = !state.bacia || p.bacia === state.bacia;
+    var okSub = !state.subbacia || p.subbacia === state.subbacia;
+    var okStatus = !state.status || p.status === state.status;
+    var okSearch = !q || (p.title.toLowerCase().indexOf(q)>-1 || p.bairro.toLowerCase().indexOf(q)>-1 || p.code.toLowerCase().indexOf(q)>-1);
+    return okBacia && okSub && okStatus && okSearch;
+  }
+  function filteredProjects(){ return PROJECTS.filter(matchesFilters); }
+
+  /* ---------------------------------------------------------------------
+     MAPA
+     --------------------------------------------------------------------- */
+  var WEBMAP_ID = "d19385d68f1b4303b5f94ddc5ce58ff6";  // "Recife Resiliente v2" (publicado por Pedro em 04/10/2026)
+  var PORTAL_URL = "https://esigportal2.recife.pe.gov.br/portal";
+  var map = new WebMap({ portalItem: { id: WEBMAP_ID, portal: { url: PORTAL_URL } } });
+
+  var view = new MapView({
+    container: "viewDiv",
+    map: map,
+    center: [-34.9020, -8.0600],
+    zoom: 12,
+    constraints: { snapToZoom: false }
+  });
+  view.ui.components = ["attribution"];
+  // Popup criado explicitamente (na 4.29 o popup padrão só existe depois de abrir a 1ª vez).
+  // Usado pelas camadas do WebMap; os pontos críticos usam o cartão próprio (abrirCartao).
+  view.popup = new Popup({
+    autoOpenEnabled: true,
+    dockEnabled: false,
+    dockOptions: { buttonEnabled:false, breakpoint:false },
+    visibleElements: { collapseButton:false }
+  });
+
+  view.when(function(){
+    console.log("Mapa carregado com sucesso.");
+  }, function(err){
+    console.error("Falha ao carregar o mapa/WebMap:", err);
+    document.getElementById("viewDiv").innerHTML =
+      '<div style="padding:24px;font-family:sans-serif;color:#9a3412;background:#fff7ed;border:1px solid #fdba74;' +
+      'border-radius:8px;margin:16px;max-width:520px;">' +
+      '<b>Erro ao carregar o Web Map.</b><br>' + (err && err.message ? err.message : String(err)) +
+      '<br><br>Causas comuns: o item não está compartilhado publicamente no portal, ou o WEBMAP_ID/PORTAL_URL estão errados.' +
+      '</div>';
+  });
+
+  // Camada de exemplo (PROJECTS) mantida em memória para alimentar KPIs, lista, filtros e Street View,
+  // mas NÃO adicionada ao mapa — o WebMap real da Prefeitura já traz os pontos/obras verdadeiros.
+  var graphicsLayer = new GraphicsLayer({ title: "Intervenções (exemplo)" });
+  var canalSymbol = { type:"simple-line", color:[71,85,105,0.85], width:5, cap:"round", join:"round" };
+  var pontoSymbol = { type:"simple-marker", style:"triangle", color:[71,85,105,1], size:14, outline:{ color:[255,255,255,1], width:1.6 } };
+
