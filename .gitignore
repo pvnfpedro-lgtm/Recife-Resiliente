@@ -16,3 +16,7 @@ __pycache__/
 # Sistema
 .DS_Store
 Thumbs.db
+
+# Páginas montadas por scripts/montar_painel.py (prévias locais, não versionar)
+painel_montado.html
+painel_previa*.html
