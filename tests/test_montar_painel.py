@@ -30,7 +30,7 @@ class TestMontarPainel(unittest.TestCase):
 
     def test_partes_na_ordem(self):
         pos = [self.html.index(t) for t in (
-            "window.onerror", "PONTOS CRÍTICOS — lidos da planilha",
+            "var PROJETOS_PRANCHAS", "window.onerror", "PONTOS CRÍTICOS — lidos da planilha",
             "GOOGLE STREET VIEW", "PÁGINA 1 — KPIs + lista", "buildFilterBar();")]
         self.assertEqual(pos, sorted(pos))
 

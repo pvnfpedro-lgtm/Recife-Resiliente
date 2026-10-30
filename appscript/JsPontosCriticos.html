@@ -32,13 +32,35 @@
      Vem da coluna "Obras relacionadas (obra_id)" da aba "Notas dos pontos". */
   var LIGACOES_TITULO = "Ligação pontos críticos ↔ obras";
   var ligacoesLayer = new GraphicsLayer({ title: LIGACOES_TITULO });
+  /* Pranchas de projeto (29/10/2026): plantas em PDF passadas para o mapa por
+     scripts/planta_pdf_para_geojson.py e gravadas em DadosProjetos.html por
+     scripts/gerar_projetos_painel.py. Um grupo por prancha, uma camada por elemento
+     (liga e desliga na legenda). Ficam por baixo dos pontos críticos e das obras. */
+  var SWATCH_PROJETO = {};
+  function rgbaDeHex(hex, alfa){
+    if(!hex || hex === "none") return [0, 0, 0, 0];
+    return [parseInt(hex.substr(1,2),16), parseInt(hex.substr(3,2),16), parseInt(hex.substr(5,2),16), alfa == null ? 1 : alfa];
+  }
+  var projetosLayers = (typeof PROJETOS_PRANCHAS === "undefined" ? [] : PROJETOS_PRANCHAS).map(function(pr){
+    // No GroupLayer a última camada fica por cima; a lista vem de baixo para cima.
+    return new GroupLayer({ title: pr.nome, visibilityMode: "independent", layers: pr.camadas.map(function(c){
+      var simbolo = { type:"simple-fill", color: rgbaDeHex(c.cor, c.opacidade),
+        outline: c.contorno ? { color: rgbaDeHex(c.contorno, 1), width: (c.espessura || 1) * 0.75 } : { color:[0,0,0,0], width:0 } };
+      SWATCH_PROJETO[c.nome] = '<svg width="14" height="12" viewBox="0 0 14 12"><rect x="1" y="1" width="12" height="10" rx="2" fill="' +
+        (c.cor && c.cor !== "none" ? c.cor : "none") + '" stroke="' + (c.contorno || (c.cor !== "none" ? c.cor : "#334155")) + '" stroke-width="1.5"/></svg>';
+      return new GraphicsLayer({ title: c.nome, graphics: c.poligonos.map(function(aneis){
+        return new Graphic({ geometry: { type:"polygon", rings: aneis, spatialReference:{ wkid:4326 } }, symbol: simbolo });
+      }) });
+    }) });
+  });
+  projetosLayers.forEach(function(l){ map.add(l); });
   map.add(ligacoesLayer);
   map.add(pontosLayer);
   map.add(obrasPontosLayer);
   // O WebMap só traz as camadas dele depois de carregar, e elas entram por cima das nossas (os rios
   // cobriam os ícones das obras). Depois do carregamento, as nossas voltam para o topo, na mesma ordem.
   map.when(function(){
-    [ligacoesLayer, pontosLayer, obrasPontosLayer].forEach(function(l){ map.reorder(l, map.layers.length - 1); });
+    projetosLayers.concat([ligacoesLayer, pontosLayer, obrasPontosLayer]).forEach(function(l){ map.reorder(l, map.layers.length - 1); });
   });
   var CLASSES_INDICE = [
     { max: 0.2,      cor: "#1a9850", rotulo: "< 0,200" },

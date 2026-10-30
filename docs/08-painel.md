@@ -207,6 +207,19 @@ mapa), local (exato/aproximado/sem coordenada), notas preenchidas e obras relaci
   tela de celular. Conferido por Pedro na URL de teste em 29/10/2026: painel abre, tabela, CSV e
   impressão funcionam dentro do Apps Script.
 
+## Pranchas de projeto no mapa (30/10/2026, código; `clasp push` só após aprovação)
+O painel desenha plantas de projeto vindas de PDF, como um **grupo de camadas por prancha** na
+legenda "Camadas" (cada elemento com seu olho), por baixo dos pontos críticos e das obras.
+Primeira: **Canal do Sanbra, implantação geral (P01, Rem. 2)**, com áreas verdes, calçadas e pisos,
+piso vermelho, vias, faixas marrons (a conferir), bacia de detenção, canal, Rio Jiquiá e limite da
+intervenção.
+- Fluxo: `scripts/planta_pdf_para_geojson.py` (PDF → camadas → encaixe por pontos de controle) →
+  `dados/processados/projetos/*.geojson` → `scripts/gerar_projetos_painel.py` →
+  `appscript/DadosProjetos.html` (variável `PROJETOS_PRANCHAS`, ~120 KB; não editar à mão).
+- Encaixe do Sanbra com 2 pontos (pendência 24): posição de poucos metros, ainda sem erro medido.
+- Testado com o ArcGIS simulado (grupo, 9 camadas, polígonos fechados, coordenadas no lugar).
+  **Não testado com o mapa de verdade:** conferir na URL de teste.
+
 ## Arquivos do painel (desde 29/10/2026)
 O `Index.html` tinha cerca de 3.100 linhas. Foi dividido sem mudar o que a página mostra:
 
@@ -214,6 +227,7 @@ O `Index.html` tinha cerca de 3.100 linhas. Foi dividido sem mudar o que a pági
 |---|---|
 | `Index.html.html` | Cabeçalho, marcação das abas e chamadas `<?!= include('…'); ?>` |
 | `Estilos.html` | Todo o CSS (`<style>`) |
+| `DadosProjetos.html` | Pranchas de projeto georreferenciadas (gerado por `scripts/gerar_projetos_painel.py`) |
 | `JsBase.html` | Parte 1 do script: aviso de erro, abertura do `require()` do ArcGIS, bacias, dados, filtros |
 | `JsPontosCriticos.html` | Parte 2: pontos críticos lidos da planilha (mapa, cartão, lista) |
 | `JsMapa.html` | Parte 3: Street View, ArcGIS ↔ Google Maps, obras reais, legenda, mapa base |

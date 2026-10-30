@@ -384,6 +384,7 @@
     if(title === OBRAS_PONTOS_TITULO){
       return '<img src="' + iconeObra("", "obra") + '" width="17" height="17" alt="" style="vertical-align:middle">';
     }
+    if(SWATCH_PROJETO[title]) return SWATCH_PROJETO[title];
     if(title === LIGACOES_TITULO){
       return '<svg width="16" height="12" viewBox="0 0 16 12"><path d="M1 11 15 1" stroke="#334155" stroke-width="2" stroke-dasharray="3 2" fill="none"/></svg>';
     }
