@@ -217,12 +217,12 @@ Primeira: **Canal do Sanbra, implantação geral (P01, Rem. 2)**.
   dentro do limite da intervenção, encaixada pelos 4 cantos (`MediaLayer` + `CornersGeoreference`).
   Imagem WebP de 0,25 m/px (271 KB). As camadas vetoriais continuam no GeoJSON, fora do painel.
   Rótulos que passam do limite (ex.: Praças 7 e 8A) ficam cortados na borda.
+- 30/10, `clasp push` da camada única (aprovado por Pedro). Conferido por Pedro na URL de teste: "ficou ótimo".
 - Fluxo: `scripts/planta_pdf_para_geojson.py` (PDF → camadas → encaixe por pontos de controle) →
   `dados/processados/projetos/*.geojson` → `scripts/gerar_projetos_painel.py` →
   `appscript/DadosProjetos.html` (variável `PROJETOS_PRANCHAS`, ~360 KB com a imagem; não editar à mão).
 - Encaixe do Sanbra com 2 pontos (pendência 24): posição de poucos metros, ainda sem erro medido.
-- Testado com o ArcGIS simulado (camada única, imagem e cantos no lugar). **A imagem sobre o mapa de
-  verdade não foi vista aqui:** conferir na URL de teste.
+- Testado com o ArcGIS simulado e conferido por Pedro sobre o mapa de verdade (URL de teste, 30/10/2026).
 
 ## Arquivos do painel (desde 29/10/2026)
 O `Index.html` tinha cerca de 3.100 linhas. Foi dividido sem mudar o que a página mostra:
