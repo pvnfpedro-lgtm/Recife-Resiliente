@@ -32,8 +32,8 @@
     "nome": "Canal da Mauricéia — projeto de urbanização (Trechos 01 e 02)"
   },
   "ajuste_fixo": {
-    "fator_escala": 1.0,
-    "rotacao_graus": 88.892,
-    "origem": "rotação pela direção A1→B2 (canal reto, ~790 m); escala da prancha"
+    "fator_escala": 1.00704,
+    "rotacao_graus": 89.045,
+    "origem": "ajuste conjunto das duas faixas (A1, A2, B1, B2): escala e rotação comuns, deslocamento por faixa"
   }
 }
