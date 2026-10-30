@@ -227,7 +227,9 @@ Primeira: **Canal do Sanbra, implantação geral (P01, Rem. 2)**.
   pintada, sem linha de limite e sem marcações de ampliação. Feito desligando as camadas do CAD guardadas no
   PDF (`camadas_cad_desligar`), não por cor (por cor sumiam também plantas e meios-fios da mesma cor).
   Mauricéia: Trecho 01 sem `ImgGoogle`, `CANAL-PROJETADO`, `hatch` e `Ampliação` (e sem os títulos em letra
-  grande); Trecho 02 sem `ImgGoogle`, `POLIGONAL NOVA 22.09` e `Ampliação`.
+  grande); Trecho 02 sem `ImgGoogle`, `POLIGONAL NOVA 22.09` e `Ampliação`. Sanbra (a pedido de Pedro):
+  sem `Canal` (água e as faixas avermelhadas das margens, que estão na mesma camada), `Área de intervenção`
+  e `Rio Jiquiá`.
 - Fluxo: `scripts/planta_pdf_para_geojson.py` (PDF → camadas → encaixe por pontos de controle) →
   `dados/processados/projetos/*.geojson` → `scripts/gerar_projetos_painel.py` →
   `appscript/DadosProjetos.html` (variável `PROJETOS_PRANCHAS`, ~360 KB com a imagem; não editar à mão).
