@@ -1,0 +1,39 @@
+{
+  "pdf": "P01.TRECHO_1-CMAUR-URB-ImplGeral.pdf",
+  "pagina": 0,
+  "escala": 750,
+  "simplificar_pt": 0.15,
+  "pontos_controle": "pontos_controle_trecho1.csv",
+  "camadas": [],
+  "fonte": "Prancha P01.TRECHO 1-CMAUR-URB-ImplGeral (PDF, ZWCAD, 29/07/2025), escala 1:750",
+  "id": "canal_mauricea_trecho1b_implantacao",
+  "nome": "Canal da Mauricéia — Trecho 01, ampliações 03 e 04 (P01/08)",
+  "recorte_pt": [
+    30,
+    712,
+    1860,
+    1240
+  ],
+  "faixa": "B",
+  "imagem": {
+    "sem_fotos": true,
+    "m_por_px": 0.2,
+    "qualidade": 80,
+    "branco_ate": 245,
+    "opacidade": 1,
+    "cores_transparentes": [
+      [
+        255,
+        223,
+        191
+      ]
+    ],
+    "tolerancia_cor": 14,
+    "nome": "Canal da Mauricéia — projeto de urbanização (Trechos 01 e 02)"
+  },
+  "ajuste_fixo": {
+    "fator_escala": 1.0,
+    "rotacao_graus": 88.892,
+    "origem": "rotação pela direção A1→B2 (canal reto, ~790 m); escala da prancha"
+  }
+}

@@ -157,9 +157,9 @@ def ajustar_semelhanca(origem, destino):
     return a, b, c, d
 
 
-def ler_controle(caminho):
+def ler_controle(caminho, faixa=None):
     with open(caminho, encoding="utf-8") as f:
-        return [r for r in csv.DictReader(f) if r.get("lat") and r.get("lon")]
+        return [r for r in csv.DictReader(f) if r.get("lat") and r.get("lon") and (not faixa or r.get("faixa") == faixa)]
 
 
 def georreferenciar(camadas_m, cfg, controle):
@@ -169,7 +169,25 @@ def georreferenciar(camadas_m, cfg, controle):
     k = POL_POR_PT / 1000 * cfg["escala"]
     origem = [(float(r["x_pt"]) * k, -float(r["y_pt"]) * k) for r in controle]
     destino = [para_utm.transform(float(r["lon"]), float(r["lat"])) for r in controle]
-    a, b, c, d = ajustar_semelhanca(origem, destino)
+    if cfg.get("ajuste_fixo"):
+        # Escala e rotação dadas (ex.: rotação tirada da direção de um canal reto entre pontos distantes);
+        # os pontos de controle dão só o deslocamento (média, se houver mais de um).
+        fe, rot = cfg["ajuste_fixo"]["fator_escala"], math.radians(cfg["ajuste_fixo"]["rotacao_graus"])
+        a, b = fe * math.cos(rot), fe * math.sin(rot)
+        c = sum(q[0] - (a * p[0] - b * p[1]) for p, q in zip(origem, destino)) / len(origem)
+        d = sum(q[1] - (b * p[0] + a * p[1]) for p, q in zip(origem, destino)) / len(origem)
+        print(f"Escala e rotação fixas ({cfg['ajuste_fixo'].get('origem', '')})")
+    elif len(controle) == 1:
+        # Um ponto só: escala e rotação vêm de outro recorte do mesmo desenho (ex.: a outra faixa da
+        # prancha, mesma escala e mesma orientação); o ponto dá só o deslocamento.
+        ref = json.loads((Path(cfg["_base"]) / cfg["escala_rotacao_de"]).read_text(encoding="utf-8"))["georreferenciamento"]
+        fe, rot = ref["fator_escala"], math.radians(ref["rotacao_graus"])
+        a, b = fe * math.cos(rot), fe * math.sin(rot)
+        c = destino[0][0] - (a * origem[0][0] - b * origem[0][1])
+        d = destino[0][1] - (b * origem[0][0] + a * origem[0][1])
+        print(f"Um ponto de controle: escala e rotação de {cfg['escala_rotacao_de']}")
+    else:
+        a, b, c, d = ajustar_semelhanca(origem, destino)
     escala_ajuste = math.hypot(a, b)
     rotacao = math.degrees(math.atan2(b, a))
     print(f"Ajuste: fator de escala {escala_ajuste:.4f} (1 = escala da prancha), rotação {rotacao:.2f}°")
@@ -218,6 +236,12 @@ def imagem_da_planta(cfg, area, ponto_pdf, saida):
     lim_branco = op.get("branco_ate", 245)
     r, g, b, _ = im.split()
     fundo = Image.eval(Image.merge("RGB", (r, g, b)).convert("L"), lambda v: 0 if v >= lim_branco else 255)
+    from PIL import ImageChops
+    for alvo in op.get("cores_transparentes", []):
+        # Fundos coloridos sem conteúdo (ex.: faixa laranja translúcida de uma ampliação sobre o branco).
+        tol = op.get("tolerancia_cor", 12)
+        canais = [c.point(lambda v, a=a: 255 if abs(v - a) <= tol else 0) for c, a in zip((r, g, b), alvo)]
+        fundo = ImageChops.subtract(fundo, ImageChops.multiply(ImageChops.multiply(canais[0], canais[1]), canais[2]))
     mascara = Image.new("L", im.size, 0)
     if area is not None:
         d = ImageDraw.Draw(mascara)
@@ -300,8 +324,9 @@ def main():
     gravar_geojson(camadas_m, cfg, saida / f"{cfg['id']}_metros_planta.geojson")
 
     ctrl = base / cfg.get("pontos_controle", "pontos_controle.csv")
-    controle = ler_controle(ctrl) if ctrl.exists() else []
-    if len(controle) >= 2:
+    controle = ler_controle(ctrl, cfg.get("faixa")) if ctrl.exists() else []
+    cfg["_base"] = str(base)
+    if len(controle) >= 2 or (len(controle) == 1 and (cfg.get("escala_rotacao_de") or cfg.get("ajuste_fixo"))):
         geo, ajuste, ponto_pdf = georreferenciar(camadas_m, cfg, controle)
         img = imagem_da_planta(cfg, area, ponto_pdf, saida) if cfg.get("imagem") else None
         gravar_geojson(geo, cfg, saida / f"{cfg['id']}.geojson", ajuste, img)

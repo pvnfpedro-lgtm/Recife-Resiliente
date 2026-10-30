@@ -6,6 +6,7 @@
 | `P01.TRECHO_1-CMAUR-URB-ImplGeral.pdf` | Trecho 01, implantação geral (prancha 01/08), 1:750, ZWCAD, 29/07/2025. Planta em duas faixas (ampliações 01–02 e 03–04), norte para a direita. **Sem georreferenciamento** |
 | `trecho2_p01.json` | Configuração de `scripts/planta_pdf_para_geojson.py` para o Trecho 02 (camada única, sem a foto aérea) |
 | `pontos_controle_trecho2.csv` / `.png` | Pontos 1 e 5 com lat/lon de Pedro (Google Maps, 30/10/2026); 2, 3 e 4 sem coordenadas |
-| `pontos_controle_trecho1.csv` / `.png` | 2 pontos por faixa, coordenadas a preencher |
+| `trecho1a_p01.json` / `trecho1b_p01.json` | Configurações das duas faixas do Trecho 01 (rotação fixa pela direção A1→B2) |
+| `pontos_controle_trecho1.csv` / `.png` | A1, B1 e B2 com lat/lon de Pedro (30/10/2026); A2 sem coordenada |
 
 Saídas em `dados/processados/projetos/canal_mauricea_*`.

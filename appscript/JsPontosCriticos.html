@@ -44,17 +44,17 @@
   var SWATCH_IMAGEM = '<svg width="14" height="12" viewBox="0 0 14 12"><rect x="1" y="1" width="12" height="10" rx="2" fill="#e5e7eb" stroke="#334155" stroke-width="1.2"/>' +
     '<path d="M3 9l3-3.5 2 2 1.5-1.5L11 9z" fill="#5496bf"/><circle cx="9.5" cy="4" r="1.2" fill="#b7d7a0"/></svg>';
   var projetosLayers = (typeof PROJETOS_PRANCHAS === "undefined" ? [] : PROJETOS_PRANCHAS).map(function(pr){
-    if(pr.imagem){
-      // Camada única (30/10/2026, pedido de Pedro): a imagem da prancha, com árvores, mobiliário e pisos,
-      // fundo transparente e só dentro do limite da intervenção, encaixada pelos 4 cantos.
+    if(pr.imagens){
+      // Camada única por obra (30/10/2026, pedido de Pedro): as imagens das pranchas, com árvores, mobiliário
+      // e pisos, fundo transparente, cada uma encaixada pelos 4 cantos (vários trechos na mesma camada).
       SWATCH_PROJETO[pr.nome] = SWATCH_IMAGEM;
       function ponto(c){ return { x: c[0], y: c[1], spatialReference:{ wkid:4326 } }; }
-      var k = pr.imagem.cantos;
-      return new MediaLayer({ title: pr.nome, opacity: pr.imagem.opacidade, source: [new ImageElement({
-        image: pr.imagem.url,
-        georeference: new CornersGeoreference({ topLeft: ponto(k.sup_esq), topRight: ponto(k.sup_dir),
-          bottomRight: ponto(k.inf_dir), bottomLeft: ponto(k.inf_esq) })
-      })] });
+      return new MediaLayer({ title: pr.nome, opacity: pr.opacidade, source: pr.imagens.map(function(im){
+        var k = im.cantos;
+        return new ImageElement({ image: im.url,
+          georeference: new CornersGeoreference({ topLeft: ponto(k.sup_esq), topRight: ponto(k.sup_dir),
+            bottomRight: ponto(k.inf_dir), bottomLeft: ponto(k.inf_esq) }) });
+      }) });
     }
     // No GroupLayer a última camada fica por cima; a lista vem de baixo para cima.
     return new GroupLayer({ title: pr.nome, visibilityMode: "independent", layers: pr.camadas.map(function(c){
