@@ -1,0 +1,147 @@
+{
+  "id": "canal_sanbra_implantacao",
+  "nome": "Canal do Sanbra — implantação geral (P01, Rem. 2)",
+  "fonte": "Prancha P01.CSb_Implan.Rem.2 (PDF assinado, ZWCAD, 21/10/2024), escala 1:1500",
+  "pdf": "P01.CSb_Implan.Rem.2_assinado.pdf",
+  "pagina": 0,
+  "recorte_pt": [
+    345,
+    60,
+    830,
+    1786
+  ],
+  "escala": 1500,
+  "simplificar_pt": 0.15,
+  "pontos_controle": "pontos_controle.csv",
+  "camadas": [
+    {
+      "id": "areas_verdes",
+      "nome": "Áreas verdes (grama/jardim)",
+      "cor_pdf": [
+        0.65,
+        0.87,
+        0.43
+      ],
+      "cor": "#b7d7a0",
+      "opacidade": 0.9,
+      "so_no_limite": true
+    },
+    {
+      "id": "pisos",
+      "nome": "Calçadas e pisos",
+      "cor_pdf": [
+        0.86,
+        0.86,
+        0.86
+      ],
+      "cor": "#e5e7eb",
+      "opacidade": 0.9,
+      "so_no_limite": true
+    },
+    {
+      "id": "piso_vermelho",
+      "nome": "Piso intertravado vermelho",
+      "cor_pdf": [
+        0.72,
+        0.45,
+        0.36
+      ],
+      "cor": "#d9a38f",
+      "opacidade": 0.9,
+      "so_no_limite": true
+    },
+    {
+      "id": "vias",
+      "nome": "Vias do projeto",
+      "cor_pdf": [
+        [
+          0.36,
+          0.36,
+          0.36
+        ],
+        [
+          0.47,
+          0.53,
+          0.66
+        ]
+      ],
+      "cor": "#9ca3af",
+      "opacidade": 0.9,
+      "so_no_limite": true
+    },
+    {
+      "id": "vias_faixa_marrom",
+      "nome": "Vias em faixa marrom na planta (a conferir)",
+      "cor_pdf": [
+        0.45,
+        0.39,
+        0.22
+      ],
+      "cor": "#c9b99a",
+      "opacidade": 0.8,
+      "so_no_limite": true
+    },
+    {
+      "id": "bacia_detencao",
+      "nome": "Bacia de detenção",
+      "cor_pdf": [
+        0.15,
+        0.58,
+        0.0
+      ],
+      "tipo_pdf": "s",
+      "fechar_pt": 0.6,
+      "envoltoria": true,
+      "cor": "#c8b48c",
+      "contorno": "#7c6a46",
+      "espessura": 1,
+      "opacidade": 0.7
+    },
+    {
+      "id": "canal",
+      "nome": "Canal (lâmina d'água)",
+      "cor_pdf": [
+        0.5,
+        0.87,
+        1.0
+      ],
+      "cor": "#7fb8de",
+      "contorno": "#2685bf",
+      "espessura": 0.8,
+      "opacidade": 1
+    },
+    {
+      "id": "rio",
+      "nome": "Rio Jiquiá (trecho na prancha)",
+      "cor_pdf": [
+        0.0,
+        0.43,
+        0.87
+      ],
+      "cor": "#5496bf",
+      "opacidade": 1
+    },
+    {
+      "id": "limite_intervencao",
+      "nome": "Limite da intervenção",
+      "cor_pdf": [
+        0.65,
+        0.43,
+        0.87
+      ],
+      "cor": "#334155",
+      "opacidade": 1,
+      "nota": "Traços do limite como estão na prancha (o tracejado vem do próprio desenho)."
+    }
+  ],
+  "camada_limite": "limite_intervencao",
+  "folga_limite_pt": 3,
+  "fechar_limite_pt": 12,
+  "imagem": {
+    "nome": "Canal do Sanbra — projeto de urbanização (P01)",
+    "m_por_px": 0.25,
+    "qualidade": 80,
+    "branco_ate": 245,
+    "opacidade": 1
+  }
+}
