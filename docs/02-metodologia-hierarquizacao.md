@@ -83,6 +83,15 @@ daquele ponto e a cobertura aparece na saída (por exemplo, `10/12`).
 **Sensibilidade:** mostrar também o ranking com pesos iguais na Consequência.
 Se o top 5 mudar muito, o ranking depende mais dos pesos do que dos dados.
 
+## Fluxograma das notas
+Página com o fluxograma (da variável à posição no ranking), os 4 passos do
+cálculo, a matriz P × C (dados de teste) e a origem de cada dado:
+`docs/fluxograma/fluxograma-notas-rpa6.html` (abrir no navegador). Versão
+online: https://claude.ai/artifact/SJj2aZorQDqdQRAuNM6iC3
+
+Cópia da versão de 06/10/2026, sem alterações. Ainda não traz as decisões
+de 03/10 em diante (I3, I4, V5, V6 e E3 pelo IPTU no círculo de 1 km).
+
 ## Matriz risco × tratabilidade
 Tratabilidade de 1 a 5, em que **5 = mais tratável**. A nota é a média dos
 itens.
