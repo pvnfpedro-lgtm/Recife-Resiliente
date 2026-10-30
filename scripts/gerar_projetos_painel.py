@@ -3,7 +3,9 @@
 Lê dados/processados/projetos/*.geojson (os de scripts/planta_pdf_para_geojson.py,
 menos os "_metros_planta", que não têm posição) e escreve
 appscript/DadosProjetos.html com a variável PROJETOS_PRANCHAS, que o painel
-desenha como um grupo de camadas por prancha (JsPontosCriticos.html).
+desenha como camada no mapa (JsPontosCriticos.html): com imagem da prancha
+(campo "imagem" do GeoJSON), uma camada única com o desenho inteiro; sem imagem,
+um grupo com uma camada por elemento.
 
 Para o arquivo ficar leve, simplifica cada camada em metros (UTM 25S) e
 arredonda as coordenadas em 6 casas (cerca de 10 cm). Os anéis saem no sentido
@@ -13,6 +15,7 @@ Uso: python3 scripts/gerar_projetos_painel.py [--tolerancia 0.3]
 Requer: shapely, pyproj.
 """
 import argparse
+import base64
 import json
 from pathlib import Path
 
@@ -49,6 +52,16 @@ def main():
         if arq.stem.endswith("_metros_planta"):
             continue
         fc = json.loads(arq.read_text(encoding="utf-8"))
+        img = fc.get("imagem")
+        if img:
+            # Prancha com imagem: vai como camada única (tudo o que o desenho mostra).
+            dados = (arq.parent / img["arquivo"]).read_bytes()
+            pranchas.append({"id": arq.stem, "nome": img.get("nome", fc["name"]),
+                             "imagem": {"url": "data:image/webp;base64," + base64.b64encode(dados).decode("ascii"),
+                                        "cantos": {k: [round(v, 7) for v in xy] for k, xy in img["cantos"].items()},
+                                        "opacidade": img.get("opacidade", 1)}})
+            print(f"{arq.name}: imagem {len(dados) / 1024:.0f} KB (camada única)")
+            continue
         camadas = []
         for f in fc["features"]:
             pr = f["properties"]

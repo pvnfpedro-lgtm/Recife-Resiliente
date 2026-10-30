@@ -122,6 +122,7 @@ def ler_camadas(cfg):
     # Camadas marcadas com "so_no_limite" ficam só dentro da camada-limite (com folga): tira o que
     # é da base cadastral ou das caixas de rótulo em volta da intervenção.
     lim = camadas.get(cfg.get("camada_limite"))
+    area = None
     if lim is not None:
         # O limite vem como traços (pode ser aberto na beira do rio): engorda até fechar,
         # pega a área de dentro e desconta, deixando a folga.
@@ -132,7 +133,7 @@ def ler_camadas(cfg):
         for cam in cfg["camadas"]:
             if cam.get("so_no_limite") and camadas.get(cam["id"]) is not None:
                 camadas[cam["id"]] = camadas[cam["id"]].intersection(area)
-    return camadas
+    return camadas, area
 
 
 def para_metros_planta(geom, escala):
@@ -184,12 +185,53 @@ def georreferenciar(camadas_m, cfg, controle):
     def f(x, y, z=None):
         X, Y = a * x - b * y + c, b * x + a * y + d
         return para_geo.transform(X, Y)
+
+    def ponto_pdf(x_pt, y_pt):
+        """Ponto da folha (pt) → [lon, lat]."""
+        return list(f(x_pt * k, -y_pt * k))
     return {k2: (transform(f, g) if g is not None else None) for k2, g in camadas_m.items()}, {
         "fator_escala": escala_ajuste, "rotacao_graus": rotacao,
-        "erros_m": {r["n"]: round(e, 2) for r, e in zip(controle, erros)}}
+        "erros_m": {r["n"]: round(e, 2) for r, e in zip(controle, erros)}}, ponto_pdf
 
 
-def gravar_geojson(camadas, cfg, caminho, ajuste=None):
+def imagem_da_planta(cfg, area, ponto_pdf, saida):
+    """Imagem da prancha (com árvores, mobiliário, pisos, rótulos) para ir por baixo das camadas.
+
+    Fundo branco transparente; fora da área da intervenção (camada-limite com folga) tudo
+    transparente, para não repetir a base cadastral do mapa. Devolve o arquivo e os 4 cantos
+    em [lon, lat] (a imagem é o recorte inteiro da folha).
+    """
+    from PIL import Image, ImageDraw
+    op = cfg["imagem"]
+    k = POL_POR_PT / 1000 * cfg["escala"]
+    zoom = k / op.get("m_por_px", 0.25)
+    x0, y0, x1, y1 = cfg["recorte_pt"]
+    pg = pymupdf.open(cfg["pdf"])[cfg.get("pagina", 0)]
+    pm = pg.get_pixmap(clip=pymupdf.Rect(x0, y0, x1, y1), matrix=pymupdf.Matrix(zoom, zoom), alpha=False)
+    im = Image.frombytes("RGB", (pm.width, pm.height), pm.samples).convert("RGBA")
+    # Branco (e quase branco) vira transparente.
+    lim_branco = op.get("branco_ate", 245)
+    r, g, b, _ = im.split()
+    fundo = Image.eval(Image.merge("RGB", (r, g, b)).convert("L"), lambda v: 0 if v >= lim_branco else 255)
+    mascara = Image.new("L", im.size, 0)
+    if area is not None:
+        d = ImageDraw.Draw(mascara)
+        for p in (area.geoms if hasattr(area, "geoms") else [area]):
+            d.polygon([((x - x0) * zoom, (y - y0) * zoom) for x, y in p.exterior.coords], fill=255)
+    else:
+        mascara = Image.new("L", im.size, 255)
+    from PIL import ImageChops
+    im.putalpha(ImageChops.multiply(fundo, mascara))
+    arq = saida / f"{cfg['id']}_imagem.webp"
+    im.save(arq, "WEBP", quality=op.get("qualidade", 80), method=6)
+    cantos = {"sup_esq": ponto_pdf(x0, y0), "sup_dir": ponto_pdf(x1, y0),
+              "inf_dir": ponto_pdf(x1, y1), "inf_esq": ponto_pdf(x0, y1)}
+    print(f"Imagem: {arq.name} ({im.width}×{im.height} px, {arq.stat().st_size / 1024:.0f} KB)")
+    return {"arquivo": arq.name, "nome": op.get("nome", cfg["nome"]), "cantos": cantos,
+            "opacidade": op.get("opacidade", 1)}
+
+
+def gravar_geojson(camadas, cfg, caminho, ajuste=None, imagem=None):
     feats = []
     for cam in cfg["camadas"]:
         g = camadas.get(cam["id"])
@@ -203,6 +245,8 @@ def gravar_geojson(camadas, cfg, caminho, ajuste=None):
     fc = {"type": "FeatureCollection", "name": cfg["nome"], "features": feats}
     if ajuste:
         fc["georreferenciamento"] = ajuste
+    if imagem:
+        fc["imagem"] = imagem
     Path(caminho).write_text(json.dumps(fc, ensure_ascii=False), encoding="utf-8")
 
 
@@ -245,7 +289,7 @@ def main():
     saida.mkdir(parents=True, exist_ok=True)
 
     print("Lendo o PDF…")
-    camadas = ler_camadas(cfg)
+    camadas, area = ler_camadas(cfg)
     camadas_m = {k: (para_metros_planta(g, cfg["escala"]) if g is not None else None) for k, g in camadas.items()}
     previa(camadas_m, cfg, saida / f"{cfg['id']}_previa.png")
     gravar_geojson(camadas_m, cfg, saida / f"{cfg['id']}_metros_planta.geojson")
@@ -253,8 +297,9 @@ def main():
     ctrl = base / cfg.get("pontos_controle", "pontos_controle.csv")
     controle = ler_controle(ctrl) if ctrl.exists() else []
     if len(controle) >= 2:
-        geo, ajuste = georreferenciar(camadas_m, cfg, controle)
-        gravar_geojson(geo, cfg, saida / f"{cfg['id']}.geojson", ajuste)
+        geo, ajuste, ponto_pdf = georreferenciar(camadas_m, cfg, controle)
+        img = imagem_da_planta(cfg, area, ponto_pdf, saida) if cfg.get("imagem") else None
+        gravar_geojson(geo, cfg, saida / f"{cfg['id']}.geojson", ajuste, img)
         print(f"Georreferenciado: {saida / (cfg['id'] + '.geojson')}")
     else:
         print(f"Sem pontos de controle com lat/lon em {ctrl}: gravei só a prévia em metros da planta.")

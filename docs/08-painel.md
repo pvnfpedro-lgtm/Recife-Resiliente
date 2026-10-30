@@ -207,18 +207,22 @@ mapa), local (exato/aproximado/sem coordenada), notas preenchidas e obras relaci
   tela de celular. Conferido por Pedro na URL de teste em 29/10/2026: painel abre, tabela, CSV e
   impressão funcionam dentro do Apps Script.
 
-## Pranchas de projeto no mapa (30/10/2026, código; `clasp push` só após aprovação)
-O painel desenha plantas de projeto vindas de PDF, como um **grupo de camadas por prancha** na
-legenda "Camadas" (cada elemento com seu olho), por baixo dos pontos críticos e das obras.
-Primeira: **Canal do Sanbra, implantação geral (P01, Rem. 2)**, com áreas verdes, calçadas e pisos,
-piso vermelho, vias, faixas marrons (a conferir), bacia de detenção, canal, Rio Jiquiá e limite da
-intervenção.
+## Pranchas de projeto no mapa (30/10/2026)
+O painel mostra plantas de projeto vindas de PDF, por baixo dos pontos críticos e das obras.
+Primeira: **Canal do Sanbra, implantação geral (P01, Rem. 2)**.
+- 30/10, primeiro `clasp push` (aprovado por Pedro): grupo com 9 camadas vetoriais (áreas verdes, pisos,
+  vias, bacia, canal, rio, limite). Pedro viu o Sanbra, mas sentiu falta dos elementos de urbanização.
+- 30/10, pedido de Pedro: **uma camada única com tudo** ("Canal do Sanbra — projeto de urbanização (P01)"):
+  a imagem da própria prancha (árvores, mobiliário, pisos, quadras, rótulos), fundo transparente e só
+  dentro do limite da intervenção, encaixada pelos 4 cantos (`MediaLayer` + `CornersGeoreference`).
+  Imagem WebP de 0,25 m/px (271 KB). As camadas vetoriais continuam no GeoJSON, fora do painel.
+  Rótulos que passam do limite (ex.: Praças 7 e 8A) ficam cortados na borda.
 - Fluxo: `scripts/planta_pdf_para_geojson.py` (PDF → camadas → encaixe por pontos de controle) →
   `dados/processados/projetos/*.geojson` → `scripts/gerar_projetos_painel.py` →
-  `appscript/DadosProjetos.html` (variável `PROJETOS_PRANCHAS`, ~120 KB; não editar à mão).
+  `appscript/DadosProjetos.html` (variável `PROJETOS_PRANCHAS`, ~360 KB com a imagem; não editar à mão).
 - Encaixe do Sanbra com 2 pontos (pendência 24): posição de poucos metros, ainda sem erro medido.
-- Testado com o ArcGIS simulado (grupo, 9 camadas, polígonos fechados, coordenadas no lugar).
-  **Não testado com o mapa de verdade:** conferir na URL de teste.
+- Testado com o ArcGIS simulado (camada única, imagem e cantos no lugar). **A imagem sobre o mapa de
+  verdade não foi vista aqui:** conferir na URL de teste.
 
 ## Arquivos do painel (desde 29/10/2026)
 O `Index.html` tinha cerca de 3.100 linhas. Foi dividido sem mudar o que a página mostra:

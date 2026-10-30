@@ -19,8 +19,12 @@ require([
   "esri/widgets/Popup",
   "esri/symbols/support/symbolUtils",
   "esri/geometry/Extent",
-  "esri/layers/GroupLayer"
-], function(WebMap, MapView, GraphicsLayer, Graphic, PopupTemplate, EsriMap, reactiveUtils, Popup, symbolUtils, Extent, GroupLayer){
+  "esri/layers/GroupLayer",
+  "esri/layers/MediaLayer",
+  "esri/layers/support/ImageElement",
+  "esri/layers/support/CornersGeoreference"
+], function(WebMap, MapView, GraphicsLayer, Graphic, PopupTemplate, EsriMap, reactiveUtils, Popup, symbolUtils, Extent, GroupLayer,
+            MediaLayer, ImageElement, CornersGeoreference){
   "use strict";
 
   /* =====================================================================

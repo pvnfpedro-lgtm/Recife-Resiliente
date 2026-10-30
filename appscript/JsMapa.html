@@ -486,7 +486,7 @@
         row.appendChild(olho(layer, row));
         parent.appendChild(row);
         parent.appendChild(classes);
-        if(layer.type === "graphics"){ sw.innerHTML = layerSwatchSvg(layer.title); return; }
+        if(layer.type === "graphics" || SWATCH_PROJETO[layer.title]){ sw.innerHTML = layerSwatchSvg(layer.title); return; }
         layer.when(function(){
           var r = layer.renderer;
           var lista = classesDoRenderer(r);
