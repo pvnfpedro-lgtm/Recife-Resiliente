@@ -224,7 +224,18 @@ def imagem_da_planta(cfg, area, ponto_pdf, saida):
     k = POL_POR_PT / 1000 * cfg["escala"]
     zoom = k / op.get("m_por_px", 0.25)
     x0, y0, x1, y1 = cfg["recorte_pt"]
-    pg = pymupdf.open(cfg["pdf"])[cfg.get("pagina", 0)]
+    doc = pymupdf.open(cfg["pdf"])
+    if op.get("camadas_cad_desligar"):
+        # Desliga camadas do CAD guardadas no PDF (ex.: foto aérea, limite, marcações das ampliações):
+        # some só o que está nelas, sem mexer nas cores do resto do desenho.
+        nomes = set(op["camadas_cad_desligar"])
+        xrefs = [x for x, v in doc.get_ocgs().items() if v["name"] in nomes]
+        faltam = nomes - {doc.get_ocgs()[x]["name"] for x in xrefs}
+        if faltam:
+            raise SystemExit(f"Camadas do CAD não encontradas no PDF: {sorted(faltam)}")
+        doc.set_layer(-1, off=xrefs)
+        doc = pymupdf.open("pdf", doc.tobytes())  # alguns PDFs (ZWCAD) só respeitam a mudança depois de regravados
+    pg = doc[cfg.get("pagina", 0)]
     if op.get("sem_fotos"):
         # Tira as imagens (foto aérea de fundo) e deixa só o desenho: o mapa base já tem a foto.
         pg.add_redact_annot(pymupdf.Rect(x0, y0, x1, y1))
@@ -232,7 +243,7 @@ def imagem_da_planta(cfg, area, ponto_pdf, saida):
                             text=pymupdf.PDF_REDACT_TEXT_NONE)
     if op.get("remover_textos") or op.get("remover_textos_a_partir_de_pt"):
         # Textos de organização da prancha (ex.: "AMPLIAÇÃO 01") que não interessam no mapa.
-        for t in op["remover_textos"]:
+        for t in op.get("remover_textos", []):
             for r in pg.search_for(t, clip=pymupdf.Rect(x0, y0, x1, y1)):
                 pg.add_redact_annot(r)
         # Títulos em letra grande (ex.: o número da ampliação, que vem num texto à parte).

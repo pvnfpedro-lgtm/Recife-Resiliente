@@ -16,31 +16,17 @@
   ],
   "faixa": "B",
   "imagem": {
-    "sem_fotos": true,
     "m_por_px": 0.2,
     "qualidade": 80,
     "branco_ate": 245,
     "opacidade": 1,
-    "cores_transparentes": [
-      [
-        255,
-        223,
-        191
-      ],
-      [
-        0,
-        191,
-        255
-      ],
-      [
-        255,
-        166,
-        77
-      ]
-    ],
-    "tolerancia_cor": 24,
     "nome": "Canal da Mauricéia — projeto de urbanização (Trechos 01 e 02)",
-    "remover_textos": [],
+    "camadas_cad_desligar": [
+      "ImgGoogle",
+      "CANAL-PROJETADO",
+      "hatch",
+      "Ampliação"
+    ],
     "remover_textos_a_partir_de_pt": 20
   },
   "ajuste_fixo": {

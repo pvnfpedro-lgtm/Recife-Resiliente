@@ -223,6 +223,11 @@ Primeira: **Canal do Sanbra, implantação geral (P01, Rem. 2)**.
 - 30/10: **Canal da Mauricéia**, camada única "Canal da Mauricéia — projeto de urbanização (Trechos 01 e 02)"
   com 3 imagens (Trecho 02 e as duas faixas do Trecho 01), sem a foto aérea de fundo das pranchas.
   Encaixe na pendência 25. Prévia: `docs/img/canal_mauricea_georreferenciado.png`.
+- 30/10, pedido de Pedro (desenho padronizado): **padrão das pranchas no mapa** = sem foto aérea, sem água
+  pintada, sem linha de limite e sem marcações de ampliação. Feito desligando as camadas do CAD guardadas no
+  PDF (`camadas_cad_desligar`), não por cor (por cor sumiam também plantas e meios-fios da mesma cor).
+  Mauricéia: Trecho 01 sem `ImgGoogle`, `CANAL-PROJETADO`, `hatch` e `Ampliação` (e sem os títulos em letra
+  grande); Trecho 02 sem `ImgGoogle`, `POLIGONAL NOVA 22.09` e `Ampliação`.
 - Fluxo: `scripts/planta_pdf_para_geojson.py` (PDF → camadas → encaixe por pontos de controle) →
   `dados/processados/projetos/*.geojson` → `scripts/gerar_projetos_painel.py` →
   `appscript/DadosProjetos.html` (variável `PROJETOS_PRANCHAS`, ~360 KB com a imagem; não editar à mão).
