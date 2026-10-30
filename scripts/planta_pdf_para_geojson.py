@@ -207,6 +207,11 @@ def imagem_da_planta(cfg, area, ponto_pdf, saida):
     zoom = k / op.get("m_por_px", 0.25)
     x0, y0, x1, y1 = cfg["recorte_pt"]
     pg = pymupdf.open(cfg["pdf"])[cfg.get("pagina", 0)]
+    if op.get("sem_fotos"):
+        # Tira as imagens (foto aérea de fundo) e deixa só o desenho: o mapa base já tem a foto.
+        pg.add_redact_annot(pymupdf.Rect(x0, y0, x1, y1))
+        pg.apply_redactions(images=pymupdf.PDF_REDACT_IMAGE_REMOVE, graphics=pymupdf.PDF_REDACT_LINE_ART_NONE,
+                            text=pymupdf.PDF_REDACT_TEXT_NONE)
     pm = pg.get_pixmap(clip=pymupdf.Rect(x0, y0, x1, y1), matrix=pymupdf.Matrix(zoom, zoom), alpha=False)
     im = Image.frombytes("RGB", (pm.width, pm.height), pm.samples).convert("RGBA")
     # Branco (e quase branco) vira transparente.

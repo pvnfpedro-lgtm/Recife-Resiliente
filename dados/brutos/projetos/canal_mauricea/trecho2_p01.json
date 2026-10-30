@@ -1,0 +1,19 @@
+{
+  "id": "canal_mauricea_trecho2_implantacao",
+  "nome": "Canal da Mauricéia — Trecho 02, implantação geral (P01/19)",
+  "fonte": "Prancha URB-CMAU-EXEC-IMPLGERAL, Trecho 02 (PDF, AutoCAD 2024, 15/10/2025), escala 1:1000",
+  "pdf": "P01_URB-CM-IMPLGERAL.pdf",
+  "pagina": 0,
+  "recorte_pt": [40, 40, 3250, 1660],
+  "escala": 1000,
+  "simplificar_pt": 0.15,
+  "pontos_controle": "pontos_controle_trecho2.csv",
+  "camada_limite": "limite_intervencao",
+  "fechar_limite_pt": 12,
+  "folga_limite_pt": 3,
+  "camadas": [
+    {"id": "limite_intervencao", "nome": "Limite da intervenção", "cor_pdf": [0.75, 0.5, 1.0], "cor": "#334155", "opacidade": 1}
+  ],
+  "imagem": {"nome": "Canal da Mauricéia — Trecho 02, projeto de urbanização (P01)", "sem_fotos": true,
+             "m_por_px": 0.3, "qualidade": 80, "branco_ate": 245, "opacidade": 1}
+}
