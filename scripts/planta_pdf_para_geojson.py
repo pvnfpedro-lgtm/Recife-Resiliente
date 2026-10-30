@@ -230,6 +230,21 @@ def imagem_da_planta(cfg, area, ponto_pdf, saida):
         pg.add_redact_annot(pymupdf.Rect(x0, y0, x1, y1))
         pg.apply_redactions(images=pymupdf.PDF_REDACT_IMAGE_REMOVE, graphics=pymupdf.PDF_REDACT_LINE_ART_NONE,
                             text=pymupdf.PDF_REDACT_TEXT_NONE)
+    if op.get("remover_textos") or op.get("remover_textos_a_partir_de_pt"):
+        # Textos de organização da prancha (ex.: "AMPLIAÇÃO 01") que não interessam no mapa.
+        for t in op["remover_textos"]:
+            for r in pg.search_for(t, clip=pymupdf.Rect(x0, y0, x1, y1)):
+                pg.add_redact_annot(r)
+        # Títulos em letra grande (ex.: o número da ampliação, que vem num texto à parte).
+        minimo = op.get("remover_textos_a_partir_de_pt")
+        if minimo:
+            for bl in pg.get_text("dict", clip=pymupdf.Rect(x0, y0, x1, y1))["blocks"]:
+                for ln in bl.get("lines", []):
+                    for sp in ln["spans"]:
+                        if sp["size"] >= minimo and sp["text"].strip():
+                            pg.add_redact_annot(pymupdf.Rect(sp["bbox"]))
+        pg.apply_redactions(images=pymupdf.PDF_REDACT_IMAGE_NONE, graphics=pymupdf.PDF_REDACT_LINE_ART_NONE,
+                            text=pymupdf.PDF_REDACT_TEXT_REMOVE)
     pm = pg.get_pixmap(clip=pymupdf.Rect(x0, y0, x1, y1), matrix=pymupdf.Matrix(zoom, zoom), alpha=False)
     im = Image.frombytes("RGB", (pm.width, pm.height), pm.samples).convert("RGBA")
     # Branco (e quase branco) vira transparente.
