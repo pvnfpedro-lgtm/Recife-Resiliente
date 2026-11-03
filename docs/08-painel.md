@@ -271,6 +271,12 @@ entrega), para abrir no navegador ou conferir; `tests/test_montar_painel.py` con
 - Pontos: usar `dados/processados/pontos_rpa6.geojson` / `.csv` (os 21 pontos,
   com lat/lon e UTM). A cópia `pontos_criticos_rpa6` foi removida em 04/10/2026.
 - `buffer_300m_rpa6.geojson` e `buffer_1000m_rpa6.geojson`: círculos.
+- `aneis_1a5km_rpa6.geojson` (03/11/2026, pedido de Pedro): anéis concêntricos de 1 em 1 km até
+  5 km em cada ponto (campos `faixa`, `raio_ini_m`, `raio_fim_m`), 105 feições; e
+  `circulos_1a5km_rpa6.geojson`: os mesmos raios como círculos completos (`raio_km`). Gerados por
+  `scripts/gerar_aneis_raio.py` (círculos em EPSG:31985, gravados em WGS 84). Com os 21 pontos, os
+  anéis de 3 a 5 km cobrem quase toda a RPA 6 e se sobrepõem: no mapa, filtrar por `ponto_id`.
+  Ainda fora do painel.
 - Coordenadas ainda aproximadas.
 
 ## Pontos de atenção do painel atual
