@@ -1,19 +1,23 @@
 #!/usr/bin/env python3
 """Infraestrutura crítica do Recife em shapefile, a partir do OpenStreetMap — Recife Resiliente.
 
-Baixa do OpenStreetMap (API Overpass), dentro do limite do município do Recife:
-- hospitais (amenity=hospital) e UPAs/policlínicas marcadas como clinic com
-  emergência, como pontos (polígonos viram o centroide);
-- linhas de metrô e VLT (route=subway/light_rail/train do sistema do Recife);
-- estações de metrô/VLT (railway=station / public_transport=station);
-- aeroporto (aeroway=aerodrome), como polígono;
-- terminais e estações de ônibus (amenity=bus_station), como pontos.
+Baixa do OpenStreetMap (API Overpass), dentro do limite do município do Recife, um
+shapefile por camada (lista em CAMADAS, abaixo), em SIRGAS 2000 / UTM 25S
+(EPSG:31985), em dados/shapefiles/infra_critica/. Campos: osm_id, nome, tipo,
+grupo, subtipo, operador, fonte, data. Polígonos de prédios viram um ponto
+dentro do prédio nas camadas de pontos.
 
-Grava em dados/shapefiles/infra_critica/, em SIRGAS 2000 / UTM 25S (EPSG:31985),
-um shapefile por tipo, com os campos osm_id, nome, tipo, subtipo, fonte e data.
+Grupos (lista aprovada por Pedro em 03/11/2026):
+1. Resposta à emergência: bombeiros, SAMU, UPAs, Defesa Civil e COP, delegacias e PM.
+2. Saúde e pessoas vulneráveis: hospitais, policlínicas e maternidades, ILPIs.
+   Abrigos temporários NÃO estão aqui: quase não existem no OSM; virão da Defesa Civil.
+3. Serviços essenciais: subestações, água e esgoto (Compesa), bombeamento da
+   drenagem e comportas.
+4. Mobilidade: metrô/VLT (linhas e estações), aeroporto, terminais de ônibus.
 
-Dado colaborativo: não é cadastro oficial. Conferir com as fontes da prefeitura
-(dados.recife.pe.gov.br, ESIG) antes de usar no I4.
+Dado colaborativo: não é cadastro oficial e pode estar incompleto. Conferir com
+as fontes oficiais (CBMPE, SAMU, Defesa Civil, Compesa, Neoenergia, EMLURB, ESIG)
+antes de usar no I4 (pendência 18).
 
 Requer: pip install shapely pyproj pyshp requests
 Uso:    python3 scripts/gerar_infra_critica.py [--saida dados/shapefiles/infra_critica]
@@ -21,6 +25,7 @@ Uso:    python3 scripts/gerar_infra_critica.py [--saida dados/shapefiles/infra_c
 
 import argparse
 import datetime as dt
+import time
 from pathlib import Path
 
 import requests
@@ -39,21 +44,52 @@ PRJ_31985 = ('PROJCS["SIRGAS_2000_UTM_Zone_25S",GEOGCS["GCS_SIRGAS_2000",DATUM["
              'PARAMETER["Central_Meridian",-33.0],PARAMETER["Scale_Factor",0.9996],'
              'PARAMETER["Latitude_Of_Origin",0.0],UNIT["Meter",1.0]]')
 
-CONSULTAS = {
-    "hospitais": ("ponto", """
+# nome do shapefile: (grupo, geometria, consulta Overpass)
+CAMADAS = {
+    # 1. Resposta à emergência
+    "bombeiros": ("1 Emergência", "ponto", """
+        nwr["amenity"="fire_station"](area.recife);"""),
+    "samu": ("1 Emergência", "ponto", """
+        nwr["emergency"="ambulance_station"](area.recife);
+        nwr["name"~"SAMU",i](area.recife);"""),
+    "upas": ("1 Emergência", "ponto", """
+        nwr["name"~"(^UPA)|(Unidade de Pronto Atendimento)|(Pronto[- ]Atendimento)",i](area.recife);"""),
+    "defesa_civil_cop": ("1 Emergência", "ponto", """
+        nwr["name"~"Defesa Civil|COMDEC|Centro de Opera[çc][õo]es",i](area.recife);"""),
+    "policia": ("1 Emergência", "ponto", """
+        nwr["amenity"="police"](area.recife);"""),
+    # 2. Saúde e pessoas vulneráveis
+    "hospitais": ("2 Saúde", "ponto", """
         nwr["amenity"="hospital"](area.recife);
-        nwr["amenity"="clinic"]["emergency"="yes"](area.recife);
         nwr["healthcare"="hospital"](area.recife);"""),
-    "metro_linhas": ("linha", """
+    "policlinicas_maternidades": ("2 Saúde", "ponto", """
+        nwr["amenity"~"^(clinic|hospital|doctors)$"]["name"~"Policl[ií]nica|Maternidade",i](area.recife);
+        nwr["healthcare"~"^(clinic|hospital|centre)$"]["name"~"Policl[ií]nica|Maternidade",i](area.recife);"""),
+    "ilpis": ("2 Saúde", "ponto", """
+        nwr["social_facility"~"^(nursing_home|assisted_living|group_home)$"](area.recife);
+        nwr["amenity"="nursing_home"](area.recife);
+        nwr["social_facility:for"~"senior"](area.recife);"""),
+    # 3. Serviços essenciais
+    "subestacoes": ("3 Serviços", "ponto", """
+        nwr["power"="substation"](area.recife);"""),
+    "agua_esgoto": ("3 Serviços", "ponto", """
+        nwr["man_made"~"^(water_works|wastewater_plant|water_tower|reservoir_covered)$"](area.recife);
+        nwr["man_made"="pumping_station"]["substance"!~"rainwater|stormwater"](area.recife);"""),
+    "drenagem_bombas_comportas": ("3 Serviços", "ponto", """
+        nwr["man_made"="pumping_station"]["substance"~"rainwater|stormwater"](area.recife);
+        nwr["waterway"~"^(sluice_gate|floodgate|lock_gate)$"](area.recife);
+        nwr["flood_prone"]["man_made"="pumping_station"](area.recife);"""),
+    # 4. Mobilidade
+    "metro_linhas": ("4 Mobilidade", "linha", """
         relation["route"~"^(subway|light_rail|train)$"](area.recife);"""),
-    "metro_estacoes": ("ponto", """
+    "metro_estacoes": ("4 Mobilidade", "ponto", """
         nwr["railway"="station"](area.recife);
         nwr["public_transport"="station"]["train"="yes"](area.recife);
         nwr["public_transport"="station"]["subway"="yes"](area.recife);
         nwr["public_transport"="station"]["light_rail"="yes"](area.recife);"""),
-    "aeroporto": ("poligono", """
+    "aeroporto": ("4 Mobilidade", "poligono", """
         nwr["aeroway"="aerodrome"](area.recife);"""),
-    "terminais_onibus": ("ponto", """
+    "terminais_onibus": ("4 Mobilidade", "ponto", """
         nwr["amenity"="bus_station"](area.recife);
         nwr["public_transport"="station"]["bus"="yes"](area.recife);"""),
 }
@@ -85,7 +121,8 @@ def geometria(el):
 
 
 def subtipo(tags):
-    for k in ("amenity", "healthcare", "route", "railway", "public_transport", "aeroway"):
+    for k in ("amenity", "healthcare", "emergency", "social_facility", "office", "power", "man_made",
+              "waterway", "route", "railway", "public_transport", "aeroway"):
         if k in tags:
             return f"{k}={tags[k]}"
     return ""
@@ -94,7 +131,7 @@ def subtipo(tags):
 def gravar(caminho, forma, feicoes, data):
     tipo = {"ponto": shapefile.POINT, "linha": shapefile.POLYLINE, "poligono": shapefile.POLYGON}[forma]
     with shapefile.Writer(str(caminho), shapeType=tipo, encoding="utf-8") as w:
-        for nome, tam in (("osm_id", 20), ("nome", 120), ("tipo", 30), ("subtipo", 40),
+        for nome, tam in (("osm_id", 20), ("nome", 120), ("tipo", 30), ("grupo", 20), ("subtipo", 40),
                           ("operador", 60), ("fonte", 40), ("data", 10)):
             w.field(nome, "C", size=tam)
         for f in feicoes:
@@ -106,7 +143,7 @@ def gravar(caminho, forma, feicoes, data):
                 w.line([[list(c) for c in p] for p in partes])
             else:
                 w.poly([[list(c) for c in anel] for anel in g["coordinates"]])
-            w.record(f["osm_id"], f["nome"], f["tipo"], f["subtipo"], f["operador"],
+            w.record(f["osm_id"], f["nome"], f["tipo"], f["grupo"], f["subtipo"], f["operador"],
                      "OpenStreetMap (Overpass)", data)
     Path(str(caminho) + ".prj").write_text(PRJ_31985)
     Path(str(caminho) + ".cpg").write_text("UTF-8")
@@ -120,7 +157,7 @@ def main():
     saida.mkdir(parents=True, exist_ok=True)
     data = dt.date.today().isoformat()
 
-    for nome, (forma, corpo) in CONSULTAS.items():
+    for nome, (grupo, forma, corpo) in CAMADAS.items():
         vistos, feicoes = set(), []
         for el in baixar(corpo):
             chave = f"{el['type']}/{el['id']}"
@@ -138,10 +175,11 @@ def main():
                 continue
             tags = el.get("tags", {})
             feicoes.append({"geom": transform(PARA_UTM, geom), "osm_id": chave,
-                            "nome": tags.get("name", ""), "tipo": nome, "subtipo": subtipo(tags),
+                            "nome": tags.get("name", ""), "tipo": nome, "grupo": grupo, "subtipo": subtipo(tags),
                             "operador": tags.get("operator", "")})
         gravar(saida / nome, forma, feicoes, data)
-        print(f"{nome}: {len(feicoes)} feições")
+        print(f"{grupo} · {nome}: {len(feicoes)} feições")
+        time.sleep(2)   # intervalo entre consultas, para não sobrecarregar a API pública
 
 
 if __name__ == "__main__":
