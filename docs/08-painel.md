@@ -209,6 +209,13 @@ mapa), local (exato/aproximado/sem coordenada), notas preenchidas e obras relaci
   tela de celular. Conferido por Pedro na URL de teste em 29/10/2026: painel abre, tabela, CSV e
   impressão funcionam dentro do Apps Script.
 
+## Pontos da bacia do Tejipió (03/11/2026, pedido de Pedro)
+A aba "Notas dos pontos" passa a ter, além dos 21 da RPA 6, os pontos da bacia do Tejipió fora da RPA 6
+(29, 30, 31, 32, 45, 46, 48; pendência 26), sem coordenadas e sem notas. Ranking (coluna Posição) estendido
+até a linha 34. No painel, os textos "RPA 6" viraram "RPA 6 e bacia do Tejipió" (`RECORTE_PONTOS` em
+`JsPontosCriticos.html`), o cartão diz "de N pontos com notas" e o ranking avisa quantos pontos ainda estão
+sem notas (ficam no fim da tabela).
+
 ## Pranchas de projeto no mapa (30/10/2026)
 O painel mostra plantas de projeto vindas de PDF, por baixo dos pontos críticos e das obras.
 Primeira: **Canal do Sanbra, implantação geral (P01, Rem. 2)**.

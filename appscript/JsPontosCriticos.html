@@ -5,7 +5,9 @@
      Código.js > getPontosCriticos(). Cor pelo índice de risco (0–1);
      corte da matriz = risco 9 = índice 0,333.
      ===================================================================== */
-  var PONTOS_TITULO = "Pontos críticos — RPA 6 (teste)";
+  // Recorte desde 03/11/2026: os 21 pontos da RPA 6 e os da bacia do Tejipió fora da RPA 6.
+  var RECORTE_PONTOS = "RPA 6 e bacia do Tejipió";
+  var PONTOS_TITULO = "Pontos críticos — " + RECORTE_PONTOS + " (teste)";
   var CORTE_RISCO = 9;
   // Notas da planilha ainda de teste (=RANDBETWEEN). Mudar para false quando entrarem as notas reais:
   // some a etiqueta "notas de teste" dos KPIs e o aviso do ranking.
@@ -256,6 +258,11 @@
     function abrir(){ abrirCartao(pc, geom); }
     focarPonto(pc).then(abrir, abrir);
   }
+  // "de N pontos": só entram no ranking os pontos que já têm risco calculado (com notas).
+  function textoRankingDe(){
+    var n = (PONTOS_LISTA || []).filter(function(x){ return x.risco != null; }).length;
+    return "de " + n + (n === 1 ? " ponto com notas" : " pontos com notas");
+  }
   function popupPonto(p){
     var linhas = "";
     GRUPOS_SUB.forEach(function(g, gi){
@@ -275,7 +282,7 @@
         '<div class="rr-kpi" style="border-top-color:' + corIndice(p.indice) + '"><div class="rr-kpi-v">' + fmtN(p.indice, 3) + '</div>' +
           '<div class="rr-kpi-r">Índice de risco</div><div class="rr-kpi-n">de 0 a 1</div></div>' +
         '<div class="rr-kpi"><div class="rr-kpi-v">' + (p.posicao != null ? p.posicao + 'º' : '—') + '</div>' +
-          '<div class="rr-kpi-r">Posição no ranking</div><div class="rr-kpi-n">de 21 pontos</div></div>' +
+          '<div class="rr-kpi-r">Posição no ranking</div><div class="rr-kpi-n">' + textoRankingDe() + '</div></div>' +
       '</div>' +
       obrasDoPontoHtml(p) +
       '<table class="rr-tab"><tr><th>Dimensão / variável</th><th>Avaliação<br><span class="rr-th-n">(nota 1–5)</span></th></tr>' + linhas + '</table>' +
@@ -297,7 +304,7 @@
     cartao.innerHTML =
       '<div class="rr-card-seta"></div>' +
       '<div class="rr-card-in">' +
-        '<div class="rr-card-cab"><span>Ponto crítico de alagamento · RPA 6</span>' +
+        '<div class="rr-card-cab"><span>Ponto crítico de alagamento · ' + RECORTE_PONTOS + '</span>' +
           '<button type="button" class="rr-card-x" title="Fechar">×</button></div>' +
         '<div class="rr-card-corpo"></div>' +
         '<div class="rr-card-acoes"><button type="button" data-a="zoom">Aproximar</button>' +
@@ -545,8 +552,10 @@
     });
     return linhas.join("\r\n");
   }
+  function semNotas(){ return (PONTOS_LISTA || []).filter(function(x){ return x.risco == null; }).length; }
   function avisoRanking(){
     return (NOTAS_DE_TESTE ? "Notas de teste: a planilha ainda sorteia as notas e o ranking muda a cada recálculo. " : "") +
+      (semNotas() ? semNotas() + (semNotas() === 1 ? " ponto ainda sem notas fica" : " pontos ainda sem notas ficam") + " no fim da tabela. " : "") +
       "Lido da planilha em " + (dataHora(PONTOS_LIDO_EM) || "—") + ".";
   }
   var CLASSE_COLUNA_RANKING = { "Trecho":"rk-largo", "Obras relacionadas":"rk-largo", "Classe do índice":"rk-nowrap", "Local":"rk-nowrap" };
@@ -578,7 +587,7 @@
     corpo.innerHTML = tabelaRankingHtml();
   }
   function nomeArquivoRanking(ext){
-    return "ranking_pontos_criticos_RPA6_" + new Date().toISOString().slice(0, 10) + (NOTAS_DE_TESTE ? "_notas-de-teste" : "") + "." + ext;
+    return "ranking_pontos_criticos_RPA6_Tejipio_" + new Date().toISOString().slice(0, 10) + (NOTAS_DE_TESTE ? "_notas-de-teste" : "") + "." + ext;
   }
   function baixarRankingCsv(){
     // BOM no começo: o Excel abre os acentos certos.
@@ -621,7 +630,7 @@
       '.rk-cor{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px;-webkit-print-color-adjust:exact;print-color-adjust:exact;}' +
       'button{margin-bottom:10px;padding:6px 12px;font:inherit;cursor:pointer;}@media print{button{display:none;}}</style></head><body>' +
       '<button onclick="print()">Imprimir / salvar em PDF</button>' +
-      '<h1>Recife Resiliente — ranking dos pontos críticos da RPA 6</h1>' +
+      '<h1>Recife Resiliente — ranking dos pontos críticos (' + escHtml(RECORTE_PONTOS) + ')</h1>' +
       '<p>' + escHtml(avisoRanking()) + ' Risco = Probabilidade × Consequência (1 a 25); índice = (risco − 1) ÷ 24.</p>' +
       tabelaRankingHtml() + '<scr' + 'ipt>window.onload=function(){print();};</scr' + 'ipt></body></html>';
     var url = URL.createObjectURL(new Blob([html], { type:"text/html" }));
