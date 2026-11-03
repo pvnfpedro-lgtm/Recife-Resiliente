@@ -676,7 +676,13 @@
   .project-card-top{display:flex;align-items:center;justify-content:space-between;gap:8px;}
   .status-pill{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;padding:3px 8px;border-radius:999px;white-space:nowrap;}
   /* Status das obras em tom neutro (sem cor), para não competir com o risco */
-  .status-pill.obra,.status-pill.licitacao,.status-pill.concluido,.status-pill.nao_planejado,.status-pill.conceitual,.status-pill.projeto{background:rgba(51,65,85,.10);color:#334155;}
+  /* Etiqueta de situação na cor do ícone da obra (03/11/2026; cores de COR_STATUS_OBRA em JsMapa) */
+  .status-pill.nao_planejado{background:rgba(148,163,184,.18);color:#475569;}
+  .status-pill.conceitual{background:rgba(168,85,247,.14);color:#7e22ce;}
+  .status-pill.projeto{background:rgba(79,70,229,.13);color:#4338ca;}
+  .status-pill.licitacao{background:rgba(219,39,119,.13);color:#be185d;}
+  .status-pill.obra{background:rgba(8,105,166,.13);color:#0869A6;}
+  .status-pill.concluido{background:rgba(22,163,74,.14);color:#15803d;}
   .status-pill.saudavel{background:var(--saudavel-bg);color:var(--saudavel-text);}
   .status-pill.atencao{background:var(--atencao-bg);color:var(--atencao-text);}
   .status-pill.critico{background:var(--critico-bg);color:var(--critico-text);}

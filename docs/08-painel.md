@@ -216,6 +216,14 @@ até a linha 34. No painel, os textos "RPA 6" viraram "RPA 6 e bacia do Tejipió
 `JsPontosCriticos.html`), o cartão diz "de N pontos com notas" e o ranking avisa quantos pontos ainda estão
 sem notas (ficam no fim da tabela).
 
+## Aba "Obras" de 03/11/2026
+- Pedro atualizou a aba e as coordenadas. O Claude deu número às obras novas (34 Comporta Dancing Days,
+  35 Microdrenagem da Abdias de Carvalho), pôs a bacia do Tejipió nas que tinham bairro na coluna `bacia`
+  e ligou o ponto crítico 47 à obra 35 (estão a ~6 m um do outro).
+- Painel: ícones das obras preenchidos na cor da situação (`docs/09-identidade-visual-mapa.md`); tipos novos
+  da coluna `tipo` reconhecidos (requalificação de canal, parque alagável, dique, comporta, microdrenagem,
+  sistema de bombas); várias coordenadas na mesma célula (uma por linha) viram um ícone por local (obra 29).
+
 ## Pranchas de projeto no mapa (30/10/2026)
 O painel mostra plantas de projeto vindas de PDF, por baixo dos pontos críticos e das obras.
 Primeira: **Canal do Sanbra, implantação geral (P01, Rem. 2)**.

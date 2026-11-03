@@ -133,14 +133,13 @@
     return p.join(" ");
   }
   var ICONES_OBRA_CACHE = {};
-  // Estilo D2 (16/10/2026, docs/prototipos/situacao_obras.html): fundo branco, contorno e desenho na cor da
-  // etapa; "não planejado" com contorno tracejado.
+  // Hexágono preenchido na cor da etapa, desenho branco e contorno branco (03/11/2026, pedido de Pedro: a
+  // situação bem visível no mapa; antes, estilo D2 com fundo branco e traço na cor). "Não planejado" em cinza.
   function iconeObraSvg(cat, status){
     var cor = COR_STATUS_OBRA[status] || COR_STATUS_OBRA.nao_planejado;
-    var glifo = (GLIFOS_OBRA[cat] || GLIFOS_OBRA.generica).replace(/#fff/g, cor);
+    var glifo = GLIFOS_OBRA[cat] || GLIFOS_OBRA.generica;
     return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">' +
-      '<polygon points="' + hexPontos(15.4) + '" fill="#fff" stroke="' + cor + '" stroke-width="3" stroke-linejoin="round"' +
-        (status === "nao_planejado" ? ' stroke-dasharray="3.2 2"' : '') + '/>' +
+      '<polygon points="' + hexPontos(15) + '" fill="' + cor + '" stroke="#fff" stroke-width="2" stroke-linejoin="round"/>' +
       '<g transform="translate(9.6,9.6) scale(0.85)">' + glifo + '</g></svg>';
   }
 
@@ -148,7 +147,10 @@
   var CATEGORIA_OBRA = {
     "canal":"canal", "perfilamento do rio tejipio":"canal", "dragagem":"dragagem",
     "reservatorios de detencao":"reservatorio", "microrreservatorio":"reservatorio",
-    "diques e comportas":"dique", "parques alagaveis":"parque", "requalificacoes na rede":"rede"
+    "diques e comportas":"dique", "parques alagaveis":"parque", "requalificacoes na rede":"rede",
+    // Valores da coluna "tipo" usados na planilha desde 03/11/2026.
+    "requalificacao de canal":"canal", "parque alagavel":"parque", "dique":"dique", "comporta":"dique",
+    "requalificacao de microdrenagem":"rede", "sistema de bombas":"rede"
   };
   function iconeObra(tipo, status){
     var cat = CATEGORIA_OBRA[semAcento(tipo).replace(/\s+/g, " ")] || "generica";
@@ -164,6 +166,10 @@
     if(isNaN(lat) || isNaN(lon) || !m[0].trim() || !m[1].trim()) return null;
     if(lat < -8.16 || lat > -7.92 || lon < -35.02 || lon > -34.85) return null;
     return [lat, lon];
+  }
+  // Várias coordenadas na mesma célula, uma por linha (ex.: obra com dois reservatórios): uma por local.
+  function coordsObra(texto){
+    return String(texto == null ? "" : texto).split(/[\r\n;]+/).map(coordObra).filter(Boolean);
   }
 
   // Gráfico em memória de cada obra (não vai para o mapa: a camada de obras do WebMap já desenha as áreas).
@@ -274,17 +280,17 @@
       };
       p.etapas = o.etapas || [];
       // Ponto da obra: a coordenada da planilha passa a ser o local da obra (centro do zoom ao selecionar).
-      var xy = coordObra(o.coordenadas);
-      p._ponto = null;
-      if(xy){
-        p.pos = [xy[1], xy[0]];
-        p._ponto = new Graphic({
+      var locais = coordsObra(o.coordenadas);
+      p._ponto = null; p._pontosExtras = [];
+      locais.forEach(function(xy, i){
+        var g = new Graphic({
           geometry: { type:"point", longitude:xy[1], latitude:xy[0] },
           symbol: { type:"picture-marker", url: iconeObra(o.tipo, p.status), width:"44px", height:"44px" },   // 36 → 44 px (16/10/2026)
           attributes: { id:p.id }
         });
-        (CAMADA_ETAPA[p.status] || CAMADA_ETAPA.nao_planejado).add(p._ponto);
-      }
+        (CAMADA_ETAPA[p.status] || CAMADA_ETAPA.nao_planejado).add(g);
+        if(i === 0){ p.pos = [xy[1], xy[0]]; p._ponto = g; } else p._pontosExtras.push(g);
+      });
     });
     desenharLigacoes();
   }
