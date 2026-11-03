@@ -230,7 +230,7 @@ Camada "Anéis de 1 a 5 km (pontos 12, 36, 37, 32 e 47)" (`aneisLayer` em `JsPon
 e preenchimento cada vez mais claro para fora. Os círculos são geodésicos e calculados no navegador a partir da
 lat/lon da aba "Notas dos pontos" (os mesmos raios de `dados/processados/arcgis/aneis_1a5km_selecao.geojson`).
 Ficam abaixo das ligações, dos pontos e das obras, não respondem ao clique e ligam/desligam no quadro Camadas.
-Para trocar os pontos: `ANEIS_PONTOS`. As 5 coordenadas são aproximadas.
+Para trocar os pontos: `ANEIS_PONTOS`. As 5 coordenadas são aproximadas. `clasp push` em 03/11/2026 com aprovação de Pedro, depois de juntar `claude/festive-bardeen-2qlfhd` (a versão que já estava no Apps Script); ainda não conferido na URL de teste.
 
 ## Pranchas de projeto no mapa (30/10/2026)
 O painel mostra plantas de projeto vindas de PDF, por baixo dos pontos críticos e das obras.
