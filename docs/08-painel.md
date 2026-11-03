@@ -271,6 +271,13 @@ entrega), para abrir no navegador ou conferir; `tests/test_montar_painel.py` con
 - Pontos: usar `dados/processados/pontos_rpa6.geojson` / `.csv` (os 21 pontos,
   com lat/lon e UTM). A cópia `pontos_criticos_rpa6` foi removida em 04/10/2026.
 - `buffer_300m_rpa6.geojson` e `buffer_1000m_rpa6.geojson`: círculos.
+- `aneis_1a5km_selecao.geojson` (03/11/2026, pedido de Pedro): anéis concêntricos de 1 em 1 km até
+  5 km (campos `faixa`, `raio_ini_m`, `raio_fim_m`) **só nos 5 pontos escolhidos por Pedro**: 12, 36,
+  37 (RPA 6), 32 (Jardim São Paulo) e 47 (Bongi, Praça da CHESF); 25 feições. E
+  `circulos_1a5km_selecao.geojson`: os mesmos raios como círculos completos (`raio_km`). Gerados por
+  `python3 scripts/gerar_aneis_raio.py` a partir de `dados/processados/pontos_aneis_selecao.csv`
+  (lat/lon da aba "Notas dos pontos"; todas "Aproximado", não conferidas). Pedro não quer anéis
+  nos 21 pontos. Ainda fora do painel.
 - Coordenadas ainda aproximadas.
 
 ## Pontos de atenção do painel atual

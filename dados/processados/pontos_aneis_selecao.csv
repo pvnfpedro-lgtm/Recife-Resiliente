@@ -1,0 +1,6 @@
+ponto_id,bairro,trecho,lat,lon,tipo,precisao_coordenada,prioridade_emlurb,coordenada_verificada,grupo_sobreposicao
+12,Boa Viagem,Rua Padre Bernardino Pessoa (Da Avenida Conselheiro Aguiar até a Via Mangue),-8.112935,-34.896796,Linha,Aproximado,Não,não,G1
+36,Imbiribeira,Avenida Mascarenhas de Moraes (Trecho da Ferreira Costa),-8.111915,-34.912386,Ponto,Aproximado,Sim,não,G3
+37,Ipsep,Avenida Recife (Da Avenida Dom Helder Câmara até o Rio Tejipió),-8.105179,-34.927549,Linha,Aproximado,Sim,não,G5
+32,Jardim São Paulo,"Rua Nossa Senhora de Fátima (Cruzamento com a Avenida Recife, em frente ao Canal do Sanbra)",-8.082658,-34.932934,Ponto,Aproximado,Sim,não,
+47,Bongi,Avenida Abdias de Carvalho (Praça da CHESF),-8.062548,-34.932170,Ponto,Aproximado,Não,não,
