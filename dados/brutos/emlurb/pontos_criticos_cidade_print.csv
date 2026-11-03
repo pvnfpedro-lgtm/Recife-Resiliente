@@ -45,7 +45,7 @@ ponto_id,rpa,bairro,logradouro,trecho,prioridade_emlurb,bacia_tejipio
 44,3,Dois Irmãos,Rua Sítio dos Pintos,Trechos pontuais,Não,fora
 45,5,Areias,Avenida Capitão Gregório de Caldas (engloba a Rua Aurora Caçote),Próximo ao canal,Não,dentro
 46,5,Areias,Rua José Natário,Trecho do prédio Metrorec,Não,dentro
-47,5,Bongi,Avenida Abdias de Carvalho,Praça da CHESF,Não,a confirmar
+47,5,Bongi,Avenida Abdias de Carvalho,Praça da CHESF,Não,dentro (decisão de Pedro em 03/11/2026)
 48,5,Estância,Rua João Cabral de Melo,Próxima à ponte do Jiquiá,Não,dentro
 49,3,Nova Descoberta,Av. Nova Descoberta e arredores do Mercado Público de Nova Descoberta,Começando no Córrego da Areia indo até limite com o Rio Morno,Não,fora
 50,4,Madalena,Rua João Ivo,Entre a Av. Abdias de Carvalho até a Rua Padre Teófilo Twors,Não,fora

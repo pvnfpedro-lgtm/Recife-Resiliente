@@ -216,6 +216,27 @@ até a linha 34. No painel, os textos "RPA 6" viraram "RPA 6 e bacia do Tejipió
 `JsPontosCriticos.html`), o cartão diz "de N pontos com notas" e o ranking avisa quantos pontos ainda estão
 sem notas (ficam no fim da tabela).
 
+## Aba "Obras" de 03/11/2026
+- Pedro atualizou a aba e as coordenadas. O Claude deu número às obras novas (34 Comporta Dancing Days,
+  35 Microdrenagem da Abdias de Carvalho), pôs a bacia do Tejipió nas que tinham bairro na coluna `bacia`
+  e ligou o ponto crítico 47 à obra 35 (estão a ~6 m um do outro).
+- Painel: ícones das obras preenchidos na cor da situação (`docs/09-identidade-visual-mapa.md`); tipos novos
+  da coluna `tipo` reconhecidos (requalificação de canal, parque alagável, dique, comporta, microdrenagem,
+  sistema de bombas); várias coordenadas na mesma célula (uma por linha) viram um ícone por local (obra 29).
+
+## Anéis de 1 a 5 km (03/11/2026, pedido de Pedro)
+- Primeira versão (`clasp push` em 03/11/2026, aprovado por Pedro, depois de juntar `claude/festive-bardeen-2qlfhd`,
+  a versão que já estava no Apps Script): camada fixa só nos pontos 12, 36, 37, 32 e 47.
+- Versão atual (pedido de Pedro, mesmo dia): **os anéis aparecem no ponto clicado**, qualquer um, e somem ao
+  fechar o cartão. Camada "Anéis de 1 a 5 km (ponto clicado)" (`aneisLayer` em `JsPontosCriticos.html`,
+  redesenhada por `desenharAneis()` dentro de `desenharLigacoes()`). Faixas 0–1 a 4–5 km, contorno tracejado em
+  #0869A6, preenchimento cada vez mais claro para fora e rótulo "1 km" … "5 km" a nordeste de cada anel.
+  Círculos geodésicos calculados no navegador a partir da lat/lon da aba "Notas dos pontos". Ficam abaixo das
+  ligações, dos pontos e das obras, não respondem ao clique e ligam/desligam no quadro Camadas. O zoom ao clicar
+  continua o mesmo (~2 km): para ver os 5 km, afastar o mapa. Coordenadas ainda aproximadas.
+- Os GeoJSON `dados/processados/arcgis/aneis_1a5km_selecao.geojson` e `circulos_1a5km_selecao.geojson` (5 pontos)
+  continuam para uso no ArcGIS.
+
 ## Pranchas de projeto no mapa (30/10/2026)
 O painel mostra plantas de projeto vindas de PDF, por baixo dos pontos críticos e das obras.
 Primeira: **Canal do Sanbra, implantação geral (P01, Rem. 2)**.

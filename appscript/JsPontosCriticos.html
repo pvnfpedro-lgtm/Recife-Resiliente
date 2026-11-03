@@ -15,6 +15,47 @@
   var pontosLayer = new GraphicsLayer({ title: PONTOS_TITULO });
   /* Círculo de 300 m em volta dos pontos: retirado do mapa em 16/10/2026 (pedido de Pedro).
      O raio continua sendo a área do score (metodologia); só deixou de ser desenhado. */
+  /* Anéis de 1 a 5 km (03/11/2026, pedido de Pedro): aparecem só no ponto clicado (cartão aberto), em
+     qualquer ponto, e somem ao fechar o cartão. Antes ficavam fixos nos pontos 12, 36, 37, 32 e 47.
+     Desenhados a partir da lat/lon da planilha. Coordenadas ainda aproximadas. */
+  var ANEIS_RAIOS_M = [1000, 2000, 3000, 4000, 5000];
+  var ANEIS_COR = [8, 105, 166];   // #0869A6, da paleta do painel
+  var ANEIS_TITULO = "Anéis de 1 a 5 km (ponto clicado)";
+  var aneisLayer = new GraphicsLayer({ title: ANEIS_TITULO });
+  // Círculo geodésico (esfera de 6.371 km) como anel de polígono [lon, lat], fechado.
+  function circuloGeo(lon, lat, raio, sentidoHorario){
+    var R = 6371008.8, d = raio / R, f1 = lat * Math.PI / 180, l1 = lon * Math.PI / 180, pts = [];
+    for(var k = 0; k <= 128; k++){
+      var b = (sentidoHorario ? 1 : -1) * 2 * Math.PI * k / 128;
+      var f2 = Math.asin(Math.sin(f1) * Math.cos(d) + Math.cos(f1) * Math.sin(d) * Math.cos(b));
+      var l2 = l1 + Math.atan2(Math.sin(b) * Math.sin(d) * Math.cos(f1), Math.cos(d) - Math.sin(f1) * Math.sin(f2));
+      pts.push([l2 * 180 / Math.PI, f2 * 180 / Math.PI]);
+    }
+    return pts;
+  }
+  function desenharAneis(){
+    aneisLayer.removeAll();
+    var p = cartaoPonto;
+    if(!p || p.lat == null || p.lon == null) return;
+    ANEIS_RAIOS_M.forEach(function(raio, i){
+      var rings = [circuloGeo(p.lon, p.lat, raio, true)];
+      if(i > 0) rings.push(circuloGeo(p.lon, p.lat, ANEIS_RAIOS_M[i - 1], false));   // furo: só a faixa
+      var faixa = (i ? ANEIS_RAIOS_M[i - 1] / 1000 : 0) + "–" + raio / 1000 + " km";
+      aneisLayer.add(new Graphic({
+        geometry: { type:"polygon", rings: rings, spatialReference:{ wkid:4326 } },
+        symbol: { type:"simple-fill", color: ANEIS_COR.concat([0.10 - i * 0.015]),
+          outline: { color: ANEIS_COR.concat([0.85 - i * 0.12]), width: i ? 1 : 1.5, style: "dash" } },
+        attributes: { ponto_id: p.id, faixa: faixa }
+      }));
+      // Rótulo da distância na borda de cada anel, a nordeste do ponto.
+      var borda = circuloGeo(p.lon, p.lat, raio, true)[16];
+      aneisLayer.add(new Graphic({
+        geometry: { type:"point", longitude: borda[0], latitude: borda[1] },
+        symbol: { type:"text", text: raio / 1000 + " km", color: ANEIS_COR.concat([1]), haloColor: [255, 255, 255, 0.95],
+          haloSize: 1.5, font: { size: 10, weight: "bold", family: "sans-serif" } }
+      }));
+    });
+  }
   /* Obras: um ponto por obra, na coordenada da coluna "coordenadas (lat, lon)" da aba "Obras".
      Desenho pelo tipo e cor pela etapa. Uma camada por etapa dentro do grupo (16/10/2026), para
      ligar e desligar cada etapa na legenda. */
@@ -70,13 +111,14 @@
     }) });
   });
   projetosLayers.forEach(function(l){ map.add(l); });
+  map.add(aneisLayer);
   map.add(ligacoesLayer);
   map.add(pontosLayer);
   map.add(obrasPontosLayer);
   // O WebMap só traz as camadas dele depois de carregar, e elas entram por cima das nossas (os rios
   // cobriam os ícones das obras). Depois do carregamento, as nossas voltam para o topo, na mesma ordem.
   map.when(function(){
-    projetosLayers.concat([ligacoesLayer, pontosLayer, obrasPontosLayer]).forEach(function(l){ map.reorder(l, map.layers.length - 1); });
+    projetosLayers.concat([aneisLayer, ligacoesLayer, pontosLayer, obrasPontosLayer]).forEach(function(l){ map.reorder(l, map.layers.length - 1); });
   });
   var CLASSES_INDICE = [
     { max: 0.2,      cor: "#1a9850", rotulo: "< 0,200" },
@@ -198,6 +240,7 @@
     }, function(){ g.symbol = base; });
   }
   function desenharLigacoes(){
+    desenharAneis();   // anéis de 1 a 5 km do ponto clicado (somem junto com as ligações)
     pararAnimacoes();
     ligacoesLayer.removeAll();
     if(!cartaoPonto) return;

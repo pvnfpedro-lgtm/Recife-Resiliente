@@ -108,3 +108,11 @@
 | Resposta e apoio | Abrigo / ponto de apoio da Defesa Civil; base do COP |
 | Mobilidade (I1) | Terminal integrado; estação de BRT; corredor de ônibus |
 | Obras | Em obra; em licitação; concluído (proposta acima) |
+
+## Obras: cor pela situação (03/11/2026, pedido de Pedro)
+- Hexágono **preenchido** na cor da situação, desenho branco e contorno branco (antes: fundo branco e
+  traço na cor, estilo D2 de 16/10). Cores de 16/10 mantidas: não planejado `#94a3b8`, conceitual
+  `#A855F7`, em projeto `#4F46E5`, em licitação `#DB2777`, em obra `#0869A6`, concluída `#16A34A`.
+- O desenho continua dizendo o tipo (canal, dragagem, reservatório, dique, parque, rede, genérica). A forma
+  (hexágono) separa as obras dos pontos críticos (círculo), que usam a escala de risco.
+- Prévia: `mapa/icones/previa_obras_situacao.png`. Código: `iconeObraSvg` em `appscript/JsMapa.html`.

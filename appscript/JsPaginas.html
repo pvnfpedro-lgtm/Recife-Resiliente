@@ -44,6 +44,7 @@
       var vis = visible.indexOf(p) > -1;
       p._graphic.visible = vis;
       if(p._ponto) p._ponto.visible = vis;
+      (p._pontosExtras || []).forEach(function(g){ g.visible = vis; });
     });
     countEl.textContent = visible.length + (visible.length===1 ? " item" : " itens");
     listEl.innerHTML = "";
