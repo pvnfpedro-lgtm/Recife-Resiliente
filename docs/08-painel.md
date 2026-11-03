@@ -234,6 +234,9 @@ sem notas (ficam no fim da tabela).
   Círculos geodésicos calculados no navegador a partir da lat/lon da aba "Notas dos pontos". Ficam abaixo das
   ligações, dos pontos e das obras, não respondem ao clique e ligam/desligam no quadro Camadas. O zoom ao clicar
   continua o mesmo (~2 km): para ver os 5 km, afastar o mapa. Coordenadas ainda aproximadas.
+- Cartão recolhível (pedido de Pedro, 03/11/2026: o cartão cobria os anéis): botão **–/+** na barra do título
+  deixa só a barra, com "Ponto N · bairro · índice"; a escolha vale para os próximos pontos até ser desfeita.
+  Botão **"Ver anéis (5 km)"** no rodapé do cartão: recolhe o cartão e enquadra o anel de 5 km na área livre.
 - Os GeoJSON `dados/processados/arcgis/aneis_1a5km_selecao.geojson` e `circulos_1a5km_selecao.geojson` (5 pontos)
   continuam para uso no ArcGIS.
 

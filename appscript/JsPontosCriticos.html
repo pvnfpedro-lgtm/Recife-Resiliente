@@ -287,6 +287,10 @@
     var MIN = 0.018;   // ~2 km: não aproxima mais que isso
     if(x1 - x0 < MIN){ var cx = (x0 + x1) / 2; x0 = cx - MIN / 2; x1 = cx + MIN / 2; }
     if(y1 - y0 < MIN){ var cy = (y0 + y1) / 2; y0 = cy - MIN / 2; y1 = cy + MIN / 2; }
+    return enquadrar(x0, x1, y0, y1);
+  }
+  // Leva a caixa (graus) para a área livre do mapa (fora das listas e da faixa de KPIs).
+  function enquadrar(x0, x1, y0, y1){
     var a = areaLivre(), W = view.width, H = view.height;
     var fw = Math.max(0.2, (W - a.L - a.R) / W), fh = Math.max(0.2, (H - a.T - a.B) / H);
     var tw = (x1 - x0) / fw, th = (y1 - y0) / fh;
@@ -347,10 +351,12 @@
     cartao.innerHTML =
       '<div class="rr-card-seta"></div>' +
       '<div class="rr-card-in">' +
-        '<div class="rr-card-cab"><span>Ponto crítico de alagamento · ' + RECORTE_PONTOS + '</span>' +
-          '<button type="button" class="rr-card-x" title="Fechar">×</button></div>' +
+        '<div class="rr-card-cab"><span class="rr-card-tit">Ponto crítico de alagamento · ' + RECORTE_PONTOS + '</span>' +
+          '<span class="rr-card-bts"><button type="button" class="rr-card-min" title="Recolher o cartão" aria-expanded="true">–</button>' +
+          '<button type="button" class="rr-card-x" title="Fechar">×</button></span></div>' +
         '<div class="rr-card-corpo"></div>' +
-        '<div class="rr-card-acoes"><button type="button" data-a="zoom">Aproximar</button>' +
+        '<div class="rr-card-acoes"><button type="button" data-a="aneis" title="Recolhe o cartão e mostra o raio de 5 km inteiro">Ver anéis (5 km)</button>' +
+          '<button type="button" data-a="zoom">Aproximar</button>' +
           '<button type="button" data-a="gmaps">Abrir no Google Maps ↗</button></div>' +
       '</div>';
     view.container.appendChild(cartao);
@@ -358,6 +364,14 @@
       cartao.addEventListener(t, function(e){ e.stopPropagation(); });
     });
     cartao.querySelector(".rr-card-x").addEventListener("click", fecharCartao);
+    cartao.querySelector(".rr-card-min").addEventListener("click", function(){ recolherCartao(!cartaoRecolhido); });
+    cartao.querySelector('[data-a="aneis"]').addEventListener("click", function(){
+      if(!cartaoPonto) return;
+      recolherCartao(true);
+      // Caixa do anel de 5 km: 1° de latitude ≈ 111,2 km; a longitude encolhe com o cosseno da latitude.
+      var r = ANEIS_RAIOS_M[ANEIS_RAIOS_M.length - 1] * 1.05, dy = r / 111195, dx = dy / Math.cos(cartaoPonto.lat * Math.PI / 180);
+      enquadrar(cartaoPonto.lon - dx, cartaoPonto.lon + dx, cartaoPonto.lat - dy, cartaoPonto.lat + dy);
+    });
     cartao.querySelector(".rr-card-corpo").addEventListener("click", function(e){
       var tr = e.target.closest("tr.rr-dim");
       if(!tr) return;
@@ -372,6 +386,23 @@
     cartao.querySelector('[data-a="gmaps"]').addEventListener("click", function(){
       if(cartaoPonto) window.open("https://www.google.com/maps/search/?api=1&query=" + cartaoPonto.lat + "," + cartaoPonto.lon, "_blank", "noopener");
     });
+  }
+  /* Cartão recolhido (03/11/2026, pedido de Pedro: o cartão cobria os anéis): fica só a barra do título,
+     com o nome do ponto. A escolha vale para os próximos pontos clicados até ser desfeita. */
+  var cartaoRecolhido = false;
+  function recolherCartao(sim){
+    cartaoRecolhido = !!sim;
+    if(!cartao) return;
+    cartao.classList.toggle("recolhido", cartaoRecolhido);
+    var bt = cartao.querySelector(".rr-card-min");
+    bt.textContent = cartaoRecolhido ? "+" : "–";
+    bt.title = cartaoRecolhido ? "Abrir o cartão" : "Recolher o cartão";
+    bt.setAttribute("aria-expanded", String(!cartaoRecolhido));
+    var p = cartaoPonto;
+    cartao.querySelector(".rr-card-tit").textContent = cartaoRecolhido && p
+      ? "Ponto " + p.id + " · " + (p.bairro || "") + (p.indice == null ? "" : " · índice " + fmtN(p.indice, 3))
+      : "Ponto crítico de alagamento · " + RECORTE_PONTOS;
+    posicionarCartao();
   }
   function posicionarCartao(){
     if(!cartao || !cartaoGeom || cartao.style.display === "none") return;
@@ -403,6 +434,7 @@
     corpo.innerHTML = popupPonto(p);
     corpo.scrollTop = 0;
     cartao.style.display = "block";
+    recolherCartao(cartaoRecolhido);
     posicionarCartao();
     marcarPontoNaLista(p.id);
     desenharLigacoes();
