@@ -1,21 +1,21 @@
 #!/usr/bin/env python3
-"""Anéis concêntricos de 1 a 5 km em volta dos pontos críticos — Recife Resiliente.
+"""Anéis concêntricos de 1 a 5 km em volta de pontos críticos escolhidos — Recife Resiliente.
 
-Lê os 21 pontos da RPA 6 (coordenadas UTM em SIRGAS 2000 / UTM 25S,
-EPSG:31985), desenha os círculos em metros nessa projeção e grava em WGS 84
+Lê os pontos escolhidos por Pedro em 03/11/2026 (12, 36, 37, 32 e 47; lat/lon
+da aba "Notas dos pontos"), projeta para SIRGAS 2000 / UTM 25S (EPSG:31985), desenha os círculos em metros nessa projeção e grava em WGS 84
 (lon/lat), no mesmo formato de `buffer_1000m_rpa6.geojson`.
 
 Saídas (em dados/processados/arcgis/):
-- aneis_1a5km_rpa6.geojson: anéis (0–1, 1–2, 2–3, 3–4 e 4–5 km), sem
+- aneis_1a5km_selecao.geojson: anéis (0–1, 1–2, 2–3, 3–4 e 4–5 km), sem
   sobreposição dentro de um mesmo ponto; bom para simbolizar por faixa.
-- circulos_1a5km_rpa6.geojson: círculos completos de 1, 2, 3, 4 e 5 km
+- circulos_1a5km_selecao.geojson: círculos completos de 1, 2, 3, 4 e 5 km
   (cada um contém os menores); bom para filtrar "até X km".
 
 Para outra lista de pontos: --pontos <csv> --nome <sufixo>. O CSV precisa de
 ponto_id, lat, lon (x e y em UTM são opcionais) e das colunas de atributos.
-Ex.: --pontos dados/processados/pontos_aneis_selecao.csv --nome selecao
+Para mudar os pontos, edite dados/processados/pontos_aneis_selecao.csv.
 
-As coordenadas de 11 pontos são aproximadas (coordenada_verificada = "não").
+As 5 coordenadas são aproximadas e não foram conferidas em campo.
 
 Requer: pip install shapely pyproj numpy
 """
@@ -93,9 +93,9 @@ def gravar(caminho, feicoes):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    ap.add_argument("--pontos", default="dados/processados/pontos_rpa6.csv")
+    ap.add_argument("--pontos", default="dados/processados/pontos_aneis_selecao.csv")
     ap.add_argument("--saida", default="dados/processados/arcgis")
-    ap.add_argument("--nome", default="rpa6", help="sufixo dos arquivos de saída")
+    ap.add_argument("--nome", default="selecao", help="sufixo dos arquivos de saída")
     args = ap.parse_args()
 
     with open(args.pontos, encoding="utf-8") as f:
