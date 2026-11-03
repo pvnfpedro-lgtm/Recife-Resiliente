@@ -216,6 +216,14 @@ até a linha 34. No painel, os textos "RPA 6" viraram "RPA 6 e bacia do Tejipió
 `JsPontosCriticos.html`), o cartão diz "de N pontos com notas" e o ranking avisa quantos pontos ainda estão
 sem notas (ficam no fim da tabela).
 
+## Anéis de 1 a 5 km (03/11/2026, pedido de Pedro)
+Camada "Anéis de 1 a 5 km (pontos 12, 36, 37, 32 e 47)" (`aneisLayer` em `JsPontosCriticos.html`): só nos
+5 pontos escolhidos por Pedro, não nos 21. Faixas 0–1, 1–2, 2–3, 3–4 e 4–5 km, contorno tracejado em #0869A6
+e preenchimento cada vez mais claro para fora. Os círculos são geodésicos e calculados no navegador a partir da
+lat/lon da aba "Notas dos pontos" (os mesmos raios de `dados/processados/arcgis/aneis_1a5km_selecao.geojson`).
+Ficam abaixo das ligações, dos pontos e das obras, não respondem ao clique e ligam/desligam no quadro Camadas.
+Para trocar os pontos: `ANEIS_PONTOS`. As 5 coordenadas são aproximadas.
+
 ## Pranchas de projeto no mapa (30/10/2026)
 O painel mostra plantas de projeto vindas de PDF, por baixo dos pontos críticos e das obras.
 Primeira: **Canal do Sanbra, implantação geral (P01, Rem. 2)**.
