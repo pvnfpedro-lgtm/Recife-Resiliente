@@ -21,12 +21,10 @@ Limpeza:
   menos de 30 m) vira uma só, ficando a que tem mais etiquetas;
 - linhas de metrô/VLT: uma por linha (o OSM tem uma relação por sentido).
 
-Grupos (lista aprovada por Pedro em 03/11/2026):
-1 Emergência: bombeiros, SAMU, UPAs, Defesa Civil e COP, delegacias e PM.
-2 Saúde: hospitais, policlínicas e maternidades (inclui UPAE), ILPIs.
-  Abrigos temporários NÃO estão aqui: virão da Defesa Civil.
-3 Serviços: subestações, água e esgoto, bombeamento da drenagem e comportas.
-4 Mobilidade: metrô/VLT (linhas e estações), aeroporto, terminais de ônibus.
+Camadas (escolha de Pedro, 03/11/2026): hospitais, subestações de energia, linhas e
+estações de metrô/VLT, aeroporto e terminais de ônibus. Em "hospitais" não entram
+UPA, UPAE nem policlínica, mesmo quando o OSM os marca como hospital; maternidades
+marcadas como hospital entram.
 
 Dado colaborativo: não é cadastro oficial e pode estar incompleto. Conferir com
 as fontes oficiais antes de usar no I4 (pendência 18).
@@ -66,23 +64,9 @@ PRJ_31985 = ('PROJCS["SIRGAS_2000_UTM_Zone_25S",GEOGCS["GCS_SIRGAS_2000",DATUM["
 CONSULTA = """[out:json][timeout:180];
 area["boundary"="administrative"]["admin_level"="8"]["name"="Recife"]->.recife;
 (
-  nwr["amenity"="fire_station"](area.recife);
-  nwr["emergency"="ambulance_station"](area.recife);
-  nwr["name"~"SAMU",i](area.recife);
-  nwr["name"~"(^UPA)|(Unidade de Pronto Atendimento)|(Pronto[- ]Atendimento)",i](area.recife);
-  nwr["name"~"Defesa Civil|COMDEC|Centro de Opera[çc][õo]es",i](area.recife);
-  nwr["amenity"="police"](area.recife);
   nwr["amenity"="hospital"](area.recife);
   nwr["healthcare"="hospital"](area.recife);
-  nwr["amenity"~"^(clinic|hospital|doctors)$"]["name"~"Policl[ií]nica|Maternidade",i](area.recife);
-  nwr["healthcare"~"^(clinic|hospital|centre)$"]["name"~"Policl[ií]nica|Maternidade",i](area.recife);
-  nwr["social_facility"~"^(nursing_home|assisted_living|group_home)$"](area.recife);
-  nwr["amenity"="nursing_home"](area.recife);
-  nwr["social_facility:for"~"senior"](area.recife);
   nwr["power"="substation"](area.recife);
-  nwr["man_made"~"^(water_works|wastewater_plant|water_tower|reservoir_covered)$"](area.recife);
-  nwr["man_made"="pumping_station"](area.recife);
-  nwr["waterway"~"^(sluice_gate|floodgate|lock_gate)$"](area.recife);
   relation["route"~"^(subway|light_rail|train)$"](area.recife);
   nwr["railway"="station"](area.recife);
   nwr["public_transport"="station"](area.recife);
@@ -100,41 +84,22 @@ def nome_tem(tags, padrao):
     return re.search(padrao, tags.get("name", ""), re.I) is not None
 
 
-SAUDE = ("hospital", "clinic", "doctors")
 # (camada, grupo, geometria, regra) — a primeira regra que bate vence.
+# Camadas escolhidas por Pedro em 03/11/2026 (as outras 9 saíram: SAMU, UPAs, bombeiros, polícia,
+# Defesa Civil/COP, policlínicas e maternidades, ILPIs, água e esgoto, comportas).
+NAO_HOSPITAL = r"^UPAE?\b|Unidade de Pronto Atendimento|Pronto[- ]Atendimento|Policl[ií]nica"
 CAMADAS = [
-    ("samu", "1 Emergência", "ponto",
-     lambda g: t(g, "emergency") == "ambulance_station" or nome_tem(g, r"\bSAMU\b")),
-    ("upas", "1 Emergência", "ponto",
-     lambda g: nome_tem(g, r"^UPA\b(?!E)|Unidade de Pronto Atendimento|Pronto[- ]Atendimento")
-     and (t(g, "amenity") in SAUDE or t(g, "healthcare") in SAUDE + ("doctor",))),
-    ("defesa_civil_cop", "1 Emergência", "ponto",
-     lambda g: nome_tem(g, r"Defesa Civil|COMDEC|Centro de Opera[çc][õo]es")),
-    ("bombeiros", "1 Emergência", "ponto", lambda g: t(g, "amenity") == "fire_station"),
-    ("policia", "1 Emergência", "ponto", lambda g: t(g, "amenity") == "police"),
-    ("policlinicas_maternidades", "2 Saúde", "ponto",
-     lambda g: nome_tem(g, r"Policl[ií]nica|Maternidade|^UPAE")
-     and (t(g, "amenity") in SAUDE or t(g, "healthcare") in SAUDE + ("centre",))),
-    ("ilpis", "2 Saúde", "ponto",
-     lambda g: t(g, "amenity") == "nursing_home"
-     or t(g, "social_facility") in ("nursing_home", "assisted_living", "group_home")
-     or "senior" in t(g, "social_facility:for")),
-    ("hospitais", "2 Saúde", "ponto",
-     lambda g: t(g, "amenity") == "hospital" or t(g, "healthcare") == "hospital"),
-    ("subestacoes", "3 Serviços", "ponto", lambda g: t(g, "power") == "substation"),
-    ("drenagem_bombas_comportas", "3 Serviços", "ponto",
-     lambda g: t(g, "waterway") in ("sluice_gate", "floodgate", "lock_gate")
-     or (t(g, "man_made") == "pumping_station" and re.search("rain|storm", t(g, "substance")))),
-    ("agua_esgoto", "3 Serviços", "ponto",
-     lambda g: t(g, "man_made") in ("water_works", "wastewater_plant", "water_tower",
-                                    "reservoir_covered", "pumping_station")),
-    ("metro_linhas", "4 Mobilidade", "linha",
+    ("hospitais", "Saúde", "ponto",
+     lambda g: (t(g, "amenity") == "hospital" or t(g, "healthcare") == "hospital")
+     and not nome_tem(g, NAO_HOSPITAL)),   # UPA, UPAE e policlínica não são hospital
+    ("subestacoes", "Energia", "ponto", lambda g: t(g, "power") == "substation"),
+    ("metro_linhas", "Mobilidade", "linha",
      lambda g: t(g, "route") in ("subway", "light_rail", "train")),
-    ("metro_estacoes", "4 Mobilidade", "ponto",
+    ("metro_estacoes", "Mobilidade", "ponto",
      lambda g: t(g, "railway") == "station" or (t(g, "public_transport") == "station" and any(
          t(g, m) == "yes" for m in ("train", "subway", "light_rail")))),
-    ("aeroporto", "4 Mobilidade", "poligono", lambda g: t(g, "aeroway") == "aerodrome"),
-    ("terminais_onibus", "4 Mobilidade", "ponto",
+    ("aeroporto", "Mobilidade", "poligono", lambda g: t(g, "aeroway") == "aerodrome"),
+    ("terminais_onibus", "Mobilidade", "ponto",
      lambda g: t(g, "amenity") == "bus_station"
      or (t(g, "public_transport") == "station" and t(g, "bus") == "yes")),
 ]
