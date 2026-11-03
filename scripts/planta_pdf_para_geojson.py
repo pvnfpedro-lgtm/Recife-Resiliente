@@ -157,9 +157,9 @@ def ajustar_semelhanca(origem, destino):
     return a, b, c, d
 
 
-def ler_controle(caminho):
+def ler_controle(caminho, faixa=None):
     with open(caminho, encoding="utf-8") as f:
-        return [r for r in csv.DictReader(f) if r.get("lat") and r.get("lon")]
+        return [r for r in csv.DictReader(f) if r.get("lat") and r.get("lon") and (not faixa or r.get("faixa") == faixa)]
 
 
 def georreferenciar(camadas_m, cfg, controle):
@@ -169,7 +169,25 @@ def georreferenciar(camadas_m, cfg, controle):
     k = POL_POR_PT / 1000 * cfg["escala"]
     origem = [(float(r["x_pt"]) * k, -float(r["y_pt"]) * k) for r in controle]
     destino = [para_utm.transform(float(r["lon"]), float(r["lat"])) for r in controle]
-    a, b, c, d = ajustar_semelhanca(origem, destino)
+    if cfg.get("ajuste_fixo"):
+        # Escala e rotação dadas (ex.: rotação tirada da direção de um canal reto entre pontos distantes);
+        # os pontos de controle dão só o deslocamento (média, se houver mais de um).
+        fe, rot = cfg["ajuste_fixo"]["fator_escala"], math.radians(cfg["ajuste_fixo"]["rotacao_graus"])
+        a, b = fe * math.cos(rot), fe * math.sin(rot)
+        c = sum(q[0] - (a * p[0] - b * p[1]) for p, q in zip(origem, destino)) / len(origem)
+        d = sum(q[1] - (b * p[0] + a * p[1]) for p, q in zip(origem, destino)) / len(origem)
+        print(f"Escala e rotação fixas ({cfg['ajuste_fixo'].get('origem', '')})")
+    elif len(controle) == 1:
+        # Um ponto só: escala e rotação vêm de outro recorte do mesmo desenho (ex.: a outra faixa da
+        # prancha, mesma escala e mesma orientação); o ponto dá só o deslocamento.
+        ref = json.loads((Path(cfg["_base"]) / cfg["escala_rotacao_de"]).read_text(encoding="utf-8"))["georreferenciamento"]
+        fe, rot = ref["fator_escala"], math.radians(ref["rotacao_graus"])
+        a, b = fe * math.cos(rot), fe * math.sin(rot)
+        c = destino[0][0] - (a * origem[0][0] - b * origem[0][1])
+        d = destino[0][1] - (b * origem[0][0] + a * origem[0][1])
+        print(f"Um ponto de controle: escala e rotação de {cfg['escala_rotacao_de']}")
+    else:
+        a, b, c, d = ajustar_semelhanca(origem, destino)
     escala_ajuste = math.hypot(a, b)
     rotacao = math.degrees(math.atan2(b, a))
     print(f"Ajuste: fator de escala {escala_ajuste:.4f} (1 = escala da prancha), rotação {rotacao:.2f}°")
@@ -206,13 +224,50 @@ def imagem_da_planta(cfg, area, ponto_pdf, saida):
     k = POL_POR_PT / 1000 * cfg["escala"]
     zoom = k / op.get("m_por_px", 0.25)
     x0, y0, x1, y1 = cfg["recorte_pt"]
-    pg = pymupdf.open(cfg["pdf"])[cfg.get("pagina", 0)]
+    doc = pymupdf.open(cfg["pdf"])
+    if op.get("camadas_cad_desligar"):
+        # Desliga camadas do CAD guardadas no PDF (ex.: foto aérea, limite, marcações das ampliações):
+        # some só o que está nelas, sem mexer nas cores do resto do desenho.
+        nomes = set(op["camadas_cad_desligar"])
+        xrefs = [x for x, v in doc.get_ocgs().items() if v["name"] in nomes]
+        faltam = nomes - {doc.get_ocgs()[x]["name"] for x in xrefs}
+        if faltam:
+            raise SystemExit(f"Camadas do CAD não encontradas no PDF: {sorted(faltam)}")
+        doc.set_layer(-1, off=xrefs)
+        doc = pymupdf.open("pdf", doc.tobytes())  # alguns PDFs (ZWCAD) só respeitam a mudança depois de regravados
+    pg = doc[cfg.get("pagina", 0)]
+    if op.get("sem_fotos"):
+        # Tira as imagens (foto aérea de fundo) e deixa só o desenho: o mapa base já tem a foto.
+        pg.add_redact_annot(pymupdf.Rect(x0, y0, x1, y1))
+        pg.apply_redactions(images=pymupdf.PDF_REDACT_IMAGE_REMOVE, graphics=pymupdf.PDF_REDACT_LINE_ART_NONE,
+                            text=pymupdf.PDF_REDACT_TEXT_NONE)
+    if op.get("remover_textos") or op.get("remover_textos_a_partir_de_pt"):
+        # Textos de organização da prancha (ex.: "AMPLIAÇÃO 01") que não interessam no mapa.
+        for t in op.get("remover_textos", []):
+            for r in pg.search_for(t, clip=pymupdf.Rect(x0, y0, x1, y1)):
+                pg.add_redact_annot(r)
+        # Títulos em letra grande (ex.: o número da ampliação, que vem num texto à parte).
+        minimo = op.get("remover_textos_a_partir_de_pt")
+        if minimo:
+            for bl in pg.get_text("dict", clip=pymupdf.Rect(x0, y0, x1, y1))["blocks"]:
+                for ln in bl.get("lines", []):
+                    for sp in ln["spans"]:
+                        if sp["size"] >= minimo and sp["text"].strip():
+                            pg.add_redact_annot(pymupdf.Rect(sp["bbox"]))
+        pg.apply_redactions(images=pymupdf.PDF_REDACT_IMAGE_NONE, graphics=pymupdf.PDF_REDACT_LINE_ART_NONE,
+                            text=pymupdf.PDF_REDACT_TEXT_REMOVE)
     pm = pg.get_pixmap(clip=pymupdf.Rect(x0, y0, x1, y1), matrix=pymupdf.Matrix(zoom, zoom), alpha=False)
     im = Image.frombytes("RGB", (pm.width, pm.height), pm.samples).convert("RGBA")
     # Branco (e quase branco) vira transparente.
     lim_branco = op.get("branco_ate", 245)
     r, g, b, _ = im.split()
     fundo = Image.eval(Image.merge("RGB", (r, g, b)).convert("L"), lambda v: 0 if v >= lim_branco else 255)
+    from PIL import ImageChops
+    for alvo in op.get("cores_transparentes", []):
+        # Fundos coloridos sem conteúdo (ex.: faixa laranja translúcida de uma ampliação sobre o branco).
+        tol = op.get("tolerancia_cor", 12)
+        canais = [c.point(lambda v, a=a: 255 if abs(v - a) <= tol else 0) for c, a in zip((r, g, b), alvo)]
+        fundo = ImageChops.subtract(fundo, ImageChops.multiply(ImageChops.multiply(canais[0], canais[1]), canais[2]))
     mascara = Image.new("L", im.size, 0)
     if area is not None:
         d = ImageDraw.Draw(mascara)
@@ -295,8 +350,9 @@ def main():
     gravar_geojson(camadas_m, cfg, saida / f"{cfg['id']}_metros_planta.geojson")
 
     ctrl = base / cfg.get("pontos_controle", "pontos_controle.csv")
-    controle = ler_controle(ctrl) if ctrl.exists() else []
-    if len(controle) >= 2:
+    controle = ler_controle(ctrl, cfg.get("faixa")) if ctrl.exists() else []
+    cfg["_base"] = str(base)
+    if len(controle) >= 2 or (len(controle) == 1 and (cfg.get("escala_rotacao_de") or cfg.get("ajuste_fixo"))):
         geo, ajuste, ponto_pdf = georreferenciar(camadas_m, cfg, controle)
         img = imagem_da_planta(cfg, area, ponto_pdf, saida) if cfg.get("imagem") else None
         gravar_geojson(geo, cfg, saida / f"{cfg['id']}.geojson", ajuste, img)

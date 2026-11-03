@@ -142,6 +142,11 @@
     "m_por_px": 0.25,
     "qualidade": 80,
     "branco_ate": 245,
-    "opacidade": 1
+    "opacidade": 1,
+    "camadas_cad_desligar": [
+      "Canal",
+      "Área de intervenção",
+      "Rio Jiquiá"
+    ]
   }
 }

@@ -1,0 +1,55 @@
+ponto_id,rpa,bairro,logradouro,trecho,prioridade_emlurb,bacia_tejipio
+1,1,São José,Rua São João,Interseção com Avenida Dantas Barreto até a Rua Vital de Negreiros,Não,fora
+2,3,Graças,Avenida Rui Barbosa,Rua Cardeal Arcoverde até a Rua das Criolas,Não,fora
+3,4,Cordeiro,Rua Costa Maia,Toda extensão,Não,fora
+4,5,Afogados,Rua Claudino dos Santos,Próximo à estação do metrô de Afogados,Não,a confirmar
+5,6,Boa Viagem,Avenida Conselheiro Aguiar,Interseção com a Rua Tenente João Cícero,Não,RPA 6 (já na planilha)
+6,6,Boa Viagem,Avenida Conselheiro Aguiar,Interseção com a Rua Dona Benvinda,Não,RPA 6 (já na planilha)
+7,6,Boa Viagem,Avenida Conselheiro Aguiar,Interseção com a Rua Maria Carolina,Não,RPA 6 (já na planilha)
+8,6,Boa Viagem,Avenida Conselheiro Aguiar,Do nº 1501 até a Rua Baltazar Pereira,Não,RPA 6 (já na planilha)
+9,6,Imbiribeira,Avenida Mascarenhas de Moraes,Rua General Mac Arthur até a Universo,Não,RPA 6 (já na planilha)
+10,3,Tamarineira,Rua Gildo Neto,Toda extensão,Não,fora
+11,6,Boa Viagem,Rua Professor José Brandão,Toda extensão,Não,RPA 6 (já na planilha)
+12,6,Boa Viagem,Rua Padre Bernardino Pessoa,Da Avenida Conselheiro Aguiar até a Via Mangue,Não,RPA 6 (já na planilha)
+13,2,Arruda,Rua Zeferino Agra,Toda extensão,Não,fora
+14,4,Cordeiro,Avenida do Forte,Cruzamento com a Rua Onze de Fevereiro e Avenida Abdias de Carvalho,Não,fora
+15,4,Iputinga,Avenida Maurício de Nassau,Da Rua Odilon Araújo até a Rua Pereira Coutinho,Não,fora
+16,4,Várzea,Rua Mário Campelo,Toda extensão,Não,fora
+17,1,São José,Rua Dantas Barreto,Toda a extensão,Não,fora
+18,6,Boa Viagem,Rua Jornalista Alfredo Porto Silveira,Toda extensão,Não,RPA 6 (já na planilha)
+19,6,Pina,Rua São Luiz,Final da rua,Não,RPA 6 (já na planilha)
+20,1,Santo Amaro,Rua Buarque de Macedo,Interseção da Rua Buarque de Macedo com a Avenida Norte,Não,fora
+21,2,Cajueiro,Avenida Cidade Monteiro,Lateral do conjunto residencial,Não,fora
+22,6,Jordão,Avenida Maria Irene,Vários trechos,Não,RPA 6 (já na planilha)
+23,1,São José,Travessa do Gaspar,Rua sem saída - trecho até a Imperial,Não,fora
+24,6,Ipsep,Rua Blumenau,Até a maré,Sim,RPA 6 (já na planilha)
+25,6,Ipsep,Rua Raimundo Diniz,Vários trechos,Não,RPA 6 (já na planilha)
+26,6,Boa Viagem,Avenida Boa Viagem,Antes da Rua Baltazar Passos,Não,RPA 6 (já na planilha)
+27,2,Encruzilhada,Avenida Norte,Interseção da Avenida Norte com a Rua José de Sá Carneiro,Não,fora
+28,3,Nova Descoberta,Avenida Norte,Em frente à Escola de Referência Clotilde de Oliveira,Sim,fora
+29,5,Jardim São Paulo,Rua Bragança,Próximo ao Canal dos Guarulhos,Não,dentro
+30,5,Jardim São Paulo,Rua Jundiaí,Próximo ao canal,Não,dentro
+31,5,Jardim São Paulo,Rua Major Felício,Ponte sobre o Canal Guarulhos,Não,dentro
+32,5,Jardim São Paulo,Rua Nossa Senhora de Fátima,Cruzamento com a Av. Recife - em frente ao Canal do Sanbra,Sim,dentro
+33,6,Ibura,Avenida Dois Rios,Interseção da Avenida Dois Rios com a Rua Rio Pajeú até a Rua Ecoporanga / interseção da Avenida Dois Rios com a Rua Rio Prado,Sim,RPA 6 (já na planilha)
+34,6,Ibura,Avenida Dom Helder Câmara,Interseção da Avenida Dom Helder Câmara com a Rua Achiles Amorim,Sim,RPA 6 (já na planilha)
+35,6,Ibura,Avenida Dois Rios,Próximo ao SESI,Sim,RPA 6 (já na planilha)
+36,6,Imbiribeira,Avenida Mascarenhas de Moraes,Trecho da Ferreira Costa,Sim,RPA 6 (já na planilha)
+37,6,Ipsep,Avenida Recife,Da Avenida Dom Helder Câmara até o Rio Tejipió,Sim,RPA 6 (já na planilha)
+38,5,Mustardinha,Avenida Mustardinha,Próximo à Rua Moréira Reis,Não,a confirmar
+39,4,Cordeiro,Avenida do Forte,Trecho entre a Rua Maravilha e a Tamboril (URB executou passeios),Não,fora
+40,4,Caxangá,Avenida Caxangá,Do Hospital Santa Teresinha até o Golf Club,Não,fora
+41,6,Boa Viagem,Rua Thomé Gibson,Da Av. Encanta Moça até a Via Mangue,Não,RPA 6 (já na planilha)
+42,1,Ilha Joana Bezerra,Estação Joana Bezerra,Até o Canal Bom Jesus,Não,fora
+43,3,Casa Forte,Rua Dona Rita de Souza,Interseção com a Rua Jerônimo Albuquerque,Não,fora
+44,3,Dois Irmãos,Rua Sítio dos Pintos,Trechos pontuais,Não,fora
+45,5,Areias,Avenida Capitão Gregório de Caldas (engloba a Rua Aurora Caçote),Próximo ao canal,Não,dentro
+46,5,Areias,Rua José Natário,Trecho do prédio Metrorec,Não,dentro
+47,5,Bongi,Avenida Abdias de Carvalho,Praça da CHESF,Não,a confirmar
+48,5,Estância,Rua João Cabral de Melo,Próxima à ponte do Jiquiá,Não,dentro
+49,3,Nova Descoberta,Av. Nova Descoberta e arredores do Mercado Público de Nova Descoberta,Começando no Córrego da Areia indo até limite com o Rio Morno,Não,fora
+50,4,Madalena,Rua João Ivo,Entre a Av. Abdias de Carvalho até a Rua Padre Teófilo Twors,Não,fora
+51,6,Pina,Av. Antônio de Góes,Interseção com a saída da Via Mangue até a Bacia do Pina - Rio Capibaribe e cruzamento com Av. Conselheiro Aguiar,Não,RPA 6 (já na planilha)
+52,1,São José,Avenida Sul,Da Rua Brito até a Rua Dormentes,Não,fora
+53,1,Santo Amaro,Avenida Norte,Bacia entorno do SENAI,Não,fora
+54,6,Ibura,Rua Rio Prado,Interseção da Rua Rio Prado com a Rua Rio Brígida,Não,RPA 6 (já na planilha)

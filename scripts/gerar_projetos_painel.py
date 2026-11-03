@@ -54,13 +54,18 @@ def main():
         fc = json.loads(arq.read_text(encoding="utf-8"))
         img = fc.get("imagem")
         if img:
-            # Prancha com imagem: vai como camada única (tudo o que o desenho mostra).
+            # Prancha com imagem: vai como camada única (tudo o que o desenho mostra). Imagens com o
+            # mesmo nome de camada (ex.: trechos de uma mesma obra) entram juntas na mesma camada.
             dados = (arq.parent / img["arquivo"]).read_bytes()
-            pranchas.append({"id": arq.stem, "nome": img.get("nome", fc["name"]),
-                             "imagem": {"url": "data:image/webp;base64," + base64.b64encode(dados).decode("ascii"),
-                                        "cantos": {k: [round(v, 7) for v in xy] for k, xy in img["cantos"].items()},
-                                        "opacidade": img.get("opacidade", 1)}})
-            print(f"{arq.name}: imagem {len(dados) / 1024:.0f} KB (camada única)")
+            nome = img.get("nome", fc["name"])
+            item = {"url": "data:image/webp;base64," + base64.b64encode(dados).decode("ascii"),
+                    "cantos": {k: [round(v, 7) for v in xy] for k, xy in img["cantos"].items()}}
+            existente = next((p for p in pranchas if p["nome"] == nome and "imagens" in p), None)
+            if existente:
+                existente["imagens"].append(item)
+            else:
+                pranchas.append({"id": arq.stem, "nome": nome, "opacidade": img.get("opacidade", 1), "imagens": [item]})
+            print(f"{arq.name}: imagem {len(dados) / 1024:.0f} KB → camada \"{nome}\"")
             continue
         camadas = []
         for f in fc["features"]:

@@ -56,7 +56,9 @@ não conectado.
   (só abre para quem é editor do projeto).
 - Versões publicadas: 9 implantações. A do link compartilhado
   (`AKfycbxXh5…/exec`, antes "Primeira versão que deu certo") passou para a **versão 10**
-  ("Ranking dos pontos críticos e código dividido", 29/10/2026), publicada por Pedro. O `clasp push` não altera nenhuma delas.
+  ("Ranking dos pontos críticos e código dividido", 29/10/2026), publicada por Pedro.
+  Em 30/10/2026 passou para a **versão 11** ("Canal do Sanbra no mapa: camada única com a
+  urbanização"), publicada pelo Claude com `clasp update-deployment`, a pedido de Pedro. O `clasp push` não altera nenhuma delas.
 - 02/10/2026: primeiro `clasp push` (pontos críticos lidos da planilha,
   sem HidroData).
 - 03/10/2026: `clasp push` com as variáveis de 03/10 (nomes novos; I3, V5
@@ -207,6 +209,13 @@ mapa), local (exato/aproximado/sem coordenada), notas preenchidas e obras relaci
   tela de celular. Conferido por Pedro na URL de teste em 29/10/2026: painel abre, tabela, CSV e
   impressão funcionam dentro do Apps Script.
 
+## Pontos da bacia do Tejipió (03/11/2026, pedido de Pedro)
+A aba "Notas dos pontos" passa a ter, além dos 21 da RPA 6, os pontos da bacia do Tejipió fora da RPA 6
+(29, 30, 31, 32, 45, 46, 48; pendência 26), sem coordenadas e sem notas. Ranking (coluna Posição) estendido
+até a linha 34. No painel, os textos "RPA 6" viraram "RPA 6 e bacia do Tejipió" (`RECORTE_PONTOS` em
+`JsPontosCriticos.html`), o cartão diz "de N pontos com notas" e o ranking avisa quantos pontos ainda estão
+sem notas (ficam no fim da tabela).
+
 ## Pranchas de projeto no mapa (30/10/2026)
 O painel mostra plantas de projeto vindas de PDF, por baixo dos pontos críticos e das obras.
 Primeira: **Canal do Sanbra, implantação geral (P01, Rem. 2)**.
@@ -218,6 +227,16 @@ Primeira: **Canal do Sanbra, implantação geral (P01, Rem. 2)**.
   Imagem WebP de 0,25 m/px (271 KB). As camadas vetoriais continuam no GeoJSON, fora do painel.
   Rótulos que passam do limite (ex.: Praças 7 e 8A) ficam cortados na borda.
 - 30/10, `clasp push` da camada única (aprovado por Pedro). Conferido por Pedro na URL de teste: "ficou ótimo".
+- 30/10: **Canal da Mauricéia**, camada única "Canal da Mauricéia — projeto de urbanização (Trechos 01 e 02)"
+  com 3 imagens (Trecho 02 e as duas faixas do Trecho 01), sem a foto aérea de fundo das pranchas.
+  Encaixe na pendência 25. Prévia: `docs/img/canal_mauricea_georreferenciado.png`.
+- 30/10, pedido de Pedro (desenho padronizado): **padrão das pranchas no mapa** = sem foto aérea, sem água
+  pintada, sem linha de limite e sem marcações de ampliação. Feito desligando as camadas do CAD guardadas no
+  PDF (`camadas_cad_desligar`), não por cor (por cor sumiam também plantas e meios-fios da mesma cor).
+  Mauricéia: Trecho 01 sem `ImgGoogle`, `CANAL-PROJETADO`, `hatch` e `Ampliação` (e sem os títulos em letra
+  grande); Trecho 02 sem `ImgGoogle`, `POLIGONAL NOVA 22.09` e `Ampliação`. Sanbra (a pedido de Pedro):
+  sem `Canal` (água e as faixas avermelhadas das margens, que estão na mesma camada), `Área de intervenção`
+  e `Rio Jiquiá`.
 - Fluxo: `scripts/planta_pdf_para_geojson.py` (PDF → camadas → encaixe por pontos de controle) →
   `dados/processados/projetos/*.geojson` → `scripts/gerar_projetos_painel.py` →
   `appscript/DadosProjetos.html` (variável `PROJETOS_PRANCHAS`, ~360 KB com a imagem; não editar à mão).
