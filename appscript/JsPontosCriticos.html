@@ -15,13 +15,12 @@
   var pontosLayer = new GraphicsLayer({ title: PONTOS_TITULO });
   /* Círculo de 300 m em volta dos pontos: retirado do mapa em 16/10/2026 (pedido de Pedro).
      O raio continua sendo a área do score (metodologia); só deixou de ser desenhado. */
-  /* Anéis de 1 a 5 km (03/11/2026, pedido de Pedro): só nos pontos escolhidos por ele, não nos 21.
-     Desenhados aqui a partir da lat/lon da planilha (mesmos raios de
-     dados/processados/arcgis/aneis_1a5km_selecao.geojson). Coordenadas ainda aproximadas. */
-  var ANEIS_PONTOS = [12, 36, 37, 32, 47];
+  /* Anéis de 1 a 5 km (03/11/2026, pedido de Pedro): aparecem só no ponto clicado (cartão aberto), em
+     qualquer ponto, e somem ao fechar o cartão. Antes ficavam fixos nos pontos 12, 36, 37, 32 e 47.
+     Desenhados a partir da lat/lon da planilha. Coordenadas ainda aproximadas. */
   var ANEIS_RAIOS_M = [1000, 2000, 3000, 4000, 5000];
   var ANEIS_COR = [8, 105, 166];   // #0869A6, da paleta do painel
-  var ANEIS_TITULO = "Anéis de 1 a 5 km (pontos 12, 36, 37, 32 e 47)";
+  var ANEIS_TITULO = "Anéis de 1 a 5 km (ponto clicado)";
   var aneisLayer = new GraphicsLayer({ title: ANEIS_TITULO });
   // Círculo geodésico (esfera de 6.371 km) como anel de polígono [lon, lat], fechado.
   function circuloGeo(lon, lat, raio, sentidoHorario){
@@ -36,20 +35,25 @@
   }
   function desenharAneis(){
     aneisLayer.removeAll();
-    ANEIS_PONTOS.forEach(function(id){
-      var p = PONTOS_POR_ID[id];
-      if(!p) return;   // ponto sem coordenada na planilha
-      ANEIS_RAIOS_M.forEach(function(raio, i){
-        var rings = [circuloGeo(p.lon, p.lat, raio, true)];
-        if(i > 0) rings.push(circuloGeo(p.lon, p.lat, ANEIS_RAIOS_M[i - 1], false));   // furo: só a faixa
-        var faixa = (i ? ANEIS_RAIOS_M[i - 1] / 1000 : 0) + "–" + raio / 1000 + " km";
-        aneisLayer.add(new Graphic({
-          geometry: { type:"polygon", rings: rings, spatialReference:{ wkid:4326 } },
-          symbol: { type:"simple-fill", color: ANEIS_COR.concat([0.10 - i * 0.015]),
-            outline: { color: ANEIS_COR.concat([0.85 - i * 0.12]), width: i ? 1 : 1.5, style: "dash" } },
-          attributes: { ponto_id: id, faixa: faixa }
-        }));
-      });
+    var p = cartaoPonto;
+    if(!p || p.lat == null || p.lon == null) return;
+    ANEIS_RAIOS_M.forEach(function(raio, i){
+      var rings = [circuloGeo(p.lon, p.lat, raio, true)];
+      if(i > 0) rings.push(circuloGeo(p.lon, p.lat, ANEIS_RAIOS_M[i - 1], false));   // furo: só a faixa
+      var faixa = (i ? ANEIS_RAIOS_M[i - 1] / 1000 : 0) + "–" + raio / 1000 + " km";
+      aneisLayer.add(new Graphic({
+        geometry: { type:"polygon", rings: rings, spatialReference:{ wkid:4326 } },
+        symbol: { type:"simple-fill", color: ANEIS_COR.concat([0.10 - i * 0.015]),
+          outline: { color: ANEIS_COR.concat([0.85 - i * 0.12]), width: i ? 1 : 1.5, style: "dash" } },
+        attributes: { ponto_id: p.id, faixa: faixa }
+      }));
+      // Rótulo da distância na borda de cada anel, a nordeste do ponto.
+      var borda = circuloGeo(p.lon, p.lat, raio, true)[16];
+      aneisLayer.add(new Graphic({
+        geometry: { type:"point", longitude: borda[0], latitude: borda[1] },
+        symbol: { type:"text", text: raio / 1000 + " km", color: ANEIS_COR.concat([1]), haloColor: [255, 255, 255, 0.95],
+          haloSize: 1.5, font: { size: 10, weight: "bold", family: "sans-serif" } }
+      }));
     });
   }
   /* Obras: um ponto por obra, na coordenada da coluna "coordenadas (lat, lon)" da aba "Obras".
@@ -236,6 +240,7 @@
     }, function(){ g.symbol = base; });
   }
   function desenharLigacoes(){
+    desenharAneis();   // anéis de 1 a 5 km do ponto clicado (somem junto com as ligações)
     pararAnimacoes();
     ligacoesLayer.removeAll();
     if(!cartaoPonto) return;
@@ -443,7 +448,6 @@
     renderPontosLista();
     renderKpiStrip();
     desenharLigacoes();
-    desenharAneis();
     if(document.getElementById("rkModal").classList.contains("open")) renderRanking();
     console.log("Pontos críticos carregados da planilha: " + res.pontos.length + " (" + res.lidoEm + ")");
     buildLayerToggle();

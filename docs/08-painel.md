@@ -225,12 +225,17 @@ sem notas (ficam no fim da tabela).
   sistema de bombas); várias coordenadas na mesma célula (uma por linha) viram um ícone por local (obra 29).
 
 ## Anéis de 1 a 5 km (03/11/2026, pedido de Pedro)
-Camada "Anéis de 1 a 5 km (pontos 12, 36, 37, 32 e 47)" (`aneisLayer` em `JsPontosCriticos.html`): só nos
-5 pontos escolhidos por Pedro, não nos 21. Faixas 0–1, 1–2, 2–3, 3–4 e 4–5 km, contorno tracejado em #0869A6
-e preenchimento cada vez mais claro para fora. Os círculos são geodésicos e calculados no navegador a partir da
-lat/lon da aba "Notas dos pontos" (os mesmos raios de `dados/processados/arcgis/aneis_1a5km_selecao.geojson`).
-Ficam abaixo das ligações, dos pontos e das obras, não respondem ao clique e ligam/desligam no quadro Camadas.
-Para trocar os pontos: `ANEIS_PONTOS`. As 5 coordenadas são aproximadas. `clasp push` em 03/11/2026 com aprovação de Pedro, depois de juntar `claude/festive-bardeen-2qlfhd` (a versão que já estava no Apps Script); ainda não conferido na URL de teste.
+- Primeira versão (`clasp push` em 03/11/2026, aprovado por Pedro, depois de juntar `claude/festive-bardeen-2qlfhd`,
+  a versão que já estava no Apps Script): camada fixa só nos pontos 12, 36, 37, 32 e 47.
+- Versão atual (pedido de Pedro, mesmo dia): **os anéis aparecem no ponto clicado**, qualquer um, e somem ao
+  fechar o cartão. Camada "Anéis de 1 a 5 km (ponto clicado)" (`aneisLayer` em `JsPontosCriticos.html`,
+  redesenhada por `desenharAneis()` dentro de `desenharLigacoes()`). Faixas 0–1 a 4–5 km, contorno tracejado em
+  #0869A6, preenchimento cada vez mais claro para fora e rótulo "1 km" … "5 km" a nordeste de cada anel.
+  Círculos geodésicos calculados no navegador a partir da lat/lon da aba "Notas dos pontos". Ficam abaixo das
+  ligações, dos pontos e das obras, não respondem ao clique e ligam/desligam no quadro Camadas. O zoom ao clicar
+  continua o mesmo (~2 km): para ver os 5 km, afastar o mapa. Coordenadas ainda aproximadas.
+- Os GeoJSON `dados/processados/arcgis/aneis_1a5km_selecao.geojson` e `circulos_1a5km_selecao.geojson` (5 pontos)
+  continuam para uso no ArcGIS.
 
 ## Pranchas de projeto no mapa (30/10/2026)
 O painel mostra plantas de projeto vindas de PDF, por baixo dos pontos críticos e das obras.
