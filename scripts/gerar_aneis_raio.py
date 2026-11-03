@@ -11,6 +11,10 @@ Saídas (em dados/processados/arcgis/):
 - circulos_1a5km_rpa6.geojson: círculos completos de 1, 2, 3, 4 e 5 km
   (cada um contém os menores); bom para filtrar "até X km".
 
+Para outra lista de pontos: --pontos <csv> --nome <sufixo>. O CSV precisa de
+ponto_id, lat, lon (x e y em UTM são opcionais) e das colunas de atributos.
+Ex.: --pontos dados/processados/pontos_aneis_selecao.csv --nome selecao
+
 As coordenadas de 11 pontos são aproximadas (coordenada_verificada = "não").
 
 Requer: pip install shapely pyproj numpy
@@ -28,6 +32,7 @@ from shapely.geometry import Point, mapping
 
 RAIOS_M = (1000, 2000, 3000, 4000, 5000)
 _TRANSF = Transformer.from_crs("EPSG:31985", "EPSG:4326", always_xy=True)
+_PARA_UTM = Transformer.from_crs("EPSG:4326", "EPSG:31985", always_xy=True)
 
 
 def para_wgs84(geom):
@@ -56,7 +61,10 @@ def arredondar(geom):
 def gerar(pontos, raios=RAIOS_M):
     aneis, circulos = [], []
     for p in pontos:
-        centro = Point(float(p["x"]), float(p["y"]))
+        if p.get("x") and p.get("y"):
+            centro = Point(float(p["x"]), float(p["y"]))
+        else:  # só lat/lon: projeta para UTM 25S
+            centro = Point(*_PARA_UTM.transform(float(p["lon"]), float(p["lat"])))
         anterior = None
         for raio in raios:
             circulo = centro.buffer(raio, resolution=64)
@@ -87,14 +95,15 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--pontos", default="dados/processados/pontos_rpa6.csv")
     ap.add_argument("--saida", default="dados/processados/arcgis")
+    ap.add_argument("--nome", default="rpa6", help="sufixo dos arquivos de saída")
     args = ap.parse_args()
 
     with open(args.pontos, encoding="utf-8") as f:
         pontos = list(csv.DictReader(f))
     aneis, circulos = gerar(pontos)
     saida = Path(args.saida)
-    gravar(saida / "aneis_1a5km_rpa6.geojson", aneis)
-    gravar(saida / "circulos_1a5km_rpa6.geojson", circulos)
+    gravar(saida / f"aneis_1a5km_{args.nome}.geojson", aneis)
+    gravar(saida / f"circulos_1a5km_{args.nome}.geojson", circulos)
     print(f"{len(pontos)} pontos × {len(RAIOS_M)} raios = {len(aneis)} feições em cada arquivo ({saida})")
 
 

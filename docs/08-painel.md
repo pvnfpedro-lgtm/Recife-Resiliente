@@ -277,6 +277,11 @@ entrega), para abrir no navegador ou conferir; `tests/test_montar_painel.py` con
   `scripts/gerar_aneis_raio.py` (círculos em EPSG:31985, gravados em WGS 84). Com os 21 pontos, os
   anéis de 3 a 5 km cobrem quase toda a RPA 6 e se sobrepõem: no mapa, filtrar por `ponto_id`.
   Ainda fora do painel.
+- `aneis_1a5km_selecao.geojson` e `circulos_1a5km_selecao.geojson` (03/11/2026, pedido de Pedro):
+  os mesmos anéis só nos pontos 12, 36, 37 (RPA 6), 32 (Jardim São Paulo) e 47 (Bongi, Praça da
+  CHESF), a partir de `dados/processados/pontos_aneis_selecao.csv` (lat/lon da aba "Notas dos
+  pontos"; todas "Aproximado", não conferidas). Comando:
+  `python3 scripts/gerar_aneis_raio.py --pontos dados/processados/pontos_aneis_selecao.csv --nome selecao`.
 - Coordenadas ainda aproximadas.
 
 ## Pontos de atenção do painel atual
