@@ -51,3 +51,41 @@ coordenadas.
   buffers.
 - Dados pessoais (por exemplo, endereço de quem fez um chamado) **não** entram
   no repositório.
+
+## Infraestrutura crítica (OpenStreetMap, 03/11/2026)
+Consulta para o [Overpass Turbo](https://overpass-turbo.eu) (Executar → Exportar → GeoJSON). Salvar o
+arquivo em `dados/brutos/osm/` e rodar
+`python3 scripts/gerar_infra_critica.py --geojson dados/brutos/osm/<arquivo>.geojson --data AAAA-MM-DD`.
+Resultado em `dados/shapefiles/infra_critica/` (catálogo em `dados/shapefiles/README.md`). Dado colaborativo:
+conferir com CBMPE, SAMU, Defesa Civil, Compesa, Neoenergia e EMLURB (pendência 18).
+
+```
+[out:json][timeout:180];
+area["boundary"="administrative"]["admin_level"="8"]["name"="Recife"]->.recife;
+(
+  nwr["amenity"="fire_station"](area.recife);
+  nwr["emergency"="ambulance_station"](area.recife);
+  nwr["name"~"SAMU",i](area.recife);
+  nwr["name"~"(^UPA)|(Unidade de Pronto Atendimento)|(Pronto[- ]Atendimento)",i](area.recife);
+  nwr["name"~"Defesa Civil|COMDEC|Centro de Opera[çc][õo]es",i](area.recife);
+  nwr["amenity"="police"](area.recife);
+  nwr["amenity"="hospital"](area.recife);
+  nwr["healthcare"="hospital"](area.recife);
+  nwr["amenity"~"^(clinic|hospital|doctors)$"]["name"~"Policl[ií]nica|Maternidade",i](area.recife);
+  nwr["healthcare"~"^(clinic|hospital|centre)$"]["name"~"Policl[ií]nica|Maternidade",i](area.recife);
+  nwr["social_facility"~"^(nursing_home|assisted_living|group_home)$"](area.recife);
+  nwr["amenity"="nursing_home"](area.recife);
+  nwr["social_facility:for"~"senior"](area.recife);
+  nwr["power"="substation"](area.recife);
+  nwr["man_made"~"^(water_works|wastewater_plant|water_tower|reservoir_covered)$"](area.recife);
+  nwr["man_made"="pumping_station"](area.recife);
+  nwr["waterway"~"^(sluice_gate|floodgate|lock_gate)$"](area.recife);
+  relation["route"~"^(subway|light_rail|train)$"](area.recife);
+  nwr["railway"="station"](area.recife);
+  nwr["public_transport"="station"](area.recife);
+  nwr["aeroway"="aerodrome"](area.recife);
+  nwr["amenity"="bus_station"](area.recife);
+);
+out geom;
+```
+
