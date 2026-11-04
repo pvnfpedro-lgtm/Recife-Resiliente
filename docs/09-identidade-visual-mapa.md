@@ -83,7 +83,22 @@
   As formas já usadas ficam livres: círculo = risco, quadrado = drenagem, losango = equipamentos sensíveis.
 - Primeiro ícone: **aeroporto** (avião da Maki, CC0): `mapa/icones/infra_aeroporto.svg` e
   `png/infra_aeroporto_64.png`, `_128.png`. Para a pendência 18 (I4, infraestrutura crítica).
-- A seguir, no mesmo octógono: metrô, hospital/UPA (se não ficar no losango), subestação, bombeiros.
+- **04/11/2026 (pedido de Pedro):** um ícone por camada de `dados/shapefiles/infra_critica/`, no mesmo
+  octógono, gerados por `scripts/gerar_icones_infra.py` (SVG em `mapa/icones/`, PNG 64/128 em `png/`).
+  Prévia sobre o fundo cinza: `mapa/icones/previa_infra.png`. A aprovar.
+
+| Ícone | Camada | Desenho (CC0) |
+|---|---|---|
+| `infra_hospital` | `hospitais` | cruz (Maki "hospital") |
+| `infra_subestacao` | `subestacoes` | raio (Temaki "power") |
+| `infra_metro_estacao` | `metro_estacoes` | trem de metrô (Maki "rail-metro") |
+| `infra_terminal_onibus` | `terminais_onibus` | ônibus (Maki "bus") |
+| `infra_aeroporto` | `aeroporto` (ponto, se usado) | avião (Maki "airport") |
+
+- Linha do metrô (`metro_linhas`): sem ícone; linha grafite #334155 de 4 px com borda branca, estações por cima.
+- O hospital da infraestrutura crítica usa a **cruz no octógono**; o losango com "H" (`equip_hospital_upa`) continua
+  para os equipamentos sensíveis do E2.
+- No ArcGIS Pro: em cada camada, Simbologia → Símbolo único → Imagem (SVG de mesmo nome), 32 px no mínimo.
 
 ## Origem dos desenhos
 - **Maki** (Mapbox), versão 8.2.0, licença CC0 (domínio público).
