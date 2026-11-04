@@ -465,6 +465,7 @@
     // Ordem do Conteúdo do ArcGIS: camada de cima primeiro.
     function addRows(layers, parent, nivel){
       layers.toArray().slice().reverse().forEach(function(layer){
+        if(pular.indexOf(layer) >= 0) return;   // já mostrada numa coluna por tema
         var isGroup = layer.type === "group" && layer.layers && layer.layers.length > 0;
         if(nivel === 0) parent = coluna(isGroup);
         var row = document.createElement("div");
@@ -542,6 +543,7 @@
     /* Quadro Camadas organizado por tema (Pedro, 04/11/2026), uma coluna por vez. A legenda não muda a
        ordem de desenho do mapa: só agrupa as linhas. Coluna 1, "Intervenções": "Localização das intervenções"
        (pontos das obras, por etapa) e "Detalhe das intervenções" (pranchas dos canais Sanbra e Mauricéia). */
+    var pular = [];
     function colecao(lista){ return { toArray: function(){ return lista.slice(); } }; }
     function olhoGrupo(membros, row){
       var btn = document.createElement("button");
@@ -554,7 +556,7 @@
       return btn;
     }
     function colunaTema(titulo, membros){
-      membros = membros.filter(function(l){ return l && map.layers.includes(l); });
+      membros = membros.filter(function(l){ return l && map.allLayers.includes(l); });
       if(!membros.length) return [];
       colSolta = null;
       var col = document.createElement("div");
@@ -580,7 +582,11 @@
       return peso(a) - peso(b);
     });
     var jaMostradas = colunaTema("Intervenções", [obrasPontosLayer].concat(projetosOrdem));
-    addRows(colecao(map.layers.toArray().filter(function(l){ return jaMostradas.indexOf(l) < 0; })), container, 0);
+    // Coluna 2, "Infraestrutura" (Pedro, 04/11/2026): infraestrutura crítica (OSM) e classificação de vias (WebMap).
+    var vias = map.allLayers.find(function(l){ return /classifica[çc][ãa]o de vias/i.test(nomeCamada(l.title)); });
+    jaMostradas = jaMostradas.concat(colunaTema("Infraestrutura", [infraLayer, vias]));
+    pular = jaMostradas;   // daqui em diante, as já mostradas não se repetem (nem dentro dos grupos do WebMap)
+    addRows(map.layers, container, 0);
   }
   (function(){
     var box = document.getElementById("mapTools"), btn = document.getElementById("mapToolsMin");

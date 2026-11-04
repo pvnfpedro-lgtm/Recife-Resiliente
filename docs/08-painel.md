@@ -246,10 +246,13 @@ sem notas (ficam no fim da tabela).
 - **Coluna 1, "Intervenções"** (nomes de Pedro, 04/11/2026): título com olho que liga/desliga tudo, e dentro:
   **Localização das intervenções** (antes "Obras (pontos da planilha)", por etapa) e **Detalhe das
   intervenções** (as pranchas do Canal do Sanbra e do Canal da Mauricéia numa camada só, `DETALHE_TITULO`).
+- **Coluna 2, "Infraestrutura"** (Pedro, 04/11/2026): **Infraestrutura crítica** (camada do painel, OSM; título
+  encurtado, a fonte fica no popup) e **Classificação de vias** (camada do WebMap, achada pelo nome). Camadas
+  mostradas numa coluna por tema não se repetem no resto do quadro, nem dentro dos grupos do WebMap.
 - Próximas colunas: a combinar com Pedro.
 
 ## Infraestrutura crítica no mapa (04/11/2026, pedido de Pedro)
-**Uma camada só**, "Infraestrutura crítica (OpenStreetMap)" (`infraLayer` em `JsPontosCriticos.html`; pedido de
+**Uma camada só**, "Infraestrutura crítica" (`infraLayer` em `JsPontosCriticos.html`; pedido de
 Pedro, 04/11/2026, no lugar do grupo com uma camada por tipo): liga e desliga tudo junto no quadro Camadas, e a
 linha da legenda abre a lista dos tipos com o ícone de cada um: Hospitais (124), Subestações de energia (39), Terminais de ônibus (75),
 Estações de metrô (19), Metrô (linha grafite com borda branca) e Aeroporto (polígono + ícone). Clique no ícone abre um popup com o tipo (Hospital, Subestação de energia...), o nome e o operador, aberto pelo próprio clique do mapa (`abrirPopupInfra`; a abertura automática do ArcGIS não funcionava, 04/11/2026). Ícones de
