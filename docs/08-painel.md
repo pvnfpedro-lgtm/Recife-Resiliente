@@ -63,6 +63,7 @@ não conectado.
   quadro Camadas por tema"), publicada pelo Claude com aprovação de Pedro. Código = `main` depois do PR #16.
   Ainda em 04/11/2026, **versão 13** ("Cores suaves na Classificação de vias"), publicada pelo Claude a pedido de Pedro (PR #17).
   **Versão 14** (04/11/2026, "Cores das vias funcionando (símbolos CIM)"): na v13 as cores não apareciam; conferido por Pedro na URL de teste antes de publicar.
+  **Versão 15** (04/11/2026, "Mapa de calor do comércio e serviços (OSM)"), publicada pelo Claude a pedido de Pedro.
 - **Link da equipe (versão publicada):**
   https://script.google.com/macros/s/AKfycbxXh5HsuhaBBF7z4-8f3bZvksWa7lRuzbj6vA9lLqX87GQlvXhWiluTtG8OTyLYxoXE/exec
 - 02/10/2026: primeiro `clasp push` (pontos críticos lidos da planilha,
