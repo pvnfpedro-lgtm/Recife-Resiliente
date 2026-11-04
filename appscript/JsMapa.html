@@ -392,7 +392,6 @@
     }
     if(SWATCH_PROJETO[title]) return SWATCH_PROJETO[title];
     if(SWATCH_INFRA[title]) return SWATCH_INFRA[title];
-    if(title === INFRA_TITULO) return SWATCH_INFRA["Hospitais"] || "";
     if(title === ANEIS_TITULO){
       return '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#0869A6" stroke-dasharray="2 1.5"><circle cx="8" cy="8" r="2.5"/><circle cx="8" cy="8" r="5"/><circle cx="8" cy="8" r="7.3" stroke-opacity=".6"/></svg>';
     }
@@ -497,6 +496,22 @@
         row.appendChild(olho(layer, row));
         parent.appendChild(row);
         parent.appendChild(classes);
+        if(layer === infraLayer){
+          // Infraestrutura crítica: uma camada, com os tipos (ícones) listados ao abrir a linha.
+          sw.innerHTML = layerSwatchSvg(layer.title);
+          INFRA_CLASSES.forEach(function(it){
+            var linha = document.createElement("div");
+            linha.className = "lg-class";
+            var s2 = document.createElement("span"); s2.className = "lg-sw"; s2.innerHTML = it.swatch;
+            linha.appendChild(s2);
+            linha.appendChild(document.createTextNode(it.rotulo));
+            classes.appendChild(linha);
+          });
+          ch2.el.classList.remove("empty");
+          ch2.el.addEventListener("click", ch2.alterna);
+          nome.addEventListener("click", ch2.alterna);
+          return;
+        }
         if(layer.type === "graphics" || SWATCH_PROJETO[layer.title]){ sw.innerHTML = layerSwatchSvg(layer.title); return; }
         layer.when(function(){
           var r = layer.renderer;

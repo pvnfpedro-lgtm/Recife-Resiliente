@@ -114,7 +114,7 @@
   /* Infraestrutura crítica (04/11/2026, pedido de Pedro): hospitais, subestações, metrô (linha e estações),
      terminais de ônibus e aeroporto, do OpenStreetMap (dado colaborativo, não conferido). Dados em
      DadosInfra.html (scripts/gerar_infra_painel.py); ícones de mapa/icones/infra_*.svg (octógono grafite).
-     Um grupo com uma camada por tipo, para ligar e desligar cada uma no quadro Camadas. */
+     Uma camada só (liga e desliga tudo junto no quadro Camadas), com os tipos listados na legenda. */
   var INFRA_TITULO = "Infraestrutura crítica (OpenStreetMap)";
   var SWATCH_INFRA = {};
   var INFRA_TAM = 22;   // px na tela
@@ -148,15 +148,18 @@
     });
     return gs;
   }
-  // No GroupLayer a última camada fica por cima; INFRA_CAMADAS vem de baixo para cima.
-  var infraLayer = new GroupLayer({ title: INFRA_TITULO, visibilityMode: "independent",
-    layers: (typeof INFRA_CAMADAS === "undefined" ? [] : INFRA_CAMADAS).map(function(c){
-      SWATCH_INFRA[c.titulo] = c.icone
-        ? '<img src="' + c.icone + '" width="16" height="16" alt="" style="vertical-align:middle">'
+  /* Uma camada só para toda a infraestrutura (pedido de Pedro, 04/11/2026); a legenda lista os tipos com o
+     ícone de cada um. INFRA_CAMADAS vem de baixo para cima: a última desenhada fica por cima. */
+  var INFRA_CLASSES = [];
+  var infraLayer = new GraphicsLayer({ title: INFRA_TITULO,
+    graphics: (typeof INFRA_CAMADAS === "undefined" ? [] : INFRA_CAMADAS).reduce(function(acc, c){
+      INFRA_CLASSES.unshift({ rotulo: c.titulo + " (" + c.itens.length + ")", swatch: c.icone
+        ? '<img src="' + c.icone + '" width="16" height="16" alt="">'
         : '<svg width="16" height="12" viewBox="0 0 16 12"><path d="M1 6H15" stroke="#fff" stroke-width="5" stroke-linecap="round"/>' +
-          '<path d="M1 6H15" stroke="#334155" stroke-width="3" stroke-linecap="round"/></svg>';
-      return new GraphicsLayer({ title: c.titulo, graphics: infraGraficos(c) });
-    }) });
+          '<path d="M1 6H15" stroke="#334155" stroke-width="3" stroke-linecap="round"/></svg>' });
+      return acc.concat(infraGraficos(c));
+    }, []) });
+  SWATCH_INFRA[INFRA_TITULO] = INFRA_CLASSES.length ? INFRA_CLASSES[0].swatch : "";
   map.add(infraLayer);
   map.add(aneisLayer);
   map.add(ligacoesLayer);
