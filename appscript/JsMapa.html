@@ -687,6 +687,38 @@
   }
   window.addEventListener("resize", posicionarCamadas);
   view.when(function(){ posicionarCamadas(); setTimeout(posicionarCamadas, 800); });
+  /* Cores da "Classificação de vias" (Pedro, 04/11/2026: "sutis, mas que eu consiga identificar"). Só no painel; o
+     WebMap continua igual. Tons suaves e bem distintos, sem azul (hidrografia) nem vermelho (pontos críticos), na
+     ordem dos tipos da legenda do WebMap; a espessura de cada tipo não muda. */
+  var CORES_VIAS = ["#8E6FB3", "#C79A4B", "#6F9E86", "#B07C8E", "#8A97A6", "#B8AE9C", "#A3A86B", "#9C8574"];
+  function recolorirVias(){
+    var l = map.allLayers.find(function(x){ return x.type === "feature" && /classifica[çc][ãa]o de vias/i.test(nomeCamada(x.title)); });
+    if(!l) return;
+    l.when(function(){
+      if(!l.renderer) return;
+      var r = l.renderer.clone();
+      function pinta(sym, cor){
+        if(!sym) return sym;
+        var s2 = sym.clone();
+        var c = [parseInt(cor.substr(1,2),16), parseInt(cor.substr(3,2),16), parseInt(cor.substr(5,2),16), 0.95];
+        s2.color = c;
+        if(s2.outline) s2.outline.color = c;
+        return s2;
+      }
+      var infos = r.type === "unique-value" ? r.uniqueValueInfos : r.type === "class-breaks" ? r.classBreakInfos : null;
+      if(infos){
+        infos.forEach(function(it, i){ it.symbol = pinta(it.symbol, CORES_VIAS[i % CORES_VIAS.length]); });
+        if(r.defaultSymbol) r.defaultSymbol = pinta(r.defaultSymbol, "#C4C0B8");
+        console.log("Classificação de vias: cores trocadas em " + infos.length + " tipos: " +
+          infos.map(function(it){ return it.label || it.value; }).join(", "));
+      } else if(r.symbol){
+        r.symbol = pinta(r.symbol, CORES_VIAS[0]);
+      }
+      l.renderer = r;
+      buildLayerToggle();   // a legenda mostra as cores novas
+    }, function(){});
+  }
+  map.when(recolorirVias);
   map.when(buildLayerToggle, function(err){
     console.error("Falha ao montar lista de camadas:", err);
   });

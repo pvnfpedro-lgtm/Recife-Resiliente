@@ -59,6 +59,11 @@ não conectado.
   ("Ranking dos pontos críticos e código dividido", 29/10/2026), publicada por Pedro.
   Em 30/10/2026 passou para a **versão 11** ("Canal do Sanbra no mapa: camada única com a
   urbanização"), publicada pelo Claude com `clasp update-deployment`, a pedido de Pedro. O `clasp push` não altera nenhuma delas.
+  Em 04/11/2026 passou para a **versão 12** ("Infraestrutura crítica, anéis no ponto clicado, cartão recolhível e
+  quadro Camadas por tema"), publicada pelo Claude com aprovação de Pedro. Código = `main` depois do PR #16.
+  Ainda em 04/11/2026, **versão 13** ("Cores suaves na Classificação de vias"), publicada pelo Claude a pedido de Pedro (PR #17).
+- **Link da equipe (versão publicada):**
+  https://script.google.com/macros/s/AKfycbxXh5HsuhaBBF7z4-8f3bZvksWa7lRuzbj6vA9lLqX87GQlvXhWiluTtG8OTyLYxoXE/exec
 - 02/10/2026: primeiro `clasp push` (pontos críticos lidos da planilha,
   sem HidroData).
 - 03/10/2026: `clasp push` com as variáveis de 03/10 (nomes novos; I3, V5
@@ -261,6 +266,10 @@ sem notas (ficam no fim da tabela).
 - **Quadro na vertical, na borda direita do mapa** (Pedro, 04/11/2026; depois trocado de lugar com os botões de zoom, que ficam à esquerda dele): um tema embaixo do outro, com rolagem; ao lado dos
   botões de zoom, começando abaixo da faixa de indicadores (`posicionarCamadas()` em `JsMapa.html`). O
   enquadramento ao clicar num ponto desconta a largura do quadro aberto (`areaLivre`).
+- **Cores da "Classificação de vias"** (Pedro, 04/11/2026: "sutis, mas que eu consiga identificar"): trocadas só no
+  painel (`recolorirVias()` em `JsMapa.html`), na ordem dos tipos da legenda do WebMap: #8E6FB3 violeta, #C79A4B ocre,
+  #6F9E86 sálvia, #B07C8E malva, #8A97A6 cinza-azulado, #B8AE9C bege (sem azul nem vermelho). Espessuras do WebMap
+  mantidas. O console do navegador lista os tipos encontrados.
 - Próximas colunas: a combinar com Pedro.
 
 ## Infraestrutura crítica no mapa (04/11/2026, pedido de Pedro)
