@@ -19,10 +19,11 @@ Limpeza:
 - nas camadas de pontos, prédios (polígonos) viram um ponto dentro do prédio, e
   a mesma coisa mapeada duas vezes (mesmo nome a menos de 200 m, ou sem nome a
   menos de 30 m) vira uma só, ficando a que tem mais etiquetas;
-- linhas de metrô/VLT: uma por linha (o OSM tem uma relação por sentido).
+- metrô: as linhas e os dois sentidos viram uma feição só ("Metrô do Recife").
 
-Camadas (escolha de Pedro, 03/11/2026): hospitais, subestações de energia, linhas e
-estações de metrô/VLT, aeroporto e terminais de ônibus. Em "hospitais" não entram
+Camadas (escolha de Pedro, 03/11/2026): hospitais, subestações de energia, metrô
+(a rede inteira numa feição só, sem separar as linhas) e estações de metrô, aeroporto
+e terminais de ônibus. O VLT (linha e estações) fica de fora. Em "hospitais" não entram
 UPA, UPAE nem policlínica, mesmo quando o OSM os marca como hospital; maternidades
 marcadas como hospital entram.
 
@@ -43,7 +44,7 @@ from pathlib import Path
 import shapefile
 from pyproj import Transformer
 from shapely.geometry import LineString, MultiLineString, Point, Polygon, mapping, shape
-from shapely.ops import linemerge
+from shapely.ops import linemerge, unary_union
 import shapely
 import numpy as np
 
@@ -93,11 +94,12 @@ CAMADAS = [
      lambda g: (t(g, "amenity") == "hospital" or t(g, "healthcare") == "hospital")
      and not nome_tem(g, NAO_HOSPITAL)),   # UPA, UPAE e policlínica não são hospital
     ("subestacoes", "Energia", "ponto", lambda g: t(g, "power") == "substation"),
-    ("metro_linhas", "Mobilidade", "linha",
-     lambda g: t(g, "route") in ("subway", "light_rail", "train")),
+    # Só metrô (Pedro, 03/11/2026: não há estações de VLT a considerar). A linha e as estações do VLT saem.
+    ("metro_linhas", "Mobilidade", "linha", lambda g: t(g, "route") == "subway"),
     ("metro_estacoes", "Mobilidade", "ponto",
-     lambda g: t(g, "railway") == "station" or (t(g, "public_transport") == "station" and any(
-         t(g, m) == "yes" for m in ("train", "subway", "light_rail")))),
+     lambda g: (t(g, "railway") == "station" or (t(g, "public_transport") == "station" and any(
+         t(g, m) == "yes" for m in ("train", "subway"))))
+     and t(g, "station") != "light_rail" and t(g, "light_rail") != "yes"),
     ("aeroporto", "Mobilidade", "poligono", lambda g: t(g, "aeroway") == "aerodrome"),
     ("terminais_onibus", "Mobilidade", "ponto",
      lambda g: t(g, "amenity") == "bus_station"
@@ -171,16 +173,19 @@ def limpar_pontos(lista):
 
 
 def limpar_linhas(lista):
-    """Uma linha por serviço: o nome sem o sentido (o que vem depois do parêntese)."""
-    por_linha = {}
+    """Uma feição só para todo o metrô (Pedro, 03/11/2026: não precisa diferenciar as linhas).
+    O OSM tem uma relação por linha e por sentido; os trechos são unidos."""
+    if not lista:
+        return []
+    partes = []
     for f in lista:
-        # "Linha Sul (Recife → Cajueiro Seco)" → "Linha Sul"; "VLT Curado --> Cajueiro Seco" → "VLT"
-        base = re.split(r"\s*\(", f["nome"])[0].strip() if f["nome"] else f["osm_id"]
-        if re.search(r"-->|→", base):
-            base = base.split()[0]
-        if base not in por_linha or f["geom"].length > por_linha[base]["geom"].length:
-            por_linha[base] = dict(f, nome=base)
-    return list(por_linha.values())
+        g = f["geom"]
+        partes += [g] if g.geom_type == "LineString" else list(g.geoms)
+    rede = unary_union(partes)
+    rede = linemerge(rede) if rede.geom_type == "MultiLineString" else rede
+    base = max(lista, key=lambda f: f["n_tags"])
+    return [dict(base, geom=rede, nome="Metrô do Recife", osm_id=";".join(sorted(f["osm_id"] for f in lista))[:20],
+                 subtipo="route=subway", operador=base["operador"] or "CBTU")]
 
 
 def gravar(caminho, forma, feicoes, data, fonte):

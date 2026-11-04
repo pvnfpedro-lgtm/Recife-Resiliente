@@ -53,7 +53,7 @@ coordenadas.
   no repositório.
 
 ## Infraestrutura crítica (OpenStreetMap, 03/11/2026)
-Camadas escolhidas por Pedro: hospitais, subestações, linhas e estações de metrô/VLT, aeroporto e terminais
+Camadas escolhidas por Pedro: hospitais, subestações, metrô (uma feição, sem VLT) e estações de metrô, aeroporto e terminais
 de ônibus. Consulta para o [Overpass Turbo](https://overpass-turbo.eu) (Executar → Exportar → GeoJSON).
 Salvar o arquivo em `dados/brutos/osm/` e rodar
 `python3 scripts/gerar_infra_critica.py --geojson dados/brutos/osm/<arquivo>.geojson --data AAAA-MM-DD`.
