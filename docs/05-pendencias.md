@@ -71,3 +71,4 @@ Tudo o que estiver aqui **não** pode ir para a apresentação sem conferência.
   aproximadas.
 - Malha de favelas e comunidades 2022, tipo de domicílio por setor, curvas de
   nível no ESIG e MapBiomas: não verificados.
+| 27 | Comércio (OSM) no mapa de calor: conferir se a cobertura dos bairros da RPA 6 é razoável (OSM incompleto na periferia) e decidir se serve de apoio ao E3 enquanto o IPTU não residencial não chega | Pedro | 11/11 | 4.437 pontos de 04/11/2026 em `dados/shapefiles/comercio/`; prévia em `docs/img/comercio_calor_previa.png` |

@@ -179,6 +179,37 @@
       return acc.concat(infraGraficos(c));
     }, []) });
   SWATCH_INFRA[INFRA_TITULO] = INFRA_CLASSES.length ? INFRA_CLASSES[0].swatch : "";
+  /* Mapa de calor do comércio e serviços (04/11/2026, pedido de Pedro): 4.437 pontos do OpenStreetMap (lojas,
+     alimentação, mercados e shoppings, bancos, farmácias e postos), em DadosComercio.html (scripts/gerar_comercio.py).
+     Dado colaborativo, não conferido e incompleto nos bairros periféricos: mostra onde há comércio mapeado.
+     Camada de feições no navegador (o mapa de calor do ArcGIS só funciona em FeatureLayer). Roxo, para não
+     confundir com o vermelho do risco nem com o azul da água. Fica por baixo da infraestrutura e dos pontos. */
+  var COMERCIO_TITULO = "Comércio e serviços (mapa de calor)";
+  var COMERCIO_DADOS = typeof COMERCIO === "undefined" ? null : COMERCIO;
+  var comercioLayer = COMERCIO_DADOS ? new FeatureLayer({
+    title: COMERCIO_TITULO, visible: true, opacity: 0.85,
+    objectIdField: "oid", geometryType: "point", spatialReference: { wkid: 4326 },
+    fields: [{ name: "oid", type: "oid" }, { name: "categoria", type: "string" }],
+    source: COMERCIO_DADOS.pontos.map(function(p, i){
+      return new Graphic({ geometry: { type:"point", longitude: p[0], latitude: p[1] },
+        attributes: { oid: i + 1, categoria: COMERCIO_DADOS.categorias[p[2]] } });
+    }),
+    popupEnabled: false,
+    renderer: { type: "heatmap", radius: 12, maxDensity: 0.02, minDensity: 0,
+      colorStops: [
+        { ratio: 0,    color: "rgba(142, 111, 179, 0)" },
+        { ratio: 0.12, color: "rgba(196, 176, 222, 0.45)" },
+        { ratio: 0.35, color: "rgba(160, 120, 200, 0.70)" },
+        { ratio: 0.65, color: "rgba(120, 70, 170, 0.85)" },
+        { ratio: 1,    color: "rgba(75, 30, 125, 0.95)" }
+      ] }
+  }) : null;
+  if(comercioLayer){
+    SWATCH_PROJETO[COMERCIO_TITULO] = '<svg width="16" height="12" viewBox="0 0 16 12"><defs><linearGradient id="gcom" x1="0" x2="1">' +
+      '<stop offset="0" stop-color="#C4B0DE"/><stop offset=".5" stop-color="#A078C8"/><stop offset="1" stop-color="#4B1E7D"/>' +
+      '</linearGradient></defs><rect x="1" y="1" width="14" height="10" rx="2" fill="url(#gcom)"/></svg>';
+    map.add(comercioLayer);
+  }
   map.add(infraLayer);
   map.add(aneisLayer);
   map.add(ligacoesLayer);
@@ -187,7 +218,7 @@
   // O WebMap só traz as camadas dele depois de carregar, e elas entram por cima das nossas (os rios
   // cobriam os ícones das obras). Depois do carregamento, as nossas voltam para o topo, na mesma ordem.
   map.when(function(){
-    projetosLayers.concat([infraLayer, aneisLayer, ligacoesLayer, pontosLayer, obrasPontosLayer]).forEach(function(l){ map.reorder(l, map.layers.length - 1); });
+    projetosLayers.concat((comercioLayer ? [comercioLayer] : []).concat([infraLayer, aneisLayer, ligacoesLayer, pontosLayer, obrasPontosLayer])).forEach(function(l){ map.reorder(l, map.layers.length - 1); });
   });
   var CLASSES_INDICE = [
     { max: 0.2,      cor: "#1a9850", rotulo: "< 0,200" },

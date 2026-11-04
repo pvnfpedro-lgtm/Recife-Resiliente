@@ -609,6 +609,8 @@
     }
     jaMostradas = jaMostradas.concat(colunaTema("Vulnerabilidade",
       [camadaPorNome(/bairro/i), camadaPorNome(/^zeis\b/i), camadaPorNome(/^cis\b/i)]));
+    // Coluna "Economia" (04/11/2026): mapa de calor do comércio e serviços (OSM).
+    if(comercioLayer) jaMostradas = jaMostradas.concat(colunaTema("Economia", [comercioLayer]));
     // Coluna 4, "Pontos críticos de alagamento" (Pedro, 04/11/2026): os pontos, as ligações com as obras e os anéis.
     jaMostradas = jaMostradas.concat(colunaTema("Pontos críticos de alagamento", [pontosLayer, ligacoesLayer, aneisLayer]));
     pular = jaMostradas.concat(CAMADAS_OCULTAS);   // daqui em diante, as já mostradas não se repetem (nem dentro dos grupos do WebMap)

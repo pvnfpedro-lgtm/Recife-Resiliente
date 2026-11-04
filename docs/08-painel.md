@@ -63,6 +63,7 @@ não conectado.
   quadro Camadas por tema"), publicada pelo Claude com aprovação de Pedro. Código = `main` depois do PR #16.
   Ainda em 04/11/2026, **versão 13** ("Cores suaves na Classificação de vias"), publicada pelo Claude a pedido de Pedro (PR #17).
   **Versão 14** (04/11/2026, "Cores das vias funcionando (símbolos CIM)"): na v13 as cores não apareciam; conferido por Pedro na URL de teste antes de publicar.
+  **Versão 15** (04/11/2026, "Mapa de calor do comércio e serviços (OSM)"), publicada pelo Claude a pedido de Pedro.
 - **Link da equipe (versão publicada):**
   https://script.google.com/macros/s/AKfycbxXh5HsuhaBBF7z4-8f3bZvksWa7lRuzbj6vA9lLqX87GQlvXhWiluTtG8OTyLYxoXE/exec
 - 02/10/2026: primeiro `clasp push` (pontos críticos lidos da planilha,
@@ -273,6 +274,10 @@ sem notas (ficam no fim da tabela).
   mantidas. O console do navegador lista os tipos encontrados.
   1ª versão (v13) não mudou nada no mapa (Pedro). Correção: troca também símbolos CIM (`cimSymbolUtils`), tira
   variáveis visuais de cor e trata subcamadas de "map-image". O console mostra "Vias: ..." com o tipo da camada.
+- **Coluna "Economia"** (Pedro, 04/11/2026): "Comércio e serviços (mapa de calor)", 4.437 pontos do OpenStreetMap
+  (`comercioLayer` em `JsPontosCriticos.html`, FeatureLayer no navegador com renderer `heatmap` em roxo; dados em
+  `DadosComercio.html`, de `scripts/gerar_comercio.py`). Por baixo da infraestrutura e dos pontos. Prévia:
+  `docs/img/comercio_calor_previa.png`. As manchas mais fortes são shoppings (lojas mapeadas uma a uma).
 - Próximas colunas: a combinar com Pedro.
 
 ## Infraestrutura crítica no mapa (04/11/2026, pedido de Pedro)
@@ -318,6 +323,7 @@ O `Index.html` tinha cerca de 3.100 linhas. Foi dividido sem mudar o que a pági
 |---|---|
 | `Index.html.html` | Cabeçalho, marcação das abas e chamadas `<?!= include('…'); ?>` |
 | `Estilos.html` | Todo o CSS (`<style>`) |
+| `DadosComercio.html` | Comércio e serviços para o mapa de calor (gerado por `scripts/gerar_comercio.py`) |
 | `DadosInfra.html` | Infraestrutura crítica (gerado por `scripts/gerar_infra_painel.py`) |
 | `DadosProjetos.html` | Pranchas de projeto georreferenciadas (gerado por `scripts/gerar_projetos_painel.py`) |
 | `JsBase.html` | Parte 1 do script: aviso de erro, abertura do `require()` do ArcGIS, bacias, dados, filtros |
