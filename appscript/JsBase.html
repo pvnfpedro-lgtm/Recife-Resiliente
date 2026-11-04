@@ -22,9 +22,11 @@ require([
   "esri/layers/GroupLayer",
   "esri/layers/MediaLayer",
   "esri/layers/support/ImageElement",
-  "esri/layers/support/CornersGeoreference"
+  "esri/layers/support/CornersGeoreference",
+  "esri/symbols/support/cimSymbolUtils",
+  "esri/Color"
 ], function(WebMap, MapView, GraphicsLayer, Graphic, PopupTemplate, EsriMap, reactiveUtils, Popup, symbolUtils, Extent, GroupLayer,
-            MediaLayer, ImageElement, CornersGeoreference){
+            MediaLayer, ImageElement, CornersGeoreference, cimSymbolUtils, EsriColor){
   "use strict";
 
   /* =====================================================================

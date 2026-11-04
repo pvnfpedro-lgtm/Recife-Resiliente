@@ -62,6 +62,7 @@ não conectado.
   Em 04/11/2026 passou para a **versão 12** ("Infraestrutura crítica, anéis no ponto clicado, cartão recolhível e
   quadro Camadas por tema"), publicada pelo Claude com aprovação de Pedro. Código = `main` depois do PR #16.
   Ainda em 04/11/2026, **versão 13** ("Cores suaves na Classificação de vias"), publicada pelo Claude a pedido de Pedro (PR #17).
+  **Versão 14** (04/11/2026, "Cores das vias funcionando (símbolos CIM)"): na v13 as cores não apareciam; conferido por Pedro na URL de teste antes de publicar.
 - **Link da equipe (versão publicada):**
   https://script.google.com/macros/s/AKfycbxXh5HsuhaBBF7z4-8f3bZvksWa7lRuzbj6vA9lLqX87GQlvXhWiluTtG8OTyLYxoXE/exec
 - 02/10/2026: primeiro `clasp push` (pontos críticos lidos da planilha,
@@ -270,6 +271,8 @@ sem notas (ficam no fim da tabela).
   painel (`recolorirVias()` em `JsMapa.html`), na ordem dos tipos da legenda do WebMap: #8E6FB3 violeta, #C79A4B ocre,
   #6F9E86 sálvia, #B07C8E malva, #8A97A6 cinza-azulado, #B8AE9C bege (sem azul nem vermelho). Espessuras do WebMap
   mantidas. O console do navegador lista os tipos encontrados.
+  1ª versão (v13) não mudou nada no mapa (Pedro). Correção: troca também símbolos CIM (`cimSymbolUtils`), tira
+  variáveis visuais de cor e trata subcamadas de "map-image". O console mostra "Vias: ..." com o tipo da camada.
 - Próximas colunas: a combinar com Pedro.
 
 ## Infraestrutura crítica no mapa (04/11/2026, pedido de Pedro)
