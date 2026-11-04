@@ -358,6 +358,9 @@
         if(pc){ selecionarPonto(pc, hitPonto.graphic.geometry); return; }
       }
       fecharCartao();
+      // Ícones da infraestrutura crítica: popup com o tipo e o nome (04/11/2026).
+      var hitInfra = res.results.find(function(r){ return r.graphic && r.graphic.layer === infraLayer && r.graphic.attributes && r.graphic.attributes.infra; });
+      if(hitInfra){ abrirPopupInfra(hitInfra.graphic, evt.mapPoint); return; }
       var hitProject = res.results.find(function(r){ return r.graphic && (ehCamadaDeObra(r.graphic.layer) || r.graphic.layer === graphicsLayer); });
       if(hitProject){
         var p = PROJECTS.find(function(pr){ return pr.id === hitProject.graphic.attributes.id; });

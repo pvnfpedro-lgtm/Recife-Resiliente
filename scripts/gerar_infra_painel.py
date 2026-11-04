@@ -28,14 +28,14 @@ ICONES = RAIZ / "mapa" / "icones"
 SAIDA = RAIZ / "appscript" / "DadosInfra.html"
 PARA_WGS84 = Transformer.from_crs("EPSG:31985", "EPSG:4326", always_xy=True).transform
 
-# Ordem de desenho: a primeira fica por baixo. (camada, título no painel, ícone)
+# Ordem de desenho: a primeira fica por baixo. (camada, título na legenda, tipo no popup, ícone)
 CAMADAS = [
-    ("aeroporto", "Aeroporto", "infra_aeroporto"),
-    ("metro_linhas", "Metrô", None),
-    ("metro_estacoes", "Estações de metrô", "infra_metro_estacao"),
-    ("terminais_onibus", "Terminais de ônibus", "infra_terminal_onibus"),
-    ("subestacoes", "Subestações de energia", "infra_subestacao"),
-    ("hospitais", "Hospitais", "infra_hospital"),
+    ("aeroporto", "Aeroporto", "Aeroporto", "infra_aeroporto"),
+    ("metro_linhas", "Metrô", "Linha do metrô", None),
+    ("metro_estacoes", "Estações de metrô", "Estação de metrô", "infra_metro_estacao"),
+    ("terminais_onibus", "Terminais de ônibus", "Terminal de ônibus", "infra_terminal_onibus"),
+    ("subestacoes", "Subestações de energia", "Subestação de energia", "infra_subestacao"),
+    ("hospitais", "Hospitais", "Hospital", "infra_hospital"),
 ]
 
 
@@ -49,7 +49,7 @@ def ler(nome):
         yield shape(item.shape.__geo_interface__), item.record.as_dict()
 
 
-def camada(nome, titulo, icone):
+def camada(nome, titulo, tipo, icone):
     itens = []
     for geom, rec in ler(nome):
         g = transform(PARA_WGS84, geom.simplify(5) if geom.geom_type != "Point" else geom)
@@ -63,7 +63,7 @@ def camada(nome, titulo, icone):
             dado = {"aneis": [[r6(c) for c in orient(p, sign=-1.0).exterior.coords] for p in pols]}
         dado.update({"nome": rec["nome"], "operador": rec["operador"]})
         itens.append(dado)
-    out = {"id": nome, "titulo": titulo, "itens": itens}
+    out = {"id": nome, "titulo": titulo, "tipo": tipo, "itens": itens}
     if icone:
         svg = (ICONES / f"{icone}.svg").read_bytes()
         out["icone"] = "data:image/svg+xml;base64," + base64.b64encode(svg).decode()

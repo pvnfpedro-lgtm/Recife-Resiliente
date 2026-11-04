@@ -118,11 +118,23 @@
   var INFRA_TITULO = "Infraestrutura crítica (OpenStreetMap)";
   var SWATCH_INFRA = {};
   var INFRA_TAM = 22;   // px na tela
+  // Popup do ícone (04/11/2026): o tipo em destaque e o nome (o OSM não tem nome para todos).
+  function popupInfra(a){
+    return { title: a.nome || a.tipo,
+      content: '<div style="font-size:13px;line-height:1.5"><b>' + escHtml(a.tipo) + '</b>' +
+        (a.nome ? '' : '<br><span style="color:#64748b">Sem nome no OpenStreetMap</span>') +
+        (a.operador ? '<br>Operador: ' + escHtml(a.operador) : '') +
+        '<br><span style="color:#64748b;font-size:11px">Fonte: OpenStreetMap (dado não conferido)</span></div>' };
+  }
+  function abrirPopupInfra(g, ponto){
+    var p = popupInfra(g.attributes);
+    view.popup.open({ title: p.title, content: p.content, location: g.geometry.type === "point" ? g.geometry : ponto });
+  }
   function infraGraficos(c){
-    var popup = { title: "{nome}", content: c.titulo + " · OpenStreetMap, dado não conferido" };
     var gs = [];
     c.itens.forEach(function(it){
-      var attr = { nome: it.nome || "(sem nome no OpenStreetMap)", operador: it.operador || "" };
+      var attr = { infra: true, tipo: c.tipo || c.titulo, nome: it.nome || "", operador: it.operador || "" };
+      var popup = popupInfra(attr);
       if(it.pt){
         gs.push(new Graphic({ geometry: { type:"point", longitude: it.pt[0], latitude: it.pt[1] },
           symbol: { type:"picture-marker", url: c.icone, width: INFRA_TAM, height: INFRA_TAM },

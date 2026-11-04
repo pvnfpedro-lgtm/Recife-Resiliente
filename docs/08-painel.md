@@ -244,7 +244,7 @@ sem notas (ficam no fim da tabela).
 **Uma camada só**, "Infraestrutura crítica (OpenStreetMap)" (`infraLayer` em `JsPontosCriticos.html`; pedido de
 Pedro, 04/11/2026, no lugar do grupo com uma camada por tipo): liga e desliga tudo junto no quadro Camadas, e a
 linha da legenda abre a lista dos tipos com o ícone de cada um: Hospitais (124), Subestações de energia (39), Terminais de ônibus (75),
-Estações de metrô (19), Metrô (linha grafite com borda branca) e Aeroporto (polígono + ícone). Ícones de
+Estações de metrô (19), Metrô (linha grafite com borda branca) e Aeroporto (polígono + ícone). Clique no ícone abre um popup com o tipo (Hospital, Subestação de energia...), o nome e o operador, aberto pelo próprio clique do mapa (`abrirPopupInfra`; a abertura automática do ArcGIS não funcionava, 04/11/2026). Ícones de
 `mapa/icones/infra_*.svg` (octógono grafite, 22 px). Clique abre um popup com o nome. Fica abaixo dos anéis, dos
 pontos críticos e das obras. Dados em `DadosInfra.html`, gerado por `scripts/gerar_infra_painel.py` a partir de
 `dados/shapefiles/infra_critica/`. Dado colaborativo, não conferido (pendência 18).
