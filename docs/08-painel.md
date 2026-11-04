@@ -61,6 +61,7 @@ não conectado.
   urbanização"), publicada pelo Claude com `clasp update-deployment`, a pedido de Pedro. O `clasp push` não altera nenhuma delas.
   Em 04/11/2026 passou para a **versão 12** ("Infraestrutura crítica, anéis no ponto clicado, cartão recolhível e
   quadro Camadas por tema"), publicada pelo Claude com aprovação de Pedro. Código = `main` depois do PR #16.
+  Ainda em 04/11/2026, **versão 13** ("Cores suaves na Classificação de vias"), publicada pelo Claude a pedido de Pedro (PR #17).
 - **Link da equipe (versão publicada):**
   https://script.google.com/macros/s/AKfycbxXh5HsuhaBBF7z4-8f3bZvksWa7lRuzbj6vA9lLqX87GQlvXhWiluTtG8OTyLYxoXE/exec
 - 02/10/2026: primeiro `clasp push` (pontos críticos lidos da planilha,
