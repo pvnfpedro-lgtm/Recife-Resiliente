@@ -270,6 +270,8 @@ sem notas (ficam no fim da tabela).
   painel (`recolorirVias()` em `JsMapa.html`), na ordem dos tipos da legenda do WebMap: #8E6FB3 violeta, #C79A4B ocre,
   #6F9E86 sálvia, #B07C8E malva, #8A97A6 cinza-azulado, #B8AE9C bege (sem azul nem vermelho). Espessuras do WebMap
   mantidas. O console do navegador lista os tipos encontrados.
+  1ª versão (v13) não mudou nada no mapa (Pedro). Correção: troca também símbolos CIM (`cimSymbolUtils`), tira
+  variáveis visuais de cor e trata subcamadas de "map-image". O console mostra "Vias: ..." com o tipo da camada.
 - Próximas colunas: a combinar com Pedro.
 
 ## Infraestrutura crítica no mapa (04/11/2026, pedido de Pedro)

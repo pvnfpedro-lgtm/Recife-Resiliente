@@ -691,32 +691,53 @@
      WebMap continua igual. Tons suaves e bem distintos, sem azul (hidrografia) nem vermelho (pontos críticos), na
      ordem dos tipos da legenda do WebMap; a espessura de cada tipo não muda. */
   var CORES_VIAS = ["#8E6FB3", "#C79A4B", "#6F9E86", "#B07C8E", "#8A97A6", "#B8AE9C", "#A3A86B", "#9C8574"];
+  // 04/11/2026: a 1ª versão não mudava nada no mapa. Agora troca também símbolos CIM (os do ArcGIS Pro, que
+  // ignoram .color), tira variáveis visuais de cor e vale para camada "feature" ou subcamada de "map-image".
+  function corVia(sym, cor){
+    if(!sym) return sym;
+    var s2 = sym.clone(), c = new EsriColor(cor);
+    c.a = 0.95;
+    if(s2.type === "cim"){ try{ cimSymbolUtils.applyCIMSymbolColor(s2, c); }catch(e){ console.warn("Vias: cor CIM", e); } }
+    else { s2.color = c; if(s2.outline) s2.outline.color = c; }
+    return s2;
+  }
+  function rendererVias(r0){
+    var r = r0.clone();
+    if(r.visualVariables) r.visualVariables = r.visualVariables.filter(function(v){ return v.type !== "color"; });
+    var infos = r.type === "unique-value" ? r.uniqueValueInfos : r.type === "class-breaks" ? r.classBreakInfos : null;
+    if(infos && infos.length){
+      infos.forEach(function(it, i){ it.symbol = corVia(it.symbol, CORES_VIAS[i % CORES_VIAS.length]); });
+      if(r.defaultSymbol) r.defaultSymbol = corVia(r.defaultSymbol, "#C4C0B8");
+      console.log("Vias: " + r.type + ", " + infos.length + " tipos (" + infos.map(function(it){ return it.label || it.value; }).join(", ") + ")" +
+        "; símbolo " + (infos[0].symbol && infos[0].symbol.type));
+    } else if(r.symbol){
+      r.symbol = corVia(r.symbol, CORES_VIAS[0]);
+      console.log("Vias: renderer " + r.type + " com um símbolo só (" + r.symbol.type + "): uma cor para todas as vias.");
+    } else {
+      console.warn("Vias: renderer sem símbolo reconhecido (" + r.type + ").");
+    }
+    return r;
+  }
   function recolorirVias(){
-    var l = map.allLayers.find(function(x){ return x.type === "feature" && /classifica[çc][ãa]o de vias/i.test(nomeCamada(x.title)); });
-    if(!l) return;
+    var re = /classifica[çc][ãa]o de vias/i;
+    var l = map.allLayers.find(function(x){ return x.type !== "group" && re.test(nomeCamada(x.title)); });
+    if(!l){ console.warn("Vias: camada \"Classificação de vias\" não encontrada no WebMap."); return; }
     l.when(function(){
-      if(!l.renderer) return;
-      var r = l.renderer.clone();
-      function pinta(sym, cor){
-        if(!sym) return sym;
-        var s2 = sym.clone();
-        var c = [parseInt(cor.substr(1,2),16), parseInt(cor.substr(3,2),16), parseInt(cor.substr(5,2),16), 0.95];
-        s2.color = c;
-        if(s2.outline) s2.outline.color = c;
-        return s2;
+      console.log("Vias: camada do tipo " + l.type);
+      if(l.type === "map-image" || l.type === "tile"){
+        // Subcamadas do serviço de mapa: troca o renderer de cada uma que tiver.
+        (l.allSublayers ? l.allSublayers.toArray() : []).forEach(function(sub){
+          if(sub.renderer){ sub.renderer = rendererVias(sub.renderer); }
+          else { console.warn("Vias: subcamada " + sub.title + " sem renderer (o serviço não deixa trocar)."); }
+        });
+      } else if(l.renderer){
+        l.renderer = rendererVias(l.renderer);
+      } else {
+        console.warn("Vias: tipo " + l.type + " sem renderer que o painel possa trocar.");
+        return;
       }
-      var infos = r.type === "unique-value" ? r.uniqueValueInfos : r.type === "class-breaks" ? r.classBreakInfos : null;
-      if(infos){
-        infos.forEach(function(it, i){ it.symbol = pinta(it.symbol, CORES_VIAS[i % CORES_VIAS.length]); });
-        if(r.defaultSymbol) r.defaultSymbol = pinta(r.defaultSymbol, "#C4C0B8");
-        console.log("Classificação de vias: cores trocadas em " + infos.length + " tipos: " +
-          infos.map(function(it){ return it.label || it.value; }).join(", "));
-      } else if(r.symbol){
-        r.symbol = pinta(r.symbol, CORES_VIAS[0]);
-      }
-      l.renderer = r;
       buildLayerToggle();   // a legenda mostra as cores novas
-    }, function(){});
+    }, function(e){ console.warn("Vias: camada não carregou", e); });
   }
   map.when(recolorirVias);
   map.when(buildLayerToggle, function(err){
