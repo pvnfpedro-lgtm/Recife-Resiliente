@@ -275,7 +275,7 @@ sem notas (ficam no fim da tabela).
   1ª versão (v13) não mudou nada no mapa (Pedro). Correção: troca também símbolos CIM (`cimSymbolUtils`), tira
   variáveis visuais de cor e trata subcamadas de "map-image". O console mostra "Vias: ..." com o tipo da camada.
 - **Coluna "Economia"** (Pedro, 04/11/2026): "Comércio e serviços (mapa de calor)", 4.437 pontos do OpenStreetMap
-  (`comercioLayer` em `JsPontosCriticos.html`, FeatureLayer no navegador com renderer `heatmap` em roxo; dados em
+  (`comercioLayer` em `JsPontosCriticos.html`, FeatureLayer no navegador com renderer `heatmap` em âmbar, amarelo → laranja → marrom, escolhido por Pedro no lugar do roxo; dados em
   `DadosComercio.html`, de `scripts/gerar_comercio.py`). Por baixo da infraestrutura e dos pontos. Prévia:
   `docs/img/comercio_calor_previa.png`. As manchas mais fortes são shoppings (lojas mapeadas uma a uma).
 - Próximas colunas: a combinar com Pedro.
