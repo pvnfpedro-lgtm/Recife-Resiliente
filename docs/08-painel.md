@@ -258,7 +258,7 @@ sem notas (ficam no fim da tabela).
   pontos que o painel desenha a partir da planilha. Lista `OCULTAR_DO_WEBMAP` em `JsMapa.html` (pelo nome).
 - **Coluna 4, "Pontos críticos de alagamento"** (Pedro, 04/11/2026): Pontos críticos — RPA 6 e bacia do Tejipió,
   Ligação pontos críticos ↔ obras e Anéis de 1 a 5 km (ponto clicado).
-- **Quadro na vertical, à direita do mapa** (Pedro, 04/11/2026): um tema embaixo do outro, com rolagem; ao lado dos
+- **Quadro na vertical, na borda direita do mapa** (Pedro, 04/11/2026; depois trocado de lugar com os botões de zoom, que ficam à esquerda dele): um tema embaixo do outro, com rolagem; ao lado dos
   botões de zoom, começando abaixo da faixa de indicadores (`posicionarCamadas()` em `JsMapa.html`). O
   enquadramento ao clicar num ponto desconta a largura do quadro aberto (`areaLivre`).
 - Próximas colunas: a combinar com Pedro.
