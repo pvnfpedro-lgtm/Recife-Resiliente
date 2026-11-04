@@ -294,8 +294,12 @@
     });
     desenharLigacoes();
   }
+  var CAMADAS_OCULTAS = [];   // do WebMap, fora do mapa e do quadro Camadas
   function carregarObras(){
     var camada = map.allLayers.find(function(l){ return l.type === "feature" && /obra/i.test(l.title || ""); });
+    /* Camada "Obras" do WebMap (polígonos): retirada do mapa e do quadro Camadas a pedido de Pedro (04/11/2026).
+       O painel continua lendo os dados dela (a consulta funciona com a camada oculta). */
+    if(camada){ camada.visible = false; camada.listMode = "hide"; CAMADAS_OCULTAS.push(camada); }
     var planilha = lerPlanilhaObras();
     if(!camada){
       planilha.then(function(res){ aplicarPlanilha(res); if(OBRAS_ESTADO !== "sem-planilha") OBRAS_ESTADO = "ok"; renderAll(); });
@@ -594,7 +598,7 @@
     }
     jaMostradas = jaMostradas.concat(colunaTema("Vulnerabilidade",
       [camadaPorNome(/bairro/i), camadaPorNome(/^zeis\b/i), camadaPorNome(/^cis\b/i)]));
-    pular = jaMostradas;   // daqui em diante, as já mostradas não se repetem (nem dentro dos grupos do WebMap)
+    pular = jaMostradas.concat(CAMADAS_OCULTAS);   // daqui em diante, as já mostradas não se repetem (nem dentro dos grupos do WebMap)
     addRows(map.layers, container, 0);
   }
   (function(){
