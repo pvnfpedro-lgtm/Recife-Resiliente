@@ -64,6 +64,7 @@ não conectado.
   Ainda em 04/11/2026, **versão 13** ("Cores suaves na Classificação de vias"), publicada pelo Claude a pedido de Pedro (PR #17).
   **Versão 14** (04/11/2026, "Cores das vias funcionando (símbolos CIM)"): na v13 as cores não apareciam; conferido por Pedro na URL de teste antes de publicar.
   **Versão 15** (04/11/2026, "Mapa de calor do comércio e serviços (OSM)"), publicada pelo Claude a pedido de Pedro.
+  **Versão 16** (04/11/2026, "Mapa de calor do comércio em âmbar, coluna Exposição"), publicada pelo Claude depois de Pedro aprovar o âmbar.
 - **Link da equipe (versão publicada):**
   https://script.google.com/macros/s/AKfycbxXh5HsuhaBBF7z4-8f3bZvksWa7lRuzbj6vA9lLqX87GQlvXhWiluTtG8OTyLYxoXE/exec
 - 02/10/2026: primeiro `clasp push` (pontos críticos lidos da planilha,
@@ -274,7 +275,7 @@ sem notas (ficam no fim da tabela).
   mantidas. O console do navegador lista os tipos encontrados.
   1ª versão (v13) não mudou nada no mapa (Pedro). Correção: troca também símbolos CIM (`cimSymbolUtils`), tira
   variáveis visuais de cor e trata subcamadas de "map-image". O console mostra "Vias: ..." com o tipo da camada.
-- **Coluna "Economia"** (Pedro, 04/11/2026): "Comércio e serviços (mapa de calor)", 4.437 pontos do OpenStreetMap
+- **Coluna "Exposição"** (Pedro, 04/11/2026; de início chamada "Economia"): "Comércio e serviços (mapa de calor)", 4.437 pontos do OpenStreetMap
   (`comercioLayer` em `JsPontosCriticos.html`, FeatureLayer no navegador com renderer `heatmap` em âmbar, amarelo → laranja → marrom, escolhido por Pedro no lugar do roxo; dados em
   `DadosComercio.html`, de `scripts/gerar_comercio.py`). Por baixo da infraestrutura e dos pontos. Prévia:
   `docs/img/comercio_calor_previa.png`. As manchas mais fortes são shoppings (lojas mapeadas uma a uma).
