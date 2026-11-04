@@ -1,7 +1,8 @@
 """Gera os ícones do grupo Infraestrutura crítica para o mapa (SVG + PNG 64 e 128 px).
 
-Estilo C (docs/09-identidade-visual-mapa.md): octógono em grafite (#334155) com
-contorno branco e desenho branco. Um ícone por camada de
+Estilo minimalista (Pedro, 04/11/2026; docs/09-identidade-visual-mapa.md): só o
+desenho em grafite (#334155), com borda branca fina, sem forma em volta. Antes
+era o octógono grafite com desenho branco. Um ícone por camada de
 dados/shapefiles/infra_critica/ (exceto metro_linhas, que é linha):
 
 | Ícone                     | Camada            | Desenho                         |
@@ -23,10 +24,7 @@ RAIZ = Path(__file__).resolve().parent.parent
 PASTA = RAIZ / "mapa" / "icones"
 TAMANHOS = (64, 128)
 
-# Mesmo octógono do infra_aeroporto (16/10/2026).
-FUNDO = ('<polygon points="30.04,21.82 21.82,30.04 10.18,30.04 1.96,21.82 1.96,10.18 '
-         '10.18,1.96 21.82,1.96 30.04,10.18" fill="#334155" stroke="#fff" '
-         'stroke-width="1.6" stroke-linejoin="round"/>')
+GRAFITE = "#334155"
 
 # Desenhos na grade 15 x 15 (branco).
 DESENHOS = {
@@ -62,9 +60,12 @@ DESENHOS = {
 
 
 def svg(desenho):
+    """Estilo minimalista (Pedro, 04/11/2026): só o desenho, em grafite, com uma borda branca fina
+    por baixo para destacar do mapa. Sem forma em volta."""
     return ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">'
-            f'{FUNDO}<g transform="translate(7,7) scale(1.2)" fill="#fff">'
-            f'{desenho}</g></svg>\n')
+            '<g transform="translate(5,5) scale(1.4667)">'
+            f'<g fill="none" stroke="#fff" stroke-width="2.2" stroke-linejoin="round">{desenho}</g>'
+            f'<g fill="{GRAFITE}">{desenho}</g></g></svg>\n')
 
 
 def main():

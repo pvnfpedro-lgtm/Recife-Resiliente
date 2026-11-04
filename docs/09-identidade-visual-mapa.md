@@ -83,7 +83,10 @@
   As formas já usadas ficam livres: círculo = risco, quadrado = drenagem, losango = equipamentos sensíveis.
 - Primeiro ícone: **aeroporto** (avião da Maki, CC0): `mapa/icones/infra_aeroporto.svg` e
   `png/infra_aeroporto_64.png`, `_128.png`. Para a pendência 18 (I4, infraestrutura crítica).
-- **04/11/2026 (pedido de Pedro):** um ícone por camada de `dados/shapefiles/infra_critica/`, no mesmo
+- **04/11/2026, estilo minimalista (escolha de Pedro, variante A):** só o desenho em grafite #334155 com borda
+  branca fina, **sem o octógono** em volta. Variantes comparadas: só o desenho, círculo cheio e círculo vazado
+  (o círculo foi evitado por ser a forma do ponto crítico).
+- **04/11/2026 (pedido de Pedro):** um ícone por camada de `dados/shapefiles/infra_critica/`, de início no
   octógono, gerados por `scripts/gerar_icones_infra.py` (SVG em `mapa/icones/`, PNG 64/128 em `png/`).
   Prévia sobre o fundo cinza: `mapa/icones/previa_infra.png`. A aprovar.
 
