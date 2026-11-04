@@ -342,6 +342,9 @@
     });
     var topo = document.getElementById("kpiStrip");
     if(topo && topo.offsetHeight) T = Math.max(0, topo.getBoundingClientRect().bottom - cont.top);
+    // Quadro Camadas à direita (04/11/2026): o enquadramento não fica embaixo dele quando está aberto.
+    var cam = document.getElementById("layerPanel");
+    if(cam && cam.offsetWidth && !cam.classList.contains("min")) R = Math.max(R, cont.right - cam.getBoundingClientRect().left);
     if(view.width - L - R < 200){ L = 0; R = 0; }   // tela estreita: ignora os painéis
     return { L:L + 30, R:R + 30, T:T + 30, B:30 };
   }

@@ -678,6 +678,15 @@
       layer.when(function(){ cleanPopup(layer); }, function(){});
     });
   });
+  // Topo do quadro Camadas logo abaixo da faixa de indicadores (04/11/2026).
+  function posicionarCamadas(){
+    var topo = document.getElementById("kpiStrip"), cont = view.container;
+    if(!topo || !cont) return;
+    var t = topo.offsetHeight ? topo.getBoundingClientRect().bottom - cont.getBoundingClientRect().top + 10 : 12;
+    document.documentElement.style.setProperty("--camadas-topo", Math.max(12, Math.round(t)) + "px");
+  }
+  window.addEventListener("resize", posicionarCamadas);
+  view.when(function(){ posicionarCamadas(); setTimeout(posicionarCamadas, 800); });
   map.when(buildLayerToggle, function(err){
     console.error("Falha ao montar lista de camadas:", err);
   });
