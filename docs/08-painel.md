@@ -254,6 +254,8 @@ sem notas (ficam no fim da tabela).
 - **Camada "Obras" do WebMap (polígonos) retirada** do mapa e do quadro (Pedro, 04/11/2026): `visible = false`,
   `listMode = "hide"` e fora da legenda (`CAMADAS_OCULTAS` em `JsMapa.html`). O painel continua lendo os polígonos
   para montar a lista de obras. Para apagar de vez, é no WebMap, no ArcGIS Online (e aí a lista depende só da planilha).
+- **Camada "Pontos críticos de alagamento" do WebMap retirada** do mapa e do quadro (Pedro, 04/11/2026): repetia os
+  pontos que o painel desenha a partir da planilha. Lista `OCULTAR_DO_WEBMAP` em `JsMapa.html` (pelo nome).
 - Próximas colunas: a combinar com Pedro.
 
 ## Infraestrutura crítica no mapa (04/11/2026, pedido de Pedro)

@@ -353,6 +353,17 @@
     });
   }
   map.when(carregarObras, function(){ OBRAS_ESTADO = "erro"; renderAll(); });
+  /* Camadas do WebMap retiradas do mapa e do quadro Camadas a pedido de Pedro (04/11/2026), achadas pelo nome:
+     "Pontos críticos de alagamento" repete os pontos que o painel já desenha a partir da planilha. */
+  var OCULTAR_DO_WEBMAP = [/pontos cr[ií]ticos de alagamento/i];
+  map.when(function(){
+    map.allLayers.forEach(function(l){
+      if(l === pontosLayer || l.type === "group") return;
+      if(OCULTAR_DO_WEBMAP.some(function(re){ return re.test(nomeCamada(l.title)); })){
+        l.visible = false; l.listMode = "hide"; CAMADAS_OCULTAS.push(l);
+      }
+    });
+  });
 
   view.on("click", function(evt){
     view.hitTest(evt).then(function(res){
