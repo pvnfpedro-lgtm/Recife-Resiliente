@@ -240,6 +240,13 @@ sem notas (ficam no fim da tabela).
 - Os GeoJSON `dados/processados/arcgis/aneis_1a5km_selecao.geojson` e `circulos_1a5km_selecao.geojson` (5 pontos)
   continuam para uso no ArcGIS.
 
+## Quadro Camadas por tema (04/11/2026, pedido de Pedro, por partes)
+- O quadro só agrupa as linhas; a ordem de desenho do mapa não muda (as pranchas continuam por baixo dos
+  pontos críticos). Função `colunaTema()` em `JsMapa.html`.
+- **Coluna 1, "Obras":** título "Obras" com olho que liga/desliga tudo, e dentro: Obras (pontos da planilha, por
+  etapa), Canal do Sanbra e Canal da Mauricéia.
+- Próximas colunas: a combinar com Pedro.
+
 ## Infraestrutura crítica no mapa (04/11/2026, pedido de Pedro)
 **Uma camada só**, "Infraestrutura crítica (OpenStreetMap)" (`infraLayer` em `JsPontosCriticos.html`; pedido de
 Pedro, 04/11/2026, no lugar do grupo com uma camada por tipo): liga e desliga tudo junto no quadro Camadas, e a

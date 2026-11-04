@@ -539,7 +539,48 @@
         }, function(){ sw.innerHTML = layerSwatchSvg(""); });
       });
     }
-    addRows(map.layers, container, 0);
+    /* Quadro Camadas organizado por tema (Pedro, 04/11/2026), uma coluna por vez. A legenda não muda a
+       ordem de desenho do mapa: só agrupa as linhas. Coluna 1, "Obras": os pontos das obras (por etapa) e as
+       pranchas de projeto dos canais (Sanbra primeiro, depois Mauricéia). */
+    function colecao(lista){ return { toArray: function(){ return lista.slice(); } }; }
+    function olhoGrupo(membros, row){
+      var btn = document.createElement("button");
+      btn.type = "button"; btn.className = "lg-eye";
+      function algum(){ return membros.some(function(l){ return l.visible; }); }
+      function pinta(){ var v = algum(); btn.innerHTML = v ? ICON_EYE : ICON_EYE_OFF; btn.title = v ? "Ocultar tudo" : "Mostrar tudo"; row.classList.toggle("off", !v); }
+      btn.addEventListener("click", function(ev){ ev.stopPropagation(); var v = !algum(); membros.forEach(function(l){ l.visible = v; }); pinta(); });
+      membros.forEach(function(l){ reactiveUtils.watch(function(){ return l.visible; }, pinta); });
+      pinta();
+      return btn;
+    }
+    function colunaTema(titulo, membros){
+      membros = membros.filter(function(l){ return l && map.layers.includes(l); });
+      if(!membros.length) return [];
+      colSolta = null;
+      var col = document.createElement("div");
+      col.className = "lg-col";
+      container.appendChild(col);
+      var row = document.createElement("div");
+      row.className = "lg-item grp";
+      var kids = document.createElement("div");
+      kids.className = "lg-kids";
+      var ch = chevron(kids, true);
+      var nome = document.createElement("span");
+      nome.className = "lg-name"; nome.textContent = titulo; nome.title = titulo;
+      row.appendChild(ch.el); row.appendChild(nome); row.appendChild(olhoGrupo(membros, row));
+      ch.el.addEventListener("click", ch.alterna);
+      nome.addEventListener("click", ch.alterna);
+      col.appendChild(row); col.appendChild(kids);
+      addRows(colecao(membros.slice().reverse()), kids, 1);   // addRows inverte: a lista sai na ordem dada
+      colSolta = null;
+      return membros;
+    }
+    var projetosOrdem = projetosLayers.slice().sort(function(a, b){
+      function peso(l){ return /sanbra/i.test(l.title) ? 0 : /mauric/i.test(l.title) ? 1 : 2; }
+      return peso(a) - peso(b);
+    });
+    var jaMostradas = colunaTema("Obras", [obrasPontosLayer].concat(projetosOrdem));
+    addRows(colecao(map.layers.toArray().filter(function(l){ return jaMostradas.indexOf(l) < 0; })), container, 0);
   }
   (function(){
     var box = document.getElementById("mapTools"), btn = document.getElementById("mapToolsMin");
