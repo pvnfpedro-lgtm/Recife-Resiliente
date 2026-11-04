@@ -44,6 +44,7 @@ from pathlib import Path
 import shapefile
 from pyproj import Transformer
 from shapely.geometry import LineString, MultiLineString, Point, Polygon, mapping, shape
+from shapely.geometry.polygon import orient
 from shapely.ops import linemerge, unary_union
 import shapely
 import numpy as np
@@ -202,8 +203,10 @@ def gravar(caminho, forma, feicoes, data, fonte):
                 partes = [g["coordinates"]] if g["type"] == "LineString" else list(g["coordinates"])
                 w.line([[list(c) for c in p] for p in partes])
             else:
-                poligonos = [g["coordinates"]] if g["type"] == "Polygon" else list(g["coordinates"])
-                w.poly([[list(c) for c in anel] for pol in poligonos for anel in pol])
+                # Shapefile: contorno externo no sentido horário, furos no anti-horário.
+                pols = [f["geom"]] if f["geom"].geom_type == "Polygon" else list(f["geom"].geoms)
+                w.poly([list(map(list, anel.coords)) for p in pols
+                        for anel in (lambda o: [o.exterior, *o.interiors])(orient(p, sign=-1.0))])
             w.record(f["osm_id"], f["nome"], f["camada"], f["grupo"], f["subtipo"], f["operador"],
                      fonte, data)
     Path(str(caminho) + ".prj").write_text(PRJ_31985)

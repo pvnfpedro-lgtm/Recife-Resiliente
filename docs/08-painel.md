@@ -240,6 +240,14 @@ sem notas (ficam no fim da tabela).
 - Os GeoJSON `dados/processados/arcgis/aneis_1a5km_selecao.geojson` e `circulos_1a5km_selecao.geojson` (5 pontos)
   continuam para uso no ArcGIS.
 
+## Infraestrutura crítica no mapa (04/11/2026, pedido de Pedro)
+Grupo "Infraestrutura crítica (OpenStreetMap)" (`infraLayer` em `JsPontosCriticos.html`), uma camada por tipo,
+cada uma liga e desliga no quadro Camadas: Hospitais (124), Subestações de energia (39), Terminais de ônibus (75),
+Estações de metrô (19), Metrô (linha grafite com borda branca) e Aeroporto (polígono + ícone). Ícones de
+`mapa/icones/infra_*.svg` (octógono grafite, 22 px). Clique abre um popup com o nome. Fica abaixo dos anéis, dos
+pontos críticos e das obras. Dados em `DadosInfra.html`, gerado por `scripts/gerar_infra_painel.py` a partir de
+`dados/shapefiles/infra_critica/`. Dado colaborativo, não conferido (pendência 18).
+
 ## Pranchas de projeto no mapa (30/10/2026)
 O painel mostra plantas de projeto vindas de PDF, por baixo dos pontos críticos e das obras.
 Primeira: **Canal do Sanbra, implantação geral (P01, Rem. 2)**.
@@ -274,6 +282,7 @@ O `Index.html` tinha cerca de 3.100 linhas. Foi dividido sem mudar o que a pági
 |---|---|
 | `Index.html.html` | Cabeçalho, marcação das abas e chamadas `<?!= include('…'); ?>` |
 | `Estilos.html` | Todo o CSS (`<style>`) |
+| `DadosInfra.html` | Infraestrutura crítica (gerado por `scripts/gerar_infra_painel.py`) |
 | `DadosProjetos.html` | Pranchas de projeto georreferenciadas (gerado por `scripts/gerar_projetos_painel.py`) |
 | `JsBase.html` | Parte 1 do script: aviso de erro, abertura do `require()` do ArcGIS, bacias, dados, filtros |
 | `JsPontosCriticos.html` | Parte 2: pontos críticos lidos da planilha (mapa, cartão, lista) |

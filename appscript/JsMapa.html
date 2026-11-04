@@ -391,6 +391,8 @@
       return '<img src="' + iconeObra("", "obra") + '" width="17" height="17" alt="" style="vertical-align:middle">';
     }
     if(SWATCH_PROJETO[title]) return SWATCH_PROJETO[title];
+    if(SWATCH_INFRA[title]) return SWATCH_INFRA[title];
+    if(title === INFRA_TITULO) return SWATCH_INFRA["Hospitais"] || "";
     if(title === ANEIS_TITULO){
       return '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#0869A6" stroke-dasharray="2 1.5"><circle cx="8" cy="8" r="2.5"/><circle cx="8" cy="8" r="5"/><circle cx="8" cy="8" r="7.3" stroke-opacity=".6"/></svg>';
     }

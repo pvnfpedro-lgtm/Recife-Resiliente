@@ -111,6 +111,53 @@
     }) });
   });
   projetosLayers.forEach(function(l){ map.add(l); });
+  /* Infraestrutura crítica (04/11/2026, pedido de Pedro): hospitais, subestações, metrô (linha e estações),
+     terminais de ônibus e aeroporto, do OpenStreetMap (dado colaborativo, não conferido). Dados em
+     DadosInfra.html (scripts/gerar_infra_painel.py); ícones de mapa/icones/infra_*.svg (octógono grafite).
+     Um grupo com uma camada por tipo, para ligar e desligar cada uma no quadro Camadas. */
+  var INFRA_TITULO = "Infraestrutura crítica (OpenStreetMap)";
+  var SWATCH_INFRA = {};
+  var INFRA_TAM = 22;   // px na tela
+  function infraGraficos(c){
+    var popup = { title: "{nome}", content: c.titulo + " · OpenStreetMap, dado não conferido" };
+    var gs = [];
+    c.itens.forEach(function(it){
+      var attr = { nome: it.nome || "(sem nome no OpenStreetMap)", operador: it.operador || "" };
+      if(it.pt){
+        gs.push(new Graphic({ geometry: { type:"point", longitude: it.pt[0], latitude: it.pt[1] },
+          symbol: { type:"picture-marker", url: c.icone, width: INFRA_TAM, height: INFRA_TAM },
+          attributes: attr, popupTemplate: popup }));
+      } else if(it.linhas){
+        var geo = { type:"polyline", paths: it.linhas, spatialReference:{ wkid:4326 } };
+        // Borda branca por baixo e linha grafite por cima (docs/09-identidade-visual-mapa.md).
+        gs.push(new Graphic({ geometry: geo, symbol: { type:"simple-line", color:[255,255,255,0.95], width: 5.5, cap:"round", join:"round" } }));
+        gs.push(new Graphic({ geometry: geo, symbol: { type:"simple-line", color:[51,65,85,1], width: 3, cap:"round", join:"round" },
+          attributes: attr, popupTemplate: popup }));
+      } else if(it.aneis){
+        gs.push(new Graphic({ geometry: { type:"polygon", rings: it.aneis, spatialReference:{ wkid:4326 } },
+          symbol: { type:"simple-fill", color:[51,65,85,0.10], outline:{ color:[51,65,85,0.8], width: 1.2 } },
+          attributes: attr, popupTemplate: popup }));
+        if(c.icone){   // ícone no meio do polígono
+          var r = it.aneis[0], sx = 0, sy = 0;
+          r.forEach(function(q){ sx += q[0]; sy += q[1]; });
+          gs.push(new Graphic({ geometry: { type:"point", longitude: sx / r.length, latitude: sy / r.length },
+            symbol: { type:"picture-marker", url: c.icone, width: INFRA_TAM + 4, height: INFRA_TAM + 4 },
+            attributes: attr, popupTemplate: popup }));
+        }
+      }
+    });
+    return gs;
+  }
+  // No GroupLayer a última camada fica por cima; INFRA_CAMADAS vem de baixo para cima.
+  var infraLayer = new GroupLayer({ title: INFRA_TITULO, visibilityMode: "independent",
+    layers: (typeof INFRA_CAMADAS === "undefined" ? [] : INFRA_CAMADAS).map(function(c){
+      SWATCH_INFRA[c.titulo] = c.icone
+        ? '<img src="' + c.icone + '" width="16" height="16" alt="" style="vertical-align:middle">'
+        : '<svg width="16" height="12" viewBox="0 0 16 12"><path d="M1 6H15" stroke="#fff" stroke-width="5" stroke-linecap="round"/>' +
+          '<path d="M1 6H15" stroke="#334155" stroke-width="3" stroke-linecap="round"/></svg>';
+      return new GraphicsLayer({ title: c.titulo, graphics: infraGraficos(c) });
+    }) });
+  map.add(infraLayer);
   map.add(aneisLayer);
   map.add(ligacoesLayer);
   map.add(pontosLayer);
@@ -118,7 +165,7 @@
   // O WebMap só traz as camadas dele depois de carregar, e elas entram por cima das nossas (os rios
   // cobriam os ícones das obras). Depois do carregamento, as nossas voltam para o topo, na mesma ordem.
   map.when(function(){
-    projetosLayers.concat([aneisLayer, ligacoesLayer, pontosLayer, obrasPontosLayer]).forEach(function(l){ map.reorder(l, map.layers.length - 1); });
+    projetosLayers.concat([infraLayer, aneisLayer, ligacoesLayer, pontosLayer, obrasPontosLayer]).forEach(function(l){ map.reorder(l, map.layers.length - 1); });
   });
   var CLASSES_INDICE = [
     { max: 0.2,      cor: "#1a9850", rotulo: "< 0,200" },
