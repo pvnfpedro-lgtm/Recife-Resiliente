@@ -204,6 +204,16 @@
         { ratio: 1,    color: "rgba(140, 70, 20, 0.95)" }
       ] }
   }) : null;
+  /* População: Grade Estatística do Censo 2022 do IBGE (quadrados de 200 × 200 m), serviço de mapa do próprio IBGE
+     (pedido de Pedro, 04/11/2026). O navegador de quem abre o painel busca as imagens direto no IBGE; o painel
+     não guarda os dados. Começa desligada (cobre o mapa todo); semitransparente para ver o que está por baixo.
+     Serve para ver; o cálculo do E1 (moradores no círculo de 300 m) precisa da grade em vetor. */
+  var GRADE_TITULO = "População — Grade Estatística IBGE 2022";
+  var gradeLayer = new MapImageLayer({
+    url: "https://mapasinterativos.ibge.gov.br/arcgis/rest/services/grade2022_raster1/MapServer",
+    title: GRADE_TITULO, visible: false, opacity: 0.6
+  });
+  map.add(gradeLayer);
   if(comercioLayer){
     SWATCH_PROJETO[COMERCIO_TITULO] = '<svg width="16" height="12" viewBox="0 0 16 12"><defs><linearGradient id="gcom" x1="0" x2="1">' +
       '<stop offset="0" stop-color="#FEE391"/><stop offset=".5" stop-color="#FEB24C"/><stop offset="1" stop-color="#8C4614"/>' +
@@ -218,7 +228,7 @@
   // O WebMap só traz as camadas dele depois de carregar, e elas entram por cima das nossas (os rios
   // cobriam os ícones das obras). Depois do carregamento, as nossas voltam para o topo, na mesma ordem.
   map.when(function(){
-    projetosLayers.concat((comercioLayer ? [comercioLayer] : []).concat([infraLayer, aneisLayer, ligacoesLayer, pontosLayer, obrasPontosLayer])).forEach(function(l){ map.reorder(l, map.layers.length - 1); });
+    projetosLayers.concat([gradeLayer]).concat((comercioLayer ? [comercioLayer] : []).concat([infraLayer, aneisLayer, ligacoesLayer, pontosLayer, obrasPontosLayer])).forEach(function(l){ map.reorder(l, map.layers.length - 1); });
   });
   var CLASSES_INDICE = [
     { max: 0.2,      cor: "#1a9850", rotulo: "< 0,200" },

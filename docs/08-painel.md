@@ -65,6 +65,7 @@ não conectado.
   **Versão 14** (04/11/2026, "Cores das vias funcionando (símbolos CIM)"): na v13 as cores não apareciam; conferido por Pedro na URL de teste antes de publicar.
   **Versão 15** (04/11/2026, "Mapa de calor do comércio e serviços (OSM)"), publicada pelo Claude a pedido de Pedro.
   **Versão 16** (04/11/2026, "Mapa de calor do comércio em âmbar, coluna Exposição"), publicada pelo Claude depois de Pedro aprovar o âmbar.
+  **Versão 17** (04/11/2026, "População: grade estatística IBGE 2022 na coluna Exposição"), publicada pelo Claude a pedido de Pedro.
 - **Link da equipe (versão publicada):**
   https://script.google.com/macros/s/AKfycbxXh5HsuhaBBF7z4-8f3bZvksWa7lRuzbj6vA9lLqX87GQlvXhWiluTtG8OTyLYxoXE/exec
 - 02/10/2026: primeiro `clasp push` (pontos críticos lidos da planilha,
@@ -279,6 +280,10 @@ sem notas (ficam no fim da tabela).
   (`comercioLayer` em `JsPontosCriticos.html`, FeatureLayer no navegador com renderer `heatmap` em âmbar, amarelo → laranja → marrom, escolhido por Pedro no lugar do roxo; dados em
   `DadosComercio.html`, de `scripts/gerar_comercio.py`). Por baixo da infraestrutura e dos pontos. Prévia:
   `docs/img/comercio_calor_previa.png`. As manchas mais fortes são shoppings (lojas mapeadas uma a uma).
+- **"População — Grade Estatística IBGE 2022"** na coluna "Exposição" (Pedro, 04/11/2026): `MapImageLayer` do serviço
+  do IBGE `https://mapasinterativos.ibge.gov.br/arcgis/rest/services/grade2022_raster1/MapServer` (`gradeLayer` em
+  `JsPontosCriticos.html`). O navegador busca as imagens no IBGE; começa desligada, 60% de opacidade. Só para ver: o
+  serviço não pôde ser lido desta sessão (rede bloqueada) e é "raster"; o E1 precisa da grade em vetor (pendência).
 - Próximas colunas: a combinar com Pedro.
 
 ## Infraestrutura crítica no mapa (04/11/2026, pedido de Pedro)

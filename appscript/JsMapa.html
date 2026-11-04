@@ -610,7 +610,8 @@
     jaMostradas = jaMostradas.concat(colunaTema("Vulnerabilidade",
       [camadaPorNome(/bairro/i), camadaPorNome(/^zeis\b/i), camadaPorNome(/^cis\b/i)]));
     // Coluna "Exposição" (04/11/2026; antes "Economia", nome trocado por Pedro): mapa de calor do comércio e serviços (OSM).
-    if(comercioLayer) jaMostradas = jaMostradas.concat(colunaTema("Exposição", [comercioLayer]));
+    // + População (grade do IBGE 2022, pedido de Pedro, 04/11/2026).
+    jaMostradas = jaMostradas.concat(colunaTema("Exposição", [gradeLayer].concat(comercioLayer ? [comercioLayer] : [])));
     // Coluna 4, "Pontos críticos de alagamento" (Pedro, 04/11/2026): os pontos, as ligações com as obras e os anéis.
     jaMostradas = jaMostradas.concat(colunaTema("Pontos críticos de alagamento", [pontosLayer, ligacoesLayer, aneisLayer]));
     pular = jaMostradas.concat(CAMADAS_OCULTAS);   // daqui em diante, as já mostradas não se repetem (nem dentro dos grupos do WebMap)
