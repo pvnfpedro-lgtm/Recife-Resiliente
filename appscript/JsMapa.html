@@ -466,6 +466,9 @@
     function addRows(layers, parent, nivel){
       layers.toArray().slice().reverse().forEach(function(layer){
         if(pular.indexOf(layer) >= 0) return;   // já mostrada numa coluna por tema
+        // Grupo do WebMap cujas camadas foram todas para colunas por tema: não mostra o título vazio.
+        if(pular.length && layer.type === "group" && layer.layers && layer.layers.length &&
+           layer.layers.every(function(l){ return pular.indexOf(l) >= 0; })) return;
         var isGroup = layer.type === "group" && layer.layers && layer.layers.length > 0;
         if(nivel === 0) parent = coluna(isGroup);
         var row = document.createElement("div");
@@ -585,6 +588,12 @@
     // Coluna 2, "Infraestrutura" (Pedro, 04/11/2026): infraestrutura crítica (OSM) e classificação de vias (WebMap).
     var vias = map.allLayers.find(function(l){ return /classifica[çc][ãa]o de vias/i.test(nomeCamada(l.title)); });
     jaMostradas = jaMostradas.concat(colunaTema("Infraestrutura", [infraLayer, vias]));
+    // Coluna 3, "Vulnerabilidade" (Pedro, 04/11/2026): bairros, ZEIS e CIS (camadas do WebMap, achadas pelo nome).
+    function camadaPorNome(re){
+      return map.allLayers.find(function(l){ return l.type !== "group" && re.test(nomeCamada(l.title)); });
+    }
+    jaMostradas = jaMostradas.concat(colunaTema("Vulnerabilidade",
+      [camadaPorNome(/bairro/i), camadaPorNome(/^zeis\b/i), camadaPorNome(/^cis\b/i)]));
     pular = jaMostradas;   // daqui em diante, as já mostradas não se repetem (nem dentro dos grupos do WebMap)
     addRows(map.layers, container, 0);
   }
