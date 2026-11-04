@@ -78,7 +78,7 @@ out geom;
 ```
 
 ## Comércio e serviços (OpenStreetMap, 04/11/2026)
-Para o mapa de calor do painel (coluna "Economia"). Os dados do Google Maps (Places) **não** foram usados: os termos
+Para o mapa de calor do painel (coluna "Exposição"). Os dados do Google Maps (Places) **não** foram usados: os termos
 do Google não permitem baixar os lugares para uma camada própria. Consulta para o
 [Overpass Turbo](https://overpass-turbo.eu) (Executar → Exportar → GeoJSON). Salvar em `dados/brutos/osm/` e rodar
 `python3 scripts/gerar_comercio.py --geojson dados/brutos/osm/<arquivo>.geojson --data AAAA-MM-DD`
