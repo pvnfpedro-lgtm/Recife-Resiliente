@@ -256,6 +256,8 @@ sem notas (ficam no fim da tabela).
   para montar a lista de obras. Para apagar de vez, é no WebMap, no ArcGIS Online (e aí a lista depende só da planilha).
 - **Camada "Pontos críticos de alagamento" do WebMap retirada** do mapa e do quadro (Pedro, 04/11/2026): repetia os
   pontos que o painel desenha a partir da planilha. Lista `OCULTAR_DO_WEBMAP` em `JsMapa.html` (pelo nome).
+- **Coluna 4, "Pontos críticos de alagamento"** (Pedro, 04/11/2026): Pontos críticos — RPA 6 e bacia do Tejipió,
+  Ligação pontos críticos ↔ obras e Anéis de 1 a 5 km (ponto clicado).
 - Próximas colunas: a combinar com Pedro.
 
 ## Infraestrutura crítica no mapa (04/11/2026, pedido de Pedro)
