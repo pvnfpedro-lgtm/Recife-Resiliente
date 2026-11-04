@@ -59,7 +59,7 @@
   /* Obras: um ponto por obra, na coordenada da coluna "coordenadas (lat, lon)" da aba "Obras".
      Desenho pelo tipo e cor pela etapa. Uma camada por etapa dentro do grupo (16/10/2026), para
      ligar e desligar cada etapa na legenda. */
-  var OBRAS_PONTOS_TITULO = "Obras (pontos da planilha)";
+  var OBRAS_PONTOS_TITULO = "Localização das intervenções";   // antes "Obras (pontos da planilha)" (Pedro, 04/11/2026)
   var CAMADA_ETAPA = {}, ETAPA_DA_CAMADA = {};
   // A legenda lista a última camada do grupo primeiro: adiciona do fim para o começo.
   var obrasPontosLayer = new GroupLayer({ title: OBRAS_PONTOS_TITULO, visibilityMode: "independent",
@@ -86,19 +86,26 @@
   }
   var SWATCH_IMAGEM = '<svg width="14" height="12" viewBox="0 0 14 12"><rect x="1" y="1" width="12" height="10" rx="2" fill="#e5e7eb" stroke="#334155" stroke-width="1.2"/>' +
     '<path d="M3 9l3-3.5 2 2 1.5-1.5L11 9z" fill="#5496bf"/><circle cx="9.5" cy="4" r="1.2" fill="#b7d7a0"/></svg>';
-  var projetosLayers = (typeof PROJETOS_PRANCHAS === "undefined" ? [] : PROJETOS_PRANCHAS).map(function(pr){
-    if(pr.imagens){
-      // Camada única por obra (30/10/2026, pedido de Pedro): as imagens das pranchas, com árvores, mobiliário
-      // e pisos, fundo transparente, cada uma encaixada pelos 4 cantos (vários trechos na mesma camada).
-      SWATCH_PROJETO[pr.nome] = SWATCH_IMAGEM;
-      function ponto(c){ return { x: c[0], y: c[1], spatialReference:{ wkid:4326 } }; }
-      return new MediaLayer({ title: pr.nome, opacity: pr.opacidade, source: pr.imagens.map(function(im){
-        var k = im.cantos;
-        return new ImageElement({ image: im.url,
-          georeference: new CornersGeoreference({ topLeft: ponto(k.sup_esq), topRight: ponto(k.sup_dir),
-            bottomRight: ponto(k.inf_dir), bottomLeft: ponto(k.inf_esq) }) });
-      }) });
-    }
+  function cantoGeo(c){ return { x: c[0], y: c[1], spatialReference:{ wkid:4326 } }; }
+  // Imagens de uma prancha, cada uma encaixada pelos 4 cantos.
+  function imagensDe(pr){
+    return pr.imagens.map(function(im){
+      var k = im.cantos;
+      return new ImageElement({ image: im.url,
+        georeference: new CornersGeoreference({ topLeft: cantoGeo(k.sup_esq), topRight: cantoGeo(k.sup_dir),
+          bottomRight: cantoGeo(k.inf_dir), bottomLeft: cantoGeo(k.inf_esq) }) });
+    });
+  }
+  /* "Detalhe das intervenções" (Pedro, 04/11/2026): todas as pranchas com imagem (Sanbra e Mauricéia, com
+     árvores, mobiliário e pisos, fundo transparente) numa camada só. Pranchas só vetoriais (sem imagem)
+     continuam como grupo próprio. */
+  var DETALHE_TITULO = "Detalhe das intervenções";
+  var PRANCHAS = typeof PROJETOS_PRANCHAS === "undefined" ? [] : PROJETOS_PRANCHAS;
+  var pranchasImagem = PRANCHAS.filter(function(pr){ return pr.imagens; });
+  if(pranchasImagem.length) SWATCH_PROJETO[DETALHE_TITULO] = SWATCH_IMAGEM;
+  var projetosLayers = (pranchasImagem.length ? [new MediaLayer({ title: DETALHE_TITULO,
+      source: pranchasImagem.reduce(function(acc, pr){ return acc.concat(imagensDe(pr)); }, []) })] : [])
+    .concat(PRANCHAS.filter(function(pr){ return !pr.imagens; }).map(function(pr){
     // No GroupLayer a última camada fica por cima; a lista vem de baixo para cima.
     return new GroupLayer({ title: pr.nome, visibilityMode: "independent", layers: pr.camadas.map(function(c){
       var simbolo = { type:"simple-fill", color: rgbaDeHex(c.cor, c.opacidade),
@@ -109,8 +116,70 @@
         return new Graphic({ geometry: { type:"polygon", rings: aneis, spatialReference:{ wkid:4326 } }, symbol: simbolo });
       }) });
     }) });
-  });
+  }));
   projetosLayers.forEach(function(l){ map.add(l); });
+  /* Infraestrutura crítica (04/11/2026, pedido de Pedro): hospitais, subestações, metrô (linha e estações),
+     terminais de ônibus e aeroporto, do OpenStreetMap (dado colaborativo, não conferido). Dados em
+     DadosInfra.html (scripts/gerar_infra_painel.py); ícones de mapa/icones/infra_*.svg (octógono grafite).
+     Uma camada só (liga e desliga tudo junto no quadro Camadas), com os tipos listados na legenda. */
+  var INFRA_TITULO = "Infraestrutura crítica";   // a fonte (OpenStreetMap) aparece no popup
+  var SWATCH_INFRA = {};
+  var INFRA_TAM = 22;   // px na tela
+  // Popup do ícone (04/11/2026): o tipo em destaque e o nome (o OSM não tem nome para todos).
+  function popupInfra(a){
+    return { title: a.nome || a.tipo,
+      content: '<div style="font-size:13px;line-height:1.5"><b>' + escHtml(a.tipo) + '</b>' +
+        (a.nome ? '' : '<br><span style="color:#64748b">Sem nome no OpenStreetMap</span>') +
+        (a.operador ? '<br>Operador: ' + escHtml(a.operador) : '') +
+        '<br><span style="color:#64748b;font-size:11px">Fonte: OpenStreetMap (dado não conferido)</span></div>' };
+  }
+  function abrirPopupInfra(g, ponto){
+    var p = popupInfra(g.attributes);
+    view.popup.open({ title: p.title, content: p.content, location: g.geometry.type === "point" ? g.geometry : ponto });
+  }
+  function infraGraficos(c){
+    var gs = [];
+    c.itens.forEach(function(it){
+      var attr = { infra: true, tipo: c.tipo || c.titulo, nome: it.nome || "", operador: it.operador || "" };
+      var popup = popupInfra(attr);
+      if(it.pt){
+        gs.push(new Graphic({ geometry: { type:"point", longitude: it.pt[0], latitude: it.pt[1] },
+          symbol: { type:"picture-marker", url: c.icone, width: INFRA_TAM, height: INFRA_TAM },
+          attributes: attr, popupTemplate: popup }));
+      } else if(it.linhas){
+        var geo = { type:"polyline", paths: it.linhas, spatialReference:{ wkid:4326 } };
+        // Borda branca por baixo e linha grafite por cima (docs/09-identidade-visual-mapa.md).
+        gs.push(new Graphic({ geometry: geo, symbol: { type:"simple-line", color:[255,255,255,0.95], width: 5.5, cap:"round", join:"round" } }));
+        gs.push(new Graphic({ geometry: geo, symbol: { type:"simple-line", color:[51,65,85,1], width: 3, cap:"round", join:"round" },
+          attributes: attr, popupTemplate: popup }));
+      } else if(it.aneis){
+        gs.push(new Graphic({ geometry: { type:"polygon", rings: it.aneis, spatialReference:{ wkid:4326 } },
+          symbol: { type:"simple-fill", color:[51,65,85,0.10], outline:{ color:[51,65,85,0.8], width: 1.2 } },
+          attributes: attr, popupTemplate: popup }));
+        if(c.icone){   // ícone no meio do polígono
+          var r = it.aneis[0], sx = 0, sy = 0;
+          r.forEach(function(q){ sx += q[0]; sy += q[1]; });
+          gs.push(new Graphic({ geometry: { type:"point", longitude: sx / r.length, latitude: sy / r.length },
+            symbol: { type:"picture-marker", url: c.icone, width: INFRA_TAM + 4, height: INFRA_TAM + 4 },
+            attributes: attr, popupTemplate: popup }));
+        }
+      }
+    });
+    return gs;
+  }
+  /* Uma camada só para toda a infraestrutura (pedido de Pedro, 04/11/2026); a legenda lista os tipos com o
+     ícone de cada um. INFRA_CAMADAS vem de baixo para cima: a última desenhada fica por cima. */
+  var INFRA_CLASSES = [];
+  var infraLayer = new GraphicsLayer({ title: INFRA_TITULO,
+    graphics: (typeof INFRA_CAMADAS === "undefined" ? [] : INFRA_CAMADAS).reduce(function(acc, c){
+      INFRA_CLASSES.unshift({ rotulo: c.titulo + " (" + c.itens.length + ")", swatch: c.icone
+        ? '<img src="' + c.icone + '" width="16" height="16" alt="">'
+        : '<svg width="16" height="12" viewBox="0 0 16 12"><path d="M1 6H15" stroke="#fff" stroke-width="5" stroke-linecap="round"/>' +
+          '<path d="M1 6H15" stroke="#334155" stroke-width="3" stroke-linecap="round"/></svg>' });
+      return acc.concat(infraGraficos(c));
+    }, []) });
+  SWATCH_INFRA[INFRA_TITULO] = INFRA_CLASSES.length ? INFRA_CLASSES[0].swatch : "";
+  map.add(infraLayer);
   map.add(aneisLayer);
   map.add(ligacoesLayer);
   map.add(pontosLayer);
@@ -118,7 +187,7 @@
   // O WebMap só traz as camadas dele depois de carregar, e elas entram por cima das nossas (os rios
   // cobriam os ícones das obras). Depois do carregamento, as nossas voltam para o topo, na mesma ordem.
   map.when(function(){
-    projetosLayers.concat([aneisLayer, ligacoesLayer, pontosLayer, obrasPontosLayer]).forEach(function(l){ map.reorder(l, map.layers.length - 1); });
+    projetosLayers.concat([infraLayer, aneisLayer, ligacoesLayer, pontosLayer, obrasPontosLayer]).forEach(function(l){ map.reorder(l, map.layers.length - 1); });
   });
   var CLASSES_INDICE = [
     { max: 0.2,      cor: "#1a9850", rotulo: "< 0,200" },
@@ -273,6 +342,9 @@
     });
     var topo = document.getElementById("kpiStrip");
     if(topo && topo.offsetHeight) T = Math.max(0, topo.getBoundingClientRect().bottom - cont.top);
+    // Quadro Camadas à direita (04/11/2026): o enquadramento não fica embaixo dele quando está aberto.
+    var cam = document.getElementById("layerPanel");
+    if(cam && cam.offsetWidth && !cam.classList.contains("min")) R = Math.max(R, cont.right - cam.getBoundingClientRect().left);
     if(view.width - L - R < 200){ L = 0; R = 0; }   // tela estreita: ignora os painéis
     return { L:L + 30, R:R + 30, T:T + 30, B:30 };
   }
@@ -287,6 +359,10 @@
     var MIN = 0.018;   // ~2 km: não aproxima mais que isso
     if(x1 - x0 < MIN){ var cx = (x0 + x1) / 2; x0 = cx - MIN / 2; x1 = cx + MIN / 2; }
     if(y1 - y0 < MIN){ var cy = (y0 + y1) / 2; y0 = cy - MIN / 2; y1 = cy + MIN / 2; }
+    return enquadrar(x0, x1, y0, y1);
+  }
+  // Leva a caixa (graus) para a área livre do mapa (fora das listas e da faixa de KPIs).
+  function enquadrar(x0, x1, y0, y1){
     var a = areaLivre(), W = view.width, H = view.height;
     var fw = Math.max(0.2, (W - a.L - a.R) / W), fh = Math.max(0.2, (H - a.T - a.B) / H);
     var tw = (x1 - x0) / fw, th = (y1 - y0) / fh;
@@ -347,10 +423,12 @@
     cartao.innerHTML =
       '<div class="rr-card-seta"></div>' +
       '<div class="rr-card-in">' +
-        '<div class="rr-card-cab"><span>Ponto crítico de alagamento · ' + RECORTE_PONTOS + '</span>' +
-          '<button type="button" class="rr-card-x" title="Fechar">×</button></div>' +
+        '<div class="rr-card-cab"><span class="rr-card-tit">Ponto crítico de alagamento · ' + RECORTE_PONTOS + '</span>' +
+          '<span class="rr-card-bts"><button type="button" class="rr-card-min" title="Recolher o cartão" aria-expanded="true">–</button>' +
+          '<button type="button" class="rr-card-x" title="Fechar">×</button></span></div>' +
         '<div class="rr-card-corpo"></div>' +
-        '<div class="rr-card-acoes"><button type="button" data-a="zoom">Aproximar</button>' +
+        '<div class="rr-card-acoes"><button type="button" data-a="aneis" title="Recolhe o cartão e mostra o raio de 5 km inteiro">Ver anéis (5 km)</button>' +
+          '<button type="button" data-a="zoom">Aproximar</button>' +
           '<button type="button" data-a="gmaps">Abrir no Google Maps ↗</button></div>' +
       '</div>';
     view.container.appendChild(cartao);
@@ -358,6 +436,14 @@
       cartao.addEventListener(t, function(e){ e.stopPropagation(); });
     });
     cartao.querySelector(".rr-card-x").addEventListener("click", fecharCartao);
+    cartao.querySelector(".rr-card-min").addEventListener("click", function(){ recolherCartao(!cartaoRecolhido); });
+    cartao.querySelector('[data-a="aneis"]').addEventListener("click", function(){
+      if(!cartaoPonto) return;
+      recolherCartao(true);
+      // Caixa do anel de 5 km: 1° de latitude ≈ 111,2 km; a longitude encolhe com o cosseno da latitude.
+      var r = ANEIS_RAIOS_M[ANEIS_RAIOS_M.length - 1] * 1.05, dy = r / 111195, dx = dy / Math.cos(cartaoPonto.lat * Math.PI / 180);
+      enquadrar(cartaoPonto.lon - dx, cartaoPonto.lon + dx, cartaoPonto.lat - dy, cartaoPonto.lat + dy);
+    });
     cartao.querySelector(".rr-card-corpo").addEventListener("click", function(e){
       var tr = e.target.closest("tr.rr-dim");
       if(!tr) return;
@@ -372,6 +458,23 @@
     cartao.querySelector('[data-a="gmaps"]').addEventListener("click", function(){
       if(cartaoPonto) window.open("https://www.google.com/maps/search/?api=1&query=" + cartaoPonto.lat + "," + cartaoPonto.lon, "_blank", "noopener");
     });
+  }
+  /* Cartão recolhido (03/11/2026, pedido de Pedro: o cartão cobria os anéis): fica só a barra do título,
+     com o nome do ponto. A escolha vale para os próximos pontos clicados até ser desfeita. */
+  var cartaoRecolhido = false;
+  function recolherCartao(sim){
+    cartaoRecolhido = !!sim;
+    if(!cartao) return;
+    cartao.classList.toggle("recolhido", cartaoRecolhido);
+    var bt = cartao.querySelector(".rr-card-min");
+    bt.textContent = cartaoRecolhido ? "+" : "–";
+    bt.title = cartaoRecolhido ? "Abrir o cartão" : "Recolher o cartão";
+    bt.setAttribute("aria-expanded", String(!cartaoRecolhido));
+    var p = cartaoPonto;
+    cartao.querySelector(".rr-card-tit").textContent = cartaoRecolhido && p
+      ? "Ponto " + p.id + " · " + (p.bairro || "") + (p.indice == null ? "" : " · índice " + fmtN(p.indice, 3))
+      : "Ponto crítico de alagamento · " + RECORTE_PONTOS;
+    posicionarCartao();
   }
   function posicionarCartao(){
     if(!cartao || !cartaoGeom || cartao.style.display === "none") return;
@@ -403,6 +506,7 @@
     corpo.innerHTML = popupPonto(p);
     corpo.scrollTop = 0;
     cartao.style.display = "block";
+    recolherCartao(cartaoRecolhido);
     posicionarCartao();
     marcarPontoNaLista(p.id);
     desenharLigacoes();

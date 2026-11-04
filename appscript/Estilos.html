@@ -733,8 +733,15 @@
   .rr-card-cab{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--border);
                font-size:13px;font-weight:700;color:#0f172a;}
   .rr-card-x{border:none;background:none;font-size:20px;line-height:1;color:#64748b;cursor:pointer;padding:0 2px;}
+  .rr-card-bts{display:flex;align-items:center;gap:6px;flex:none;}
+  .rr-card-min{border:none;background:none;font-size:20px;line-height:1;color:#64748b;cursor:pointer;padding:0 4px;font-weight:700;}
+  .rr-card-min:hover,.rr-card-x:hover{color:#0f172a;}
+  /* Cartão recolhido: só a barra do título (03/11/2026). */
+  .rr-card.recolhido{width:auto;max-width:min(380px, calc(100% - 16px));}
+  .rr-card.recolhido .rr-card-corpo,.rr-card.recolhido .rr-card-acoes{display:none;}
+  .rr-card.recolhido .rr-card-cab{border-bottom:none;}
   .rr-card-corpo{padding:10px 14px;overflow:auto;}
-  .rr-card-acoes{display:flex;gap:8px;padding:8px 14px;border-top:1px solid var(--border);}
+  .rr-card-acoes{display:flex;flex-wrap:wrap;gap:8px;padding:8px 14px;border-top:1px solid var(--border);}
   .rr-card-acoes button{border:1px solid rgba(255,255,255,.70);background:rgba(255,255,255,.55);color:#334155;font-weight:600;font-size:12px;
                         border-radius:6px;padding:5px 10px;cursor:pointer;}
   .rr-card-acoes button:hover{background:rgba(255,255,255,.85);}
@@ -898,6 +905,17 @@
   .pc-trecho{font-size:12.5px;}
   .pc-meta{font-size:11px;}
   .pc-tag{font-size:9.5px;}
+  /* Quadro Camadas na vertical, à direita do mapa (Pedro, 04/11/2026): um tema embaixo do outro, com rolagem.
+     O topo acompanha a faixa de indicadores (--camadas-topo, em JsMapa). */
+  /* Trocados de lugar (Pedro, 04/11/2026): o quadro na borda direita e os botões de zoom à esquerda dele. */
+  .map-br-stack{left:auto;right:12px;top:var(--camadas-topo, 84px);bottom:16px;flex-direction:column;
+                justify-content:flex-start;align-items:flex-end;}
+  .map-center-controls{right:calc(12px + 280px + 10px);}
+  .map-br-stack.livre-esq{left:auto;}
+  #layerPanel{width:280px;max-width:calc(100vw - 100px);max-height:100%;display:flex;flex-direction:column;}
+  #layerToggleList{display:block;flex:1 1 auto;max-height:none;overflow-y:auto;overflow-x:hidden;}
+  #layerToggleList .lg-col{width:auto;max-height:none;overflow:visible;padding:4px 6px 6px;}
+  #layerToggleList .lg-col + .lg-col{border-left:none;border-top:1px solid #000;}
   @media (max-width: 760px){
     .overlay-grid{grid-template-columns:1fr;grid-template-rows:auto auto auto;}
     .list-panel.pc-panel{grid-column:1;grid-row:3;max-height:30vh;}

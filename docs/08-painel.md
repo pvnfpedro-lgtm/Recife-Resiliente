@@ -234,8 +234,43 @@ sem notas (ficam no fim da tabela).
   Círculos geodésicos calculados no navegador a partir da lat/lon da aba "Notas dos pontos". Ficam abaixo das
   ligações, dos pontos e das obras, não respondem ao clique e ligam/desligam no quadro Camadas. O zoom ao clicar
   continua o mesmo (~2 km): para ver os 5 km, afastar o mapa. Coordenadas ainda aproximadas.
+- Cartão recolhível (pedido de Pedro, 03/11/2026: o cartão cobria os anéis): botão **–/+** na barra do título
+  deixa só a barra, com "Ponto N · bairro · índice"; a escolha vale para os próximos pontos até ser desfeita.
+  Botão **"Ver anéis (5 km)"** no rodapé do cartão: recolhe o cartão e enquadra o anel de 5 km na área livre.
 - Os GeoJSON `dados/processados/arcgis/aneis_1a5km_selecao.geojson` e `circulos_1a5km_selecao.geojson` (5 pontos)
   continuam para uso no ArcGIS.
+
+## Quadro Camadas por tema (04/11/2026, pedido de Pedro, por partes)
+- O quadro só agrupa as linhas; a ordem de desenho do mapa não muda (as pranchas continuam por baixo dos
+  pontos críticos). Função `colunaTema()` em `JsMapa.html`.
+- **Coluna 1, "Intervenções"** (nomes de Pedro, 04/11/2026): título com olho que liga/desliga tudo, e dentro:
+  **Localização das intervenções** (antes "Obras (pontos da planilha)", por etapa) e **Detalhe das
+  intervenções** (as pranchas do Canal do Sanbra e do Canal da Mauricéia numa camada só, `DETALHE_TITULO`).
+- **Coluna 2, "Infraestrutura"** (Pedro, 04/11/2026): **Infraestrutura crítica** (camada do painel, OSM; título
+  encurtado, a fonte fica no popup) e **Classificação de vias** (camada do WebMap, achada pelo nome). Camadas
+  mostradas numa coluna por tema não se repetem no resto do quadro, nem dentro dos grupos do WebMap.
+- **Coluna 3, "Vulnerabilidade"** (Pedro, 04/11/2026): Bairros, ZEIS e CIS (camadas do WebMap, achadas pelo nome;
+  antes no grupo "Território (Bairros, ZEIS, CIS)", que some do quadro quando fica vazio).
+- **Camada "Obras" do WebMap (polígonos) retirada** do mapa e do quadro (Pedro, 04/11/2026): `visible = false`,
+  `listMode = "hide"` e fora da legenda (`CAMADAS_OCULTAS` em `JsMapa.html`). O painel continua lendo os polígonos
+  para montar a lista de obras. Para apagar de vez, é no WebMap, no ArcGIS Online (e aí a lista depende só da planilha).
+- **Camada "Pontos críticos de alagamento" do WebMap retirada** do mapa e do quadro (Pedro, 04/11/2026): repetia os
+  pontos que o painel desenha a partir da planilha. Lista `OCULTAR_DO_WEBMAP` em `JsMapa.html` (pelo nome).
+- **Coluna 4, "Pontos críticos de alagamento"** (Pedro, 04/11/2026): Pontos críticos — RPA 6 e bacia do Tejipió,
+  Ligação pontos críticos ↔ obras e Anéis de 1 a 5 km (ponto clicado).
+- **Quadro na vertical, na borda direita do mapa** (Pedro, 04/11/2026; depois trocado de lugar com os botões de zoom, que ficam à esquerda dele): um tema embaixo do outro, com rolagem; ao lado dos
+  botões de zoom, começando abaixo da faixa de indicadores (`posicionarCamadas()` em `JsMapa.html`). O
+  enquadramento ao clicar num ponto desconta a largura do quadro aberto (`areaLivre`).
+- Próximas colunas: a combinar com Pedro.
+
+## Infraestrutura crítica no mapa (04/11/2026, pedido de Pedro)
+**Uma camada só**, "Infraestrutura crítica" (`infraLayer` em `JsPontosCriticos.html`; pedido de
+Pedro, 04/11/2026, no lugar do grupo com uma camada por tipo): liga e desliga tudo junto no quadro Camadas, e a
+linha da legenda abre a lista dos tipos com o ícone de cada um: Hospitais (124), Subestações de energia (39), Terminais de ônibus (75),
+Estações de metrô (19), Metrô (linha grafite com borda branca) e Aeroporto (polígono + ícone). Clique no ícone abre um popup com o tipo (Hospital, Subestação de energia...), o nome e o operador, aberto pelo próprio clique do mapa (`abrirPopupInfra`; a abertura automática do ArcGIS não funcionava, 04/11/2026). Ícones de
+`mapa/icones/infra_*.svg` (octógono grafite, 22 px). Clique abre um popup com o nome. Fica abaixo dos anéis, dos
+pontos críticos e das obras. Dados em `DadosInfra.html`, gerado por `scripts/gerar_infra_painel.py` a partir de
+`dados/shapefiles/infra_critica/`. Dado colaborativo, não conferido (pendência 18).
 
 ## Pranchas de projeto no mapa (30/10/2026)
 O painel mostra plantas de projeto vindas de PDF, por baixo dos pontos críticos e das obras.
@@ -271,6 +306,7 @@ O `Index.html` tinha cerca de 3.100 linhas. Foi dividido sem mudar o que a pági
 |---|---|
 | `Index.html.html` | Cabeçalho, marcação das abas e chamadas `<?!= include('…'); ?>` |
 | `Estilos.html` | Todo o CSS (`<style>`) |
+| `DadosInfra.html` | Infraestrutura crítica (gerado por `scripts/gerar_infra_painel.py`) |
 | `DadosProjetos.html` | Pranchas de projeto georreferenciadas (gerado por `scripts/gerar_projetos_painel.py`) |
 | `JsBase.html` | Parte 1 do script: aviso de erro, abertura do `require()` do ArcGIS, bacias, dados, filtros |
 | `JsPontosCriticos.html` | Parte 2: pontos críticos lidos da planilha (mapa, cartão, lista) |

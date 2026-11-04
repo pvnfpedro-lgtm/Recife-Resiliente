@@ -51,3 +51,28 @@ coordenadas.
   buffers.
 - Dados pessoais (por exemplo, endereço de quem fez um chamado) **não** entram
   no repositório.
+
+## Infraestrutura crítica (OpenStreetMap, 03/11/2026)
+Camadas escolhidas por Pedro: hospitais, subestações, metrô (uma feição, sem VLT) e estações de metrô, aeroporto e terminais
+de ônibus. Consulta para o [Overpass Turbo](https://overpass-turbo.eu) (Executar → Exportar → GeoJSON).
+Salvar o arquivo em `dados/brutos/osm/` e rodar
+`python3 scripts/gerar_infra_critica.py --geojson dados/brutos/osm/<arquivo>.geojson --data AAAA-MM-DD`.
+Resultado em `dados/shapefiles/infra_critica/` (catálogo em `dados/shapefiles/README.md`). Dado colaborativo:
+conferir com as fontes oficiais (pendência 18). O bruto de 03/11/2026 veio de uma consulta mais larga
+(15 camadas); o script usa só o que interessa.
+
+```
+[out:json][timeout:180];
+area["boundary"="administrative"]["admin_level"="8"]["name"="Recife"]->.recife;
+(
+  nwr["amenity"="hospital"](area.recife);
+  nwr["healthcare"="hospital"](area.recife);
+  nwr["power"="substation"](area.recife);
+  relation["route"~"^(subway|light_rail|train)$"](area.recife);
+  nwr["railway"="station"](area.recife);
+  nwr["public_transport"="station"](area.recife);
+  nwr["aeroway"="aerodrome"](area.recife);
+  nwr["amenity"="bus_station"](area.recife);
+);
+out geom;
+```

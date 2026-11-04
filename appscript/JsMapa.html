@@ -294,8 +294,12 @@
     });
     desenharLigacoes();
   }
+  var CAMADAS_OCULTAS = [];   // do WebMap, fora do mapa e do quadro Camadas
   function carregarObras(){
     var camada = map.allLayers.find(function(l){ return l.type === "feature" && /obra/i.test(l.title || ""); });
+    /* Camada "Obras" do WebMap (polígonos): retirada do mapa e do quadro Camadas a pedido de Pedro (04/11/2026).
+       O painel continua lendo os dados dela (a consulta funciona com a camada oculta). */
+    if(camada){ camada.visible = false; camada.listMode = "hide"; CAMADAS_OCULTAS.push(camada); }
     var planilha = lerPlanilhaObras();
     if(!camada){
       planilha.then(function(res){ aplicarPlanilha(res); if(OBRAS_ESTADO !== "sem-planilha") OBRAS_ESTADO = "ok"; renderAll(); });
@@ -349,6 +353,17 @@
     });
   }
   map.when(carregarObras, function(){ OBRAS_ESTADO = "erro"; renderAll(); });
+  /* Camadas do WebMap retiradas do mapa e do quadro Camadas a pedido de Pedro (04/11/2026), achadas pelo nome:
+     "Pontos críticos de alagamento" repete os pontos que o painel já desenha a partir da planilha. */
+  var OCULTAR_DO_WEBMAP = [/pontos cr[ií]ticos de alagamento/i];
+  map.when(function(){
+    map.allLayers.forEach(function(l){
+      if(l === pontosLayer || l.type === "group") return;
+      if(OCULTAR_DO_WEBMAP.some(function(re){ return re.test(nomeCamada(l.title)); })){
+        l.visible = false; l.listMode = "hide"; CAMADAS_OCULTAS.push(l);
+      }
+    });
+  });
 
   view.on("click", function(evt){
     view.hitTest(evt).then(function(res){
@@ -358,6 +373,9 @@
         if(pc){ selecionarPonto(pc, hitPonto.graphic.geometry); return; }
       }
       fecharCartao();
+      // Ícones da infraestrutura crítica: popup com o tipo e o nome (04/11/2026).
+      var hitInfra = res.results.find(function(r){ return r.graphic && r.graphic.layer === infraLayer && r.graphic.attributes && r.graphic.attributes.infra; });
+      if(hitInfra){ abrirPopupInfra(hitInfra.graphic, evt.mapPoint); return; }
       var hitProject = res.results.find(function(r){ return r.graphic && (ehCamadaDeObra(r.graphic.layer) || r.graphic.layer === graphicsLayer); });
       if(hitProject){
         var p = PROJECTS.find(function(pr){ return pr.id === hitProject.graphic.attributes.id; });
@@ -391,6 +409,7 @@
       return '<img src="' + iconeObra("", "obra") + '" width="17" height="17" alt="" style="vertical-align:middle">';
     }
     if(SWATCH_PROJETO[title]) return SWATCH_PROJETO[title];
+    if(SWATCH_INFRA[title]) return SWATCH_INFRA[title];
     if(title === ANEIS_TITULO){
       return '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#0869A6" stroke-dasharray="2 1.5"><circle cx="8" cy="8" r="2.5"/><circle cx="8" cy="8" r="5"/><circle cx="8" cy="8" r="7.3" stroke-opacity=".6"/></svg>';
     }
@@ -461,6 +480,10 @@
     // Ordem do Conteúdo do ArcGIS: camada de cima primeiro.
     function addRows(layers, parent, nivel){
       layers.toArray().slice().reverse().forEach(function(layer){
+        if(pular.indexOf(layer) >= 0) return;   // já mostrada numa coluna por tema
+        // Grupo do WebMap cujas camadas foram todas para colunas por tema: não mostra o título vazio.
+        if(pular.length && layer.type === "group" && layer.layers && layer.layers.length &&
+           layer.layers.every(function(l){ return pular.indexOf(l) >= 0; })) return;
         var isGroup = layer.type === "group" && layer.layers && layer.layers.length > 0;
         if(nivel === 0) parent = coluna(isGroup);
         var row = document.createElement("div");
@@ -495,6 +518,22 @@
         row.appendChild(olho(layer, row));
         parent.appendChild(row);
         parent.appendChild(classes);
+        if(layer === infraLayer){
+          // Infraestrutura crítica: uma camada, com os tipos (ícones) listados ao abrir a linha.
+          sw.innerHTML = layerSwatchSvg(layer.title);
+          INFRA_CLASSES.forEach(function(it){
+            var linha = document.createElement("div");
+            linha.className = "lg-class";
+            var s2 = document.createElement("span"); s2.className = "lg-sw"; s2.innerHTML = it.swatch;
+            linha.appendChild(s2);
+            linha.appendChild(document.createTextNode(it.rotulo));
+            classes.appendChild(linha);
+          });
+          ch2.el.classList.remove("empty");
+          ch2.el.addEventListener("click", ch2.alterna);
+          nome.addEventListener("click", ch2.alterna);
+          return;
+        }
         if(layer.type === "graphics" || SWATCH_PROJETO[layer.title]){ sw.innerHTML = layerSwatchSvg(layer.title); return; }
         layer.when(function(){
           var r = layer.renderer;
@@ -519,6 +558,60 @@
         }, function(){ sw.innerHTML = layerSwatchSvg(""); });
       });
     }
+    /* Quadro Camadas organizado por tema (Pedro, 04/11/2026), uma coluna por vez. A legenda não muda a
+       ordem de desenho do mapa: só agrupa as linhas. Coluna 1, "Intervenções": "Localização das intervenções"
+       (pontos das obras, por etapa) e "Detalhe das intervenções" (pranchas dos canais Sanbra e Mauricéia). */
+    var pular = [];
+    function colecao(lista){ return { toArray: function(){ return lista.slice(); } }; }
+    function olhoGrupo(membros, row){
+      var btn = document.createElement("button");
+      btn.type = "button"; btn.className = "lg-eye";
+      function algum(){ return membros.some(function(l){ return l.visible; }); }
+      function pinta(){ var v = algum(); btn.innerHTML = v ? ICON_EYE : ICON_EYE_OFF; btn.title = v ? "Ocultar tudo" : "Mostrar tudo"; row.classList.toggle("off", !v); }
+      btn.addEventListener("click", function(ev){ ev.stopPropagation(); var v = !algum(); membros.forEach(function(l){ l.visible = v; }); pinta(); });
+      membros.forEach(function(l){ reactiveUtils.watch(function(){ return l.visible; }, pinta); });
+      pinta();
+      return btn;
+    }
+    function colunaTema(titulo, membros){
+      membros = membros.filter(function(l){ return l && map.allLayers.includes(l); });
+      if(!membros.length) return [];
+      colSolta = null;
+      var col = document.createElement("div");
+      col.className = "lg-col";
+      container.appendChild(col);
+      var row = document.createElement("div");
+      row.className = "lg-item grp";
+      var kids = document.createElement("div");
+      kids.className = "lg-kids";
+      var ch = chevron(kids, true);
+      var nome = document.createElement("span");
+      nome.className = "lg-name"; nome.textContent = titulo; nome.title = titulo;
+      row.appendChild(ch.el); row.appendChild(nome); row.appendChild(olhoGrupo(membros, row));
+      ch.el.addEventListener("click", ch.alterna);
+      nome.addEventListener("click", ch.alterna);
+      col.appendChild(row); col.appendChild(kids);
+      addRows(colecao(membros.slice().reverse()), kids, 1);   // addRows inverte: a lista sai na ordem dada
+      colSolta = null;
+      return membros;
+    }
+    var projetosOrdem = projetosLayers.slice().sort(function(a, b){
+      function peso(l){ return /sanbra/i.test(l.title) ? 0 : /mauric/i.test(l.title) ? 1 : 2; }
+      return peso(a) - peso(b);
+    });
+    var jaMostradas = colunaTema("Intervenções", [obrasPontosLayer].concat(projetosOrdem));
+    // Coluna 2, "Infraestrutura" (Pedro, 04/11/2026): infraestrutura crítica (OSM) e classificação de vias (WebMap).
+    var vias = map.allLayers.find(function(l){ return /classifica[çc][ãa]o de vias/i.test(nomeCamada(l.title)); });
+    jaMostradas = jaMostradas.concat(colunaTema("Infraestrutura", [infraLayer, vias]));
+    // Coluna 3, "Vulnerabilidade" (Pedro, 04/11/2026): bairros, ZEIS e CIS (camadas do WebMap, achadas pelo nome).
+    function camadaPorNome(re){
+      return map.allLayers.find(function(l){ return l.type !== "group" && re.test(nomeCamada(l.title)); });
+    }
+    jaMostradas = jaMostradas.concat(colunaTema("Vulnerabilidade",
+      [camadaPorNome(/bairro/i), camadaPorNome(/^zeis\b/i), camadaPorNome(/^cis\b/i)]));
+    // Coluna 4, "Pontos críticos de alagamento" (Pedro, 04/11/2026): os pontos, as ligações com as obras e os anéis.
+    jaMostradas = jaMostradas.concat(colunaTema("Pontos críticos de alagamento", [pontosLayer, ligacoesLayer, aneisLayer]));
+    pular = jaMostradas.concat(CAMADAS_OCULTAS);   // daqui em diante, as já mostradas não se repetem (nem dentro dos grupos do WebMap)
     addRows(map.layers, container, 0);
   }
   (function(){
@@ -585,6 +678,15 @@
       layer.when(function(){ cleanPopup(layer); }, function(){});
     });
   });
+  // Topo do quadro Camadas logo abaixo da faixa de indicadores (04/11/2026).
+  function posicionarCamadas(){
+    var topo = document.getElementById("kpiStrip"), cont = view.container;
+    if(!topo || !cont) return;
+    var t = topo.offsetHeight ? topo.getBoundingClientRect().bottom - cont.getBoundingClientRect().top + 10 : 12;
+    document.documentElement.style.setProperty("--camadas-topo", Math.max(12, Math.round(t)) + "px");
+  }
+  window.addEventListener("resize", posicionarCamadas);
+  view.when(function(){ posicionarCamadas(); setTimeout(posicionarCamadas, 800); });
   map.when(buildLayerToggle, function(err){
     console.error("Falha ao montar lista de camadas:", err);
   });
