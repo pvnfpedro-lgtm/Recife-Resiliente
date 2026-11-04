@@ -72,3 +72,4 @@ Tudo o que estiver aqui **não** pode ir para a apresentação sem conferência.
 - Malha de favelas e comunidades 2022, tipo de domicílio por setor, curvas de
   nível no ESIG e MapBiomas: não verificados.
 | 27 | Comércio (OSM) no mapa de calor: conferir se a cobertura dos bairros da RPA 6 é razoável (OSM incompleto na periferia) e decidir se serve de apoio ao E3 enquanto o IPTU não residencial não chega | Pedro | 11/11 | 4.437 pontos de 04/11/2026 em `dados/shapefiles/comercio/`; prévia em `docs/img/comercio_calor_previa.png` |
+| 28 | E1 População: obter a Grade Estatística do Censo 2022 do IBGE **em vetor** (quadrados de 200 m com a população) para somar os moradores no círculo de 300 m. O serviço `grade2022_raster1` (no painel, só para ver) é imagem. IBGE bloqueado na rede do ambiente | Pedro | 11/11 | Baixar a folha da grade que cobre o Recife (shapefile/GeoPackage) no site do IBGE, ou liberar `ftp.ibge.gov.br`/`geoftp.ibge.gov.br`/`mapasinterativos.ibge.gov.br` |
