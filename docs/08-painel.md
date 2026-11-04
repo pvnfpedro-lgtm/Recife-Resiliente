@@ -265,6 +265,10 @@ sem notas (ficam no fim da tabela).
 - **Quadro na vertical, na borda direita do mapa** (Pedro, 04/11/2026; depois trocado de lugar com os botões de zoom, que ficam à esquerda dele): um tema embaixo do outro, com rolagem; ao lado dos
   botões de zoom, começando abaixo da faixa de indicadores (`posicionarCamadas()` em `JsMapa.html`). O
   enquadramento ao clicar num ponto desconta a largura do quadro aberto (`areaLivre`).
+- **Cores da "Classificação de vias"** (Pedro, 04/11/2026: "sutis, mas que eu consiga identificar"): trocadas só no
+  painel (`recolorirVias()` em `JsMapa.html`), na ordem dos tipos da legenda do WebMap: #8E6FB3 violeta, #C79A4B ocre,
+  #6F9E86 sálvia, #B07C8E malva, #8A97A6 cinza-azulado, #B8AE9C bege (sem azul nem vermelho). Espessuras do WebMap
+  mantidas. O console do navegador lista os tipos encontrados.
 - Próximas colunas: a combinar com Pedro.
 
 ## Infraestrutura crítica no mapa (04/11/2026, pedido de Pedro)
