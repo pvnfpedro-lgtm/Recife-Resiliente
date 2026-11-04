@@ -76,3 +76,25 @@ area["boundary"="administrative"]["admin_level"="8"]["name"="Recife"]->.recife;
 );
 out geom;
 ```
+
+## Comércio e serviços (OpenStreetMap, 04/11/2026)
+Para o mapa de calor do painel (coluna "Economia"). Os dados do Google Maps (Places) **não** foram usados: os termos
+do Google não permitem baixar os lugares para uma camada própria. Consulta para o
+[Overpass Turbo](https://overpass-turbo.eu) (Executar → Exportar → GeoJSON). Salvar em `dados/brutos/osm/` e rodar
+`python3 scripts/gerar_comercio.py --geojson dados/brutos/osm/<arquivo>.geojson --data AAAA-MM-DD`
+(gera `dados/shapefiles/comercio/comercio_osm.shp` e `appscript/DadosComercio.html`). Extração de 04/11/2026:
+4.749 feições, 84 fora (lojas vazias ou desativadas, hospital, escritórios), 228 duplicatas, **4.437 pontos**
+(varejo 2.919, alimentação 739, mercados e shoppings 271, serviços 508). Dado colaborativo, incompleto nos
+bairros periféricos; não substitui o IPTU não residencial do E3.
+
+```
+[out:json][timeout:180];
+area["boundary"="administrative"]["admin_level"="8"]["name"="Recife"]->.recife;
+(
+  nwr["shop"](area.recife);
+  nwr["amenity"~"^(restaurant|cafe|fast_food|bar|pub|food_court|ice_cream|marketplace|bank|pharmacy|fuel)$"](area.recife);
+  nwr["building"~"^(retail|commercial)$"](area.recife);
+);
+out center tags;
+```
+
