@@ -243,8 +243,9 @@ sem notas (ficam no fim da tabela).
 ## Quadro Camadas por tema (04/11/2026, pedido de Pedro, por partes)
 - O quadro só agrupa as linhas; a ordem de desenho do mapa não muda (as pranchas continuam por baixo dos
   pontos críticos). Função `colunaTema()` em `JsMapa.html`.
-- **Coluna 1, "Obras":** título "Obras" com olho que liga/desliga tudo, e dentro: Obras (pontos da planilha, por
-  etapa), Canal do Sanbra e Canal da Mauricéia.
+- **Coluna 1, "Intervenções"** (nomes de Pedro, 04/11/2026): título com olho que liga/desliga tudo, e dentro:
+  **Localização das intervenções** (antes "Obras (pontos da planilha)", por etapa) e **Detalhe das
+  intervenções** (as pranchas do Canal do Sanbra e do Canal da Mauricéia numa camada só, `DETALHE_TITULO`).
 - Próximas colunas: a combinar com Pedro.
 
 ## Infraestrutura crítica no mapa (04/11/2026, pedido de Pedro)

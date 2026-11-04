@@ -540,8 +540,8 @@
       });
     }
     /* Quadro Camadas organizado por tema (Pedro, 04/11/2026), uma coluna por vez. A legenda não muda a
-       ordem de desenho do mapa: só agrupa as linhas. Coluna 1, "Obras": os pontos das obras (por etapa) e as
-       pranchas de projeto dos canais (Sanbra primeiro, depois Mauricéia). */
+       ordem de desenho do mapa: só agrupa as linhas. Coluna 1, "Intervenções": "Localização das intervenções"
+       (pontos das obras, por etapa) e "Detalhe das intervenções" (pranchas dos canais Sanbra e Mauricéia). */
     function colecao(lista){ return { toArray: function(){ return lista.slice(); } }; }
     function olhoGrupo(membros, row){
       var btn = document.createElement("button");
@@ -579,7 +579,7 @@
       function peso(l){ return /sanbra/i.test(l.title) ? 0 : /mauric/i.test(l.title) ? 1 : 2; }
       return peso(a) - peso(b);
     });
-    var jaMostradas = colunaTema("Obras", [obrasPontosLayer].concat(projetosOrdem));
+    var jaMostradas = colunaTema("Intervenções", [obrasPontosLayer].concat(projetosOrdem));
     addRows(colecao(map.layers.toArray().filter(function(l){ return jaMostradas.indexOf(l) < 0; })), container, 0);
   }
   (function(){
