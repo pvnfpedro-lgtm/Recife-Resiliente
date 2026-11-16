@@ -317,10 +317,10 @@
     projetosLayers.concat([gradeLayer]).concat(setoresLayer ? [setoresLayer] : []).concat((comercioLayer ? [comercioLayer] : []).concat(equipLayer ? [equipLayer] : []).concat([infraLayer, aneisLayer, ligacoesLayer, pontosLayer, obrasPontosLayer])).forEach(function(l){ map.reorder(l, map.layers.length - 1); });
   });
   var CLASSES_INDICE = [
-    { max: 0.2,      cor: "#1a9850", rotulo: "< 0,200" },
-    { max: 1/3,      cor: "#f2b705", rotulo: "0,200 – 0,333" },
-    { max: 0.5,      cor: "#f46d43", rotulo: "0,333 – 0,500" },
-    { max: Infinity, cor: "#d73027", rotulo: "≥ 0,500" }
+    { max: 0.2,      cor: "#1a9850", rotulo: "< 0,200",       nome: "Baixo" },
+    { max: 1/3,      cor: "#f2b705", rotulo: "0,200 – 0,333", nome: "Moderado" },
+    { max: 0.5,      cor: "#f46d43", rotulo: "0,333 – 0,500", nome: "Alto" },
+    { max: Infinity, cor: "#d73027", rotulo: "≥ 0,500",       nome: "Muito alto" }
   ];
   /* Símbolo do ponto crítico (mapa/icones/ponto_critico.svg): gota com onda, cor única.
      O risco aparece pelo tamanho: 22 pt (índice 0) a 38 pt (índice 1) (aumentado em 14/10/2026)
@@ -615,7 +615,7 @@
       var esq = lista.getBoundingClientRect().left - view.container.getBoundingClientRect().left;
       if(esq > W / 2) W = esq - 10;
     }
-    cartao.querySelector(".rr-card-in").style.maxHeight = Math.floor(H * 0.85) + "px";
+    cartao.querySelector(".rr-card-in").style.maxHeight = Math.floor(H * 0.85 / escalaUI()) + "px";   // conteúdo ampliado por --ui
     var w = cartao.offsetWidth, h = cartao.offsetHeight;
     var direita = (pt.x + gap + w <= W - m) || (pt.x - gap - w < m);
     var left = direita ? pt.x + gap : pt.x - gap - w;

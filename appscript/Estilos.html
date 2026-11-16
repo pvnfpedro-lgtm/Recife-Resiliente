@@ -727,7 +727,7 @@
   .esri-popup__footer{border-top:1px solid var(--border);}
   .esri-popup__action{font-size:12px !important;font-weight:600;color:var(--accent) !important;}
   /* Popup dos pontos críticos — ficha no estilo do Plano de Ações de SP */
-  .rr-card{position:absolute;z-index:30;display:none;width:min(380px, calc(100% - 16px));}
+  .rr-card{position:absolute;z-index:30;display:none;width:min(calc(380px * var(--ui)), calc(100% - 16px));}
   .rr-card-in{position:relative;z-index:1;display:flex;flex-direction:column;overflow:hidden;background:rgba(255,255,255,.45);border-radius:12px;
               backdrop-filter:blur(10px) saturate(160%);-webkit-backdrop-filter:blur(10px) saturate(160%);
               border:1px solid rgba(255,255,255,.60);box-shadow:0 12px 32px rgba(15,23,42,.22);font-family:'Inter',system-ui,sans-serif;}
@@ -738,7 +738,7 @@
   .rr-card-min{border:none;background:none;font-size:20px;line-height:1;color:#64748b;cursor:pointer;padding:0 4px;font-weight:700;}
   .rr-card-min:hover,.rr-card-x:hover{color:#0f172a;}
   /* Cartão recolhido: só a barra do título (03/11/2026). */
-  .rr-card.recolhido{width:auto;max-width:min(380px, calc(100% - 16px));}
+  .rr-card.recolhido{width:auto;max-width:min(calc(380px * var(--ui)), calc(100% - 16px));}
   .rr-card.recolhido .rr-card-corpo,.rr-card.recolhido .rr-card-acoes{display:none;}
   .rr-card.recolhido .rr-card-cab{border-bottom:none;}
   .rr-card-corpo{padding:10px 14px;overflow:auto;}
@@ -922,5 +922,120 @@
     .list-panel.pc-panel{grid-column:1;grid-row:3;max-height:30vh;}
     .map-br-stack,.map-center-controls{right:10px;}
     .map-br-stack{left:auto;flex-direction:column;align-items:flex-end;}
+  }
+
+  /* ---------- Mini-legendas no cabeçalho das listas (teste, 16/11/2026) ---------- */
+  .map-legend{margin:0 12px;padding:8px 10px;border-radius:8px;background:rgba(255,255,255,.62);border:1px solid rgba(255,255,255,.7);
+              display:flex;flex-direction:column;gap:5px;font-size:11px;color:var(--text);}
+  .map-legend:empty{display:none;}
+  .ml-tit{font-size:10px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:.05em;}
+  .ml-dica{font-weight:500;text-transform:none;letter-spacing:0;color:var(--text-faint);margin-left:4px;}
+  .ml-row{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center;}
+  .ml-row[hidden]{display:none;}
+  .ml-it{display:inline-flex;align-items:center;gap:5px;white-space:nowrap;}
+  .ml-dot{width:10px;height:10px;border-radius:50%;flex:0 0 auto;box-shadow:0 0 0 1.5px #fff;}
+  .ml-tam{gap:6px;color:var(--text-dim);}
+  .ml-seta{color:var(--text-faint);}
+  .ml-mais{all:unset;cursor:pointer;display:flex;align-items:center;gap:0;font-size:10px;font-weight:700;color:var(--text-dim);
+           text-transform:uppercase;letter-spacing:.05em;margin-top:2px;}
+  .ml-mais .ml-chev{margin-left:auto;font-size:11px;transition:transform .15s;}
+  .ml-mais[aria-expanded="true"] .ml-chev{transform:rotate(180deg);}
+  .ml-tipos{padding-top:2px;}
+
+  /* ---------- Legenda embaixo do mapa (teste, 16/11/2026) ----------
+     Entre a coluna das listas (320px) e o quadro Camadas, centralizada no espaço livre. */
+  .map-legend-bar{position:absolute;left:12px;right:12px;bottom:16px;margin:0 auto;width:max-content;
+                  z-index:15;display:flex;align-items:flex-start;gap:14px;padding:10px 14px;border-radius:10px;
+                  background:rgba(255,255,255,.82);border:1px solid rgba(255,255,255,.9);box-shadow:0 4px 16px rgba(15,23,42,.12);
+                  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);font-size:11.5px;color:var(--text);}
+  .map-legend-bar.sobre{z-index:25;}
+  /* compacta: sem as dicas e com menos espaço */
+  .map-legend-bar.compacta{gap:10px;padding:8px 10px;font-size:11px;}
+  .map-legend-bar.compacta .ml-dica{display:none;}
+  .map-legend-bar.compacta .ml-row{gap:3px 8px;}
+  /* empilhada: um bloco embaixo do outro */
+  .map-legend-bar.empilhada{flex-direction:column;gap:8px;position:absolute;}
+  .map-legend-bar.empilhada .mlb-sep{width:100%;height:1px;align-self:auto;}
+  .map-legend-bar.empilhada .mlb-min{position:absolute;top:8px;right:10px;}
+  .mlb-sec{display:flex;flex-direction:column;gap:6px;min-width:0;}
+  .mlb-sep{align-self:stretch;width:1px;background:var(--border-strong);}
+  .mlb-min{all:unset;cursor:pointer;font-size:12px;font-weight:700;color:#0869A6;padding:0 4px;line-height:1;}
+  .map-legend-bar.min{padding:6px 10px;}
+  .map-legend-bar.min .mlb-sec,.map-legend-bar.min .mlb-sep{display:none;}
+  .map-legend-bar .ml-tit{display:flex;align-items:baseline;gap:6px;flex-wrap:wrap;}
+  .map-legend-bar .ml-mais{margin:0 0 0 8px;text-transform:none;letter-spacing:0;font-size:11px;color:#0869A6;font-weight:600;}
+  .map-legend-bar .ml-mais .ml-chev{margin-left:3px;}
+
+  /* ---------- Escala dos painéis (16/11/2026) ----------
+     --ui é calculada no JsBase (automático × A−/A+). "zoom" amplia o painel inteiro, com textos, ícones,
+     espaços e posição. O mapa (#viewDiv) fica de fora. Nas páginas 2 e 3 e nas janelas, amplia o conteúdo
+     e não a área de rolagem, que continua do tamanho da tela. */
+  :root{--ui:1;}
+  .navbar,.overlay-grid,.map-center-controls,.map-br-stack,.map-legend-bar,
+  .page-scroll > *,.rk-modal-inner,.sv-modal-head,
+  .rr-card > :not(.rr-card-seta){zoom:var(--ui);}
+  .rr-card-seta{transform:scale(var(--ui));}
+  .ui-escala{display:flex;align-items:center;gap:2px;flex:0 0 auto;background:rgba(255,255,255,.08);border-radius:8px;padding:2px;}
+  .ui-escala button{all:unset;cursor:pointer;color:rgba(255,255,255,.8);font-size:12px;font-weight:700;padding:4px 7px;border-radius:6px;line-height:1;}
+  .ui-escala button:hover{background:rgba(255,255,255,.14);color:#fff;}
+  .ui-escala .ui-valor{font-weight:600;font-size:11.5px;min-width:34px;text-align:center;font-variant-numeric:tabular-nums;color:rgba(255,255,255,.6);}
+  .ui-escala .ui-valor.ajustado{color:#fff;}
+
+  /* ---------- Tela pequena: celular e tablet em pé (< 900 px), 16/11/2026 ---------- */
+  .dock-movel{display:none;}
+  @media (max-width: 899px){
+    /* Barra do topo: marca em cima, abas numa linha que rola para o lado */
+    .navbar{height:auto;flex:0 0 auto;flex-wrap:wrap;padding:8px 12px 0;gap:4px 12px;}
+    .brand-sub,.navbar-inst,.navbar-spacer,.ui-escala{display:none;}
+    .tabs{order:3;width:100%;height:40px;overflow-x:auto;overflow-y:hidden;gap:14px;scrollbar-width:none;}
+    .tabs::-webkit-scrollbar{display:none;}
+    .tab{flex:0 0 auto;white-space:nowrap;}
+
+    /* Mapa inteiro; a busca fica em cima e o resto abre pela barra de baixo */
+    .overlay-grid{display:block;inset:10px 10px 66px 10px;}
+    .kpi-panel{display:block;}
+    .filter-float{width:100%;}
+    .search-box,.search-box input{width:100%;}
+    .filterbar{display:none;}
+    .map-area[data-gaveta="filtros"] .filterbar{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;white-space:normal;
+      background:rgba(255,255,255,.96);padding:12px 14px;gap:8px 12px;box-shadow:var(--shadow-lg);}
+    .map-area[data-gaveta="filtros"] .filterbar select{width:100%;min-width:0;height:34px;}
+    .map-area[data-gaveta="filtros"] .filterbar .fcount{grid-column:1;}
+    .map-area[data-gaveta="filtros"] .filterbar .freset{grid-column:2;justify-self:end;}
+
+    /* Gavetas: listas, Camadas e legenda sobem da barra de baixo, uma por vez */
+    .overlay-grid .list-panel,.overlay-grid .list-panel.pc-panel{display:none;position:absolute;left:0;right:0;bottom:0;top:auto;
+      max-height:62%;background:rgba(255,255,255,.96);}
+    .map-area[data-gaveta="obras"] .list-panel:not(.pc-panel),
+    .map-area[data-gaveta="pc"] .list-panel.pc-panel{display:flex;}
+    .list-panel .project-list{display:block !important;overflow-y:auto;}
+    .pc-recolher{display:none;}
+    .map-br-stack{display:none;left:10px;right:10px;bottom:66px;}
+    .map-area[data-gaveta="camadas"] .map-br-stack{display:flex;}
+    #layerPanel{width:auto;max-width:none;max-height:62vh;align-self:stretch;}
+    .map-legend-bar{display:none;left:10px;right:10px;bottom:66px;width:auto;max-width:none;}
+    .map-area[data-gaveta="legenda"] .map-legend-bar{display:flex;}
+    .map-legend-bar .mlb-min{display:none;}
+    .map-legend-bar .ml-tipos[hidden]{display:flex;}          /* tipos sempre abertos na gaveta */
+    .map-legend-bar .ml-mais{display:none;}
+
+    /* Zoom e Street View acima da barra de baixo */
+    .map-center-controls{top:auto;bottom:76px;transform:none;right:10px;}
+    .map-area[data-gaveta] .map-center-controls{display:none;}
+
+    /* Cartão do ponto: gaveta embaixo, largura da tela */
+    .rr-card{left:10px !important;right:10px;top:auto !important;bottom:66px;width:auto !important;max-width:none !important;}
+    .rr-card-seta{display:none;}
+    .rr-card .rr-card-in{max-height:min(62vh, calc(100vh - 170px)) !important;}   /* não passa da barra do topo */
+
+    /* Barra de botões */
+    .dock-movel{display:flex;position:absolute;left:0;right:0;bottom:0;height:56px;z-index:40;background:#fff;
+      border-top:1px solid var(--border);box-shadow:0 -2px 10px rgba(15,23,42,.06);}
+    .dock-movel button{all:unset;flex:1 1 0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+      font-size:10.5px;font-weight:600;color:var(--text-dim);cursor:pointer;min-width:0;}
+    .dock-movel button span{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0 2px;}
+    .dock-movel svg{width:20px;height:20px;}
+    .dock-movel button[aria-pressed="true"]{color:#0869A6;}
+    .dock-movel button[aria-pressed="true"] svg{stroke-width:2.4;}
   }
 </style>

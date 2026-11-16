@@ -733,6 +733,118 @@
     container.appendChild(col);
   }
 
+  /* =====================================================================
+     MINI-LEGENDAS NO CABEÇALHO DAS LISTAS (teste, 16/11/2026)
+     Cada lista explica o próprio símbolo: pontos críticos (cor do anel = classe do índice,
+     tamanho = índice) e intervenções (cor = etapa, desenho = tipo). O quadro Camadas fica só
+     com o liga/desliga. Continua visível com a lista recolhida.
+     ===================================================================== */
+  function montarLegendasListas(){
+    var pc = document.getElementById("pcLegenda");
+    if(pc){
+      var itens = CLASSES_INDICE.map(function(c){
+        return '<span class="ml-it" title="Índice de risco ' + c.rotulo + '"><img src="' + iconePonto(c.cor) + '" width="15" height="15" alt="">' + c.nome + '</span>';
+      }).join("") + '<span class="ml-it" title="Notas incompletas: o índice ainda não foi calculado"><img src="' + iconePonto("#9ca3af") + '" width="15" height="15" alt="">Sem índice</span>';
+      pc.innerHTML = '<div class="ml-tit">Pontos críticos <span class="ml-dica">cor = índice de risco · tamanho = risco</span></div>' +
+        '<div class="ml-row">' + itens + '</div>';
+    }
+    var ob = document.getElementById("obrasLegenda");
+    if(ob){
+      var etapas = ETAPAS_OBRA.map(function(et){
+        return '<span class="ml-it"><i class="ml-dot" style="background:' + COR_STATUS_OBRA[et] + '"></i>' + STATUS_LABEL[et] + '</span>';
+      }).join("");
+      var tipos = TIPOS_LEGENDA.map(function(t){
+        return '<span class="ml-it"><img src="data:image/svg+xml;base64,' + btoa(iconeObraSvg(t[0], "obra", true)) + '" width="18" height="18" alt="">' + t[1] + '</span>';
+      }).join("");
+      ob.innerHTML = '<div class="ml-tit">Intervenções <span class="ml-dica">cor = etapa · desenho = tipo</span>' +
+        '<button type="button" class="ml-mais" aria-expanded="false">Ver tipos <span class="ml-chev">▴</span></button></div>' +
+        '<div class="ml-row">' + etapas + '</div>' +
+        '<div class="ml-row ml-tipos" hidden>' + tipos + '</div>';
+      var bt = ob.querySelector(".ml-mais"), box = ob.querySelector(".ml-tipos");
+      bt.addEventListener("click", function(){ var abre = box.hidden; box.hidden = !abre; bt.setAttribute("aria-expanded", abre); });
+    }
+    var barra = document.getElementById("mapLegenda"), min = document.getElementById("mapLegendaMin");
+    if(!barra || !min) return;
+    function recolhe(r){ barra.classList.toggle("min", r); min.textContent = r ? "Legenda" : "–"; min.title = r ? "Mostrar a legenda" : "Recolher a legenda"; }
+    min.addEventListener("click", function(){ barra.dataset.mexeu = "1"; recolhe(!barra.classList.contains("min")); posicionarLegenda(); });
+
+    /* A faixa se ajusta ao espaço livre de verdade (16/11/2026): mede onde terminam as listas (esquerda) e
+       onde começa o quadro Camadas (direita), e escolhe o formato que cabe:
+       larga = uma linha com as dicas · compacta = sem as dicas · empilhada = um bloco embaixo do outro.
+       Recalcula ao mudar o tamanho da janela, recolher uma lista ou recolher o Camadas. */
+    function posicionarLegenda(){
+      if(telaPequena()){   // vira gaveta: posição e formato vêm do CSS
+        barra.style.left = barra.style.right = barra.style.maxWidth = "";
+        barra.classList.remove("min", "compacta", "sobre"); barra.classList.add("empilhada");
+        return;
+      }
+      var area = barra.parentElement.getBoundingClientRect();
+      if(!area.width) return;
+      var lista = document.querySelector("#page-1 .list-panel"), cam = document.getElementById("layerPanel");
+      var rl = lista ? lista.getBoundingClientRect() : null, rc = cam ? cam.getBoundingClientRect() : null;
+      var esq = 12, dir = 12;
+      // Lista ao lado do mapa (não por cima, como no celular, onde ela ocupa a largura toda)
+      if(rl && rl.width && rl.right < area.left + area.width * 0.6) esq = rl.right - area.left + 14;
+      // Camadas só conta se estiver na altura da faixa (recolhido, ele sobe para o alto e libera a direita)
+      if(rc && rc.width && rc.left > area.left + area.width * 0.4 && rc.bottom > area.bottom - 160) dir = area.right - rc.left + 14;
+      var livre = area.width - esq - dir;
+      if(livre < 300){ esq = 12; dir = 12; livre = area.width - 24; barra.classList.add("sobre"); }   // sem espaço ao lado: fica acima de tudo
+      else barra.classList.remove("sobre");
+      // A faixa está ampliada por --ui: left/right/max-width valem em px dela, não da tela.
+      var z = escalaUI();
+      barra.style.left = (esq / z) + "px"; barra.style.right = (dir / z) + "px"; barra.style.maxWidth = (livre / z) + "px";
+      // Sem espaço ao lado do mapa (celular): começa recolhida, até a pessoa abrir.
+      if(!barra.dataset.mexeu) recolhe(livre < 300 || window.innerWidth < 900);
+      barra.classList.remove("compacta", "empilhada");
+      if(barra.classList.contains("min")) return;
+      function quebrou(){ return barra.getBoundingClientRect().height > 70 * z; }   // uma linha por bloco ≈ 56 px
+      if(quebrou()) barra.classList.add("compacta");
+      if(quebrou()) barra.classList.add("empilhada");
+    }
+    window.addEventListener("resize", posicionarLegenda);
+    window.addEventListener("rr-escala", posicionarLegenda);
+    if(window.ResizeObserver){
+      var ro = new ResizeObserver(function(){ posicionarLegenda(); });
+      ["layerPanel"].forEach(function(id){ var el = document.getElementById(id); if(el) ro.observe(el); });
+      document.querySelectorAll("#page-1 .list-panel").forEach(function(el){ ro.observe(el); });
+      ro.observe(barra.parentElement);
+    }
+    barra.querySelector(".ml-mais") && barra.querySelector(".ml-mais").addEventListener("click", posicionarLegenda);
+    posicionarLegenda();
+    setTimeout(posicionarLegenda, 1500);   // depois que o quadro Camadas termina de montar
+  }
+  /* =====================================================================
+     TELA PEQUENA (< 900 px: celular e tablet em pé) — 16/11/2026
+     O mapa ocupa a tela; Filtros, Intervenções, Pontos, Camadas e Legenda abrem como gaveta pela
+     barra de botões de baixo, uma por vez. Tocar no mesmo botão (ou num item da lista) fecha.
+     ===================================================================== */
+  var TELA_PEQUENA = window.matchMedia("(max-width: 899px)");
+  function telaPequena(){ return TELA_PEQUENA.matches; }
+  function abrirGaveta(nome){
+    var area = document.querySelector("#page-1 .map-area");
+    if(!area) return;
+    var atual = area.getAttribute("data-gaveta") || "";
+    var nova = (nome && nome !== atual) ? nome : "";
+    if(nova) area.setAttribute("data-gaveta", nova); else area.removeAttribute("data-gaveta");
+    document.querySelectorAll("#dockMovel button").forEach(function(b){ b.setAttribute("aria-pressed", String(b.dataset.gaveta === nova)); });
+    if(nova === "obras" || nova === "pc"){   // a lista recolhida no computador abre inteira na gaveta
+      document.querySelectorAll("#page-1 .list-panel.recolhida").forEach(function(l){ l.classList.remove("recolhida"); });
+    }
+  }
+  document.querySelectorAll("#dockMovel button").forEach(function(b){
+    b.addEventListener("click", function(){ abrirGaveta(b.dataset.gaveta); });
+  });
+  // Escolher um item da lista fecha a gaveta, para ver o mapa.
+  ["projectList", "pcList"].forEach(function(id){
+    var el = document.getElementById(id);
+    if(el) el.addEventListener("click", function(e){
+      if(telaPequena() && e.target.closest(".project-card,.pc-card") && !e.target.closest("button")) abrirGaveta("");
+    });
+  });
+  TELA_PEQUENA.addEventListener && TELA_PEQUENA.addEventListener("change", function(){ abrirGaveta(""); });
+
+  montarLegendasListas();
+
   var CAMADAS_OCULTAS = [];   // do WebMap, fora do mapa e do quadro Camadas
   function carregarObras(){
     var camada = map.allLayers.find(function(l){ return l.type === "feature" && /obra/i.test(l.title || ""); });
@@ -1094,7 +1206,7 @@
     jaMostradas = jaMostradas.concat(colunaTema("Pontos críticos de alagamento", [pontosLayer, ligacoesLayer, aneisLayer]));
     pular = jaMostradas.concat(CAMADAS_OCULTAS, [rotulosLayer, destaqueLayer, ligHoverLayer]);   // daqui em diante, as já mostradas não se repetem (nem dentro dos grupos do WebMap)
     addRows(map.layers, container, 0);
-    legendaTipos(container);
+    // Tipos de intervenção saíram do quadro Camadas para a legenda da lista de intervenções (16/11/2026).
   }
   (function(){
     var box = document.getElementById("mapTools"), btn = document.getElementById("mapToolsMin");
