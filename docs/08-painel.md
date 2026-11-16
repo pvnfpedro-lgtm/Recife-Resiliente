@@ -332,6 +332,7 @@ O `Index.html` tinha cerca de 3.100 linhas. Foi dividido sem mudar o que a pági
 | `DadosComercio.html` | Comércio e serviços para o mapa de calor (gerado por `scripts/gerar_comercio.py`) |
 | `DadosInfra.html` | Infraestrutura crítica (gerado por `scripts/gerar_infra_painel.py`) |
 | `DadosProjetos.html` | Pranchas de projeto georreferenciadas (gerado por `scripts/gerar_projetos_painel.py`) |
+| `DadosSetores.html`, `DadosEquipamentos.html`, `DadosSubbacias.html`, `DadosTracados.html` | Setores censitários do IBGE, equipamentos (Base do Farol), sub-bacias e traçados das obras (KML). Entraram no Apps Script entre 04 e 15/11/2026; o repositório só os recebeu em 16/11 |
 | `JsBase.html` | Parte 1 do script: aviso de erro, abertura do `require()` do ArcGIS, bacias, dados, filtros |
 | `JsPontosCriticos.html` | Parte 2: pontos críticos lidos da planilha (mapa, cartão, lista) |
 | `JsMapa.html` | Parte 3: Street View, ArcGIS ↔ Google Maps, obras reais, legenda, mapa base |
@@ -344,7 +345,8 @@ entrega), para abrir no navegador ou conferir; `tests/test_montar_painel.py` con
 
 ## Como trabalhar no código
 1. Editar os arquivos em `appscript/`; cada mudança vira um commit.
-2. Enviar ao Apps Script com `clasp push` **só depois da aprovação de Pedro**.
+2. Enviar ao Apps Script **só depois da aprovação de Pedro**, com `clasp push` ou pela Action
+   "Painel → Apps Script" (ver "Envio pelo GitHub Actions" abaixo).
 3. Testar pela URL de teste (Implantar → Testar implantações); o link
    publicado só muda quando Pedro publicar uma nova versão.
 
@@ -431,3 +433,68 @@ entrega), para abrir no navegador ou conferir; `tests/test_montar_painel.py` con
   lê), mais uma faixa fina à esquerda. O fundo dos cards volta ao translúcido neutro. `clasp push` feito com aprovação de Pedro.
 - 16/10/2026: contorno do card inteiro (2 px) na cor da etapa (intervenções) e da classe do índice (pontos), no lugar da faixa da esquerda. Contorno translúcido (45% de opacidade), pedido de Pedro. `clasp push` feito com aprovação de Pedro.
 - 16/10/2026: quadro Camadas translúcido (fundo branco a 38% com desfoque) e linhas pretas (contorno, divisória do título, separação das colunas e dos grupos). `clasp push` feito com aprovação de Pedro.
+
+## Repositório × Apps Script (16/11/2026)
+Entre 04/11 e 15/11/2026 o projeto do Apps Script mudou sem que o código voltasse para o repositório.
+Entraram nesse período: os pictogramas das obras, os setores censitários, os equipamentos, as sub-bacias, os
+traçados das obras, o recorte da bacia do Tejipió e a retirada da faixa de KPIs. Em 16/11, `appscript/` foi
+igualado ao projeto de 15/11 sem alterações (commit "appscript/ igual ao Apps Script de 15/11/2026"), antes
+das mudanças abaixo. **Regra:** toda mudança feita direto no editor do Apps Script deve voltar para cá
+(`clasp pull` ou pedido ao Claude). Sem isso, o próximo envio apaga a mudança, e a Action para por isso.
+
+## Legenda, escala para telão e modo celular (16/11/2026, pedido de Pedro)
+- **Legenda embaixo do mapa**, no espaço livre entre as listas e o quadro Camadas:
+  - **Pontos críticos:** a gota em cada cor do anel, uma por classe do índice, mais "Sem índice" em cinza e a
+    dica "tamanho = risco". As classes ganharam nome (`CLASSES_INDICE[].nome`): Baixo (< 0,200), Moderado
+    (0,200–0,333), Alto (0,333–0,500) e Muito alto (≥ 0,500). A faixa numérica aparece ao passar o mouse.
+  - **Intervenções:** as 6 etapas pela cor. "Ver tipos" abre os 10 pictogramas, que saíram do quadro
+    Camadas; o Camadas fica só com o liga/desliga.
+  - A faixa mede o espaço livre (`posicionarLegenda` em `JsMapa`) e escolhe entre três formatos: larga (uma
+    linha, com as dicas), compacta (sem as dicas) ou empilhada. Recalcula ao mudar a janela, ao recolher uma
+    lista ou o Camadas e ao abrir "Ver tipos". O botão "–" recolhe a faixa.
+- **Escala para telão** (o painel vai ser exibido num telão de resolução ainda desconhecida, operado com mouse):
+  - Os painéis crescem por um fator único, a variável CSS `--ui`. Ficam de fora o mapa e o
+    `zoom: var(--ui)` dos painéis, em `Estilos`. Valores: 1 até 1920 × 1080 (o desenho de sempre), 1,33 em
+    2560 × 1440 e 2 em 3840 × 2160.
+  - **A− 100% A+** na barra do topo: passos de 10%, guardados no navegador (`localStorage` "rr-escala").
+    Clicar no percentual volta ao automático. Código em `JsBase`, antes do `require()`.
+  - Elementos posicionados em px pelo script dividem pela escala (`escalaUI()`): o cartão do ponto e a faixa
+    da legenda.
+- **Celular e tablet em pé (< 900 px):**
+  - O mapa ocupa a tela, a busca fica no topo e as abas rolam para o lado.
+  - Barra de botões embaixo (Filtros, Intervenções, Pontos, Camadas, Legenda): cada botão abre o painel como
+    gaveta, uma por vez. Tocar de novo fecha, e escolher um item da lista também fecha.
+  - O cartão do ponto abre embaixo, na largura da tela. Nessa largura, os botões A−/A+ ficam escondidos.
+- **Testado** fora do Apps Script (página montada, sem o mapa: o ESIG é bloqueado no ambiente do Claude):
+  - Celular (iPhone 13 e SE), iPad em pé, 1280, 1366, 1536, 1920, 2560 e 3840: sem erro de script e sem a
+    página vazar para os lados.
+  - `tests/test_montar_painel.py` passa.
+  - **A conferir no `/dev`:** os ícones sobre o mapa e o cartão ao lado do ponto clicado.
+
+## Envio pelo GitHub Actions (16/11/2026)
+Workflow `.github/workflows/painel-apps-script.yml`. **Só roda à mão**, o que mantém a regra "envio só com
+aprovação de Pedro": GitHub → Actions → "Painel → Apps Script" → Run workflow → escolher o branch.
+
+- **Sempre:** `clasp push` de `appscript/`, que atualiza o link de teste (`/dev`).
+- **Com "publicar" marcado:** também `clasp update-deployment` no link da equipe (`AKfycbxXh5…/exec`). Cria uma
+  versão nova; o endereço não muda.
+- **Trava:** antes de enviar, baixa o projeto (`clasp pull`) e confere se ele é igual a alguma versão de
+  `appscript/` no histórico do repositório (`.github/scripts/conferir_apps_script.py`). Se não for, alguém
+  editou direto no Apps Script: a Action **para**, lista os arquivos diferentes e não apaga nada. Para enviar
+  mesmo assim, marque "ignorar_trava".
+
+**Configuração (uma vez só, por Pedro):**
+
+1. **Ativar a API do Apps Script:** em https://script.google.com/home/usersettings, ligue "API do Google Apps
+   Script".
+2. **Gerar a credencial do clasp:**
+   - No Google Cloud Shell (https://shell.cloud.google.com), rode `npx -y @google/clasp@3.4.1 login --no-localhost`.
+   - Abra o link e autorize. Depois, copie o endereço `http://localhost…` em que o navegador parar e cole no
+     terminal.
+   - Copie a saída de `cat ~/.clasprc.json` e depois rode `rm ~/.clasprc.json`.
+3. **Guardar no GitHub:** neste repositório, Settings → Secrets and variables → Actions → New repository secret,
+   com o nome `CLASPRC_JSON` e o texto copiado como valor. A credencial nunca vai para o chat nem para o código.
+
+A credencial dá acesso aos projetos do Apps Script da conta. Os secrets não ficam expostos em forks, mas
+quem puder alterar as Actions deste repositório pode usá-los. Para cortar o acesso, revogue o "clasp" em
+https://myaccount.google.com/permissions.

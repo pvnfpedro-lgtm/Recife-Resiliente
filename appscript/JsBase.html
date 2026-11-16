@@ -8,6 +8,45 @@ window.onerror = function(msg, src, line, col, err){
   return false;
 };
 
+/* =====================================================================
+   ESCALA DOS PAINÉIS (16/11/2026) — telão, monitor, notebook
+   Os painéis (barra do topo, filtros, listas, legenda, Camadas, cartão, páginas 2 e 3) crescem juntos
+   por um fator único, a variável CSS --ui. O mapa não: ele já usa a resolução da tela.
+   Automático: 1 até 1920 × 1080 (o desenho original) e proporcional acima (2× numa TV 4K).
+   A−/A+ multiplicam o automático e ficam guardados neste navegador (se ele permitir).
+   ===================================================================== */
+var UI_ESCALA_PASSO = 0.1, UI_ESCALA_MIN = 0.6, UI_ESCALA_MAX = 2.5;
+function uiEscalaAuto(){
+  var w = window.innerWidth, h = window.innerHeight;
+  if(w < 900) return 1;                        // celular e tablet em pé: layout próprio
+  return Math.max(1, Math.min(w / 1920, h / 1080));
+}
+function uiEscalaManual(){
+  try { var v = parseFloat(localStorage.getItem("rr-escala")); return (v > 0) ? v : 1; } catch(e){ return 1; }
+}
+function escalaUI(){ var v = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--ui")); return v > 0 ? v : 1; }
+function aplicarEscalaUI(){
+  var m = uiEscalaManual(), z = Math.min(UI_ESCALA_MAX, Math.max(UI_ESCALA_MIN, uiEscalaAuto() * m));
+  document.documentElement.style.setProperty("--ui", z.toFixed(3));
+  var v = document.getElementById("uiValor");
+  if(v){ v.textContent = Math.round(m * 100) + "%"; v.classList.toggle("ajustado", Math.abs(m - 1) > 0.001); }
+  window.dispatchEvent(new CustomEvent("rr-escala"));
+}
+function mudarEscalaUI(delta){
+  var m = delta === 0 ? 1 : Math.round((uiEscalaManual() + delta) * 10) / 10;
+  m = Math.min(2, Math.max(0.6, m));
+  try { localStorage.setItem("rr-escala", String(m)); } catch(e){}
+  aplicarEscalaUI();
+}
+(function(){
+  var a = document.getElementById("uiMenos"), b = document.getElementById("uiMais"), c = document.getElementById("uiValor");
+  if(a) a.addEventListener("click", function(){ mudarEscalaUI(-UI_ESCALA_PASSO); });
+  if(b) b.addEventListener("click", function(){ mudarEscalaUI(UI_ESCALA_PASSO); });
+  if(c) c.addEventListener("click", function(){ mudarEscalaUI(0); });
+  window.addEventListener("resize", aplicarEscalaUI);
+  aplicarEscalaUI();
+})();
+
 require([
   "esri/WebMap",
   "esri/views/MapView",

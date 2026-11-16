@@ -214,6 +214,92 @@
     title: GRADE_TITULO, visible: false, opacity: 0.6
   });
   map.add(gradeLayer);
+  /* Setores censitários do Censo 2022 (IBGE), pedido de Pedro (12/11/2026), no grupo Vulnerabilidade do quadro Camadas.
+     Serve para ver a régua do cálculo da Vulnerabilidade: o círculo de 300 m de cada ponto corta os setores, e cada
+     pedaço entra com a sua parte da população. Os indicadores V1 a V4 são do CadÚnico POR BAIRRO (o CadÚnico por setor
+     não é confiável), por isso o popup mostra a população do setor e as taxas do bairro dele.
+     Dados em DadosSetores.html (scripts/05_gerar_setores_painel.py). Começa desligada. Só contorno: Favela e Comunidade
+     Urbana (IBGE) com preenchimento leve. */
+  var SETORES_TITULO = "Setores censitários (IBGE 2022)";
+  var SETORES_DADOS = typeof SETORES === "undefined" ? null : SETORES;
+  function fmtNum(x, casas){
+    if(x === null || x === undefined || isNaN(x)) return "—";
+    return Number(x).toLocaleString("pt-BR", { minimumFractionDigits: casas || 0, maximumFractionDigits: casas || 0 });
+  }
+  function popupSetor(feature){
+    var a = feature.graphic.attributes, t = (SETORES_DADOS.bairros || {})[a.bairro] || [];
+    function linha(k, v){ return '<tr><td style="color:#64748b;padding:2px 10px 2px 0">' + k + '</td><td style="text-align:right;font-weight:600">' + v + '</td></tr>'; }
+    return '<div style="font-size:12.5px;line-height:1.45">' +
+      '<table style="width:100%;border-collapse:collapse">' +
+      linha("Bairro", escHtml(a.bairro || "—")) + linha("RPA", escHtml(a.rpa || "—")) +
+      linha("Moradores", fmtNum(a.pop)) + linha("Domicílios ocupados", fmtNum(a.dom)) +
+      linha("Área", fmtNum(a.ha, 1) + " ha") +
+      linha("Favela e Comunidade Urbana", a.favela ? "Sim" + (a.fcu ? " (" + escHtml(a.fcu) + ")" : "") : "Não") +
+      '</table>' +
+      '<div style="margin-top:8px;padding-top:6px;border-top:1px solid #e2e8f0;font-weight:700;font-size:11px;color:#475569;text-transform:uppercase;letter-spacing:.04em">CadÚnico no bairro (a cada 100 casas)</div>' +
+      '<table style="width:100%;border-collapse:collapse">' +
+      linha("V1 Extrema pobreza", fmtNum(t[0], 1)) + linha("V2 Moradia precária", fmtNum(t[1], 1)) +
+      linha("V3 Água fora da rede", fmtNum(t[2], 1)) + linha("V4 Trabalho instável", fmtNum(t[3], 1)) +
+      linha("Famílias no CadÚnico", fmtNum(t[4], 1)) +
+      '</table>' +
+      '<div style="margin-top:6px;color:#64748b;font-size:10.5px">Fontes: IBGE, Censo 2022 (setor); CadÚnico (bairro). Código do setor: ' + escHtml(a.codigo) + '</div></div>';
+  }
+  var setoresLayer = SETORES_DADOS ? new FeatureLayer({
+    title: SETORES_TITULO, visible: false,
+    objectIdField: "oid", geometryType: "polygon", spatialReference: { wkid: 4326 },
+    fields: [{ name: "oid", type: "oid" }, { name: "codigo", type: "string" }, { name: "bairro", type: "string" },
+             { name: "rpa", type: "string" }, { name: "pop", type: "integer" }, { name: "dom", type: "integer" },
+             { name: "ha", type: "double" }, { name: "favela", type: "integer" }, { name: "fcu", type: "string" }],
+    source: SETORES_DADOS.setores.map(function(st, i){
+      return new Graphic({ geometry: { type: "polygon", rings: st.g, spatialReference: { wkid: 4326 } },
+        attributes: { oid: i + 1, codigo: st.c, bairro: st.b, rpa: st.r, pop: st.p, dom: st.d, ha: st.ha, favela: st.f, fcu: st.fn } });
+    }),
+    popupTemplate: { title: "Setor censitário {codigo}", content: popupSetor, outFields: ["*"] },
+    renderer: { type: "unique-value", field: "favela",
+      defaultSymbol: { type: "simple-fill", color: [0, 0, 0, 0], outline: { color: [71, 85, 105, 0.85], width: 0.6 } },
+      defaultLabel: "Setor censitário",
+      uniqueValueInfos: [{ value: 1, label: "Setor de Favela e Comunidade Urbana",
+        symbol: { type: "simple-fill", color: [124, 58, 237, 0.14], outline: { color: [109, 40, 217, 0.9], width: 0.8 } } }] }
+  }) : null;
+  if(setoresLayer) map.add(setoresLayer);
+  /* Equipamentos da Prefeitura relevantes para o impacto do alagamento nas pessoas (pedido de Pedro, 12/11/2026),
+     no grupo Exposição do quadro Camadas. Base de Equipamentos do Farol (04/08/2026), 716 equipamentos em 3 grupos:
+     1 = pessoas que dependem de outros para sair (escolas, creches, hospitais, acolhimento);
+     2 = saúde que faz falta depois da chuva (USF, CAPS, SPA, UPAE, policlínica, farmácia);
+     3 = apoio à população atingida (CRAS, CREAS, COMPAZ, Centro Pop, restaurante popular).
+     Dados em DadosEquipamentos.html (scripts/06_equipamentos_alagamento.py). Começa ligada. Uma cor por grupo,
+     sem vermelho (risco) nem azul (água). Ver a nota "Quais equipamentos importam para o impacto do alagamento nas pessoas". */
+  var EQUIP_TITULO = "Equipamentos (impacto nas pessoas)";
+  var EQUIP_DADOS = typeof EQUIPAMENTOS === "undefined" ? null : EQUIPAMENTOS;
+  var EQUIP_CORES = { 1: [190, 24, 93], 2: [13, 148, 136], 3: [109, 40, 217] };
+  var equipLayer = EQUIP_DADOS ? new FeatureLayer({
+    title: EQUIP_TITULO, visible: true,
+    objectIdField: "oid", geometryType: "point", spatialReference: { wkid: 4326 },
+    fields: [{ name: "oid", type: "oid" }, { name: "grupo", type: "integer" }, { name: "tipo", type: "string" },
+             { name: "nome", type: "string" }, { name: "orgao", type: "string" }, { name: "endereco", type: "string" },
+             { name: "bairro", type: "string" }, { name: "rpa", type: "string" }],
+    source: EQUIP_DADOS.itens.map(function(e, i){
+      return new Graphic({ geometry: { type: "point", longitude: e[0], latitude: e[1] },
+        attributes: { oid: i + 1, grupo: e[2], tipo: e[3], nome: e[4], orgao: e[5], endereco: e[6], bairro: e[7], rpa: e[8] } });
+    }),
+    popupTemplate: { title: "{nome}", outFields: ["*"], content: function(f){
+      var a = f.graphic.attributes, c = EQUIP_CORES[a.grupo] || [100, 116, 139];
+      function linha(k, v){ return v ? '<tr><td style="color:#64748b;padding:2px 10px 2px 0">' + k + '</td><td style="font-weight:600">' + escHtml(v) + '</td></tr>' : ''; }
+      return '<div style="font-size:12.5px;line-height:1.45">' +
+        '<div style="display:inline-block;margin-bottom:6px;padding:2px 8px;border-radius:999px;font-size:11px;font-weight:700;color:#fff;background:rgb(' + c.join(",") + ')">' +
+        escHtml(EQUIP_DADOS.grupos[a.grupo] || "") + '</div>' +
+        '<table style="width:100%;border-collapse:collapse">' + linha("Tipo", a.tipo) + linha("Órgão", a.orgao) +
+        linha("Endereço", a.endereco) + linha("Bairro", a.bairro) + linha("RPA", a.rpa) + '</table>' +
+        '<div style="margin-top:6px;color:#64748b;font-size:10.5px">Fonte: Base de Equipamentos do Farol (Prefeitura do Recife, 04/08/2026)</div></div>';
+    } },
+    renderer: { type: "unique-value", field: "grupo",
+      uniqueValueInfos: [1, 2, 3].map(function(k){
+        return { value: k, label: EQUIP_DADOS.grupos[k],
+          symbol: { type: "simple-marker", style: k === 1 ? "circle" : k === 2 ? "square" : "diamond",
+            size: k === 1 ? 7 : 8, color: EQUIP_CORES[k], outline: { color: [255, 255, 255, 0.95], width: 1 } } };
+      }) }
+  }) : null;
+  if(equipLayer) map.add(equipLayer);
   if(comercioLayer){
     SWATCH_PROJETO[COMERCIO_TITULO] = '<svg width="16" height="12" viewBox="0 0 16 12"><defs><linearGradient id="gcom" x1="0" x2="1">' +
       '<stop offset="0" stop-color="#FEE391"/><stop offset=".5" stop-color="#FEB24C"/><stop offset="1" stop-color="#8C4614"/>' +
@@ -228,13 +314,13 @@
   // O WebMap só traz as camadas dele depois de carregar, e elas entram por cima das nossas (os rios
   // cobriam os ícones das obras). Depois do carregamento, as nossas voltam para o topo, na mesma ordem.
   map.when(function(){
-    projetosLayers.concat([gradeLayer]).concat((comercioLayer ? [comercioLayer] : []).concat([infraLayer, aneisLayer, ligacoesLayer, pontosLayer, obrasPontosLayer])).forEach(function(l){ map.reorder(l, map.layers.length - 1); });
+    projetosLayers.concat([gradeLayer]).concat(setoresLayer ? [setoresLayer] : []).concat((comercioLayer ? [comercioLayer] : []).concat(equipLayer ? [equipLayer] : []).concat([infraLayer, aneisLayer, ligacoesLayer, pontosLayer, obrasPontosLayer])).forEach(function(l){ map.reorder(l, map.layers.length - 1); });
   });
   var CLASSES_INDICE = [
-    { max: 0.2,      cor: "#1a9850", rotulo: "< 0,200" },
-    { max: 1/3,      cor: "#f2b705", rotulo: "0,200 – 0,333" },
-    { max: 0.5,      cor: "#f46d43", rotulo: "0,333 – 0,500" },
-    { max: Infinity, cor: "#d73027", rotulo: "≥ 0,500" }
+    { max: 0.2,      cor: "#1a9850", rotulo: "< 0,200",       nome: "Baixo" },
+    { max: 1/3,      cor: "#f2b705", rotulo: "0,200 – 0,333", nome: "Moderado" },
+    { max: 0.5,      cor: "#f46d43", rotulo: "0,333 – 0,500", nome: "Alto" },
+    { max: Infinity, cor: "#d73027", rotulo: "≥ 0,500",       nome: "Muito alto" }
   ];
   /* Símbolo do ponto crítico (mapa/icones/ponto_critico.svg): gota com onda, cor única.
      O risco aparece pelo tamanho: 22 pt (índice 0) a 38 pt (índice 1) (aumentado em 14/10/2026)
@@ -277,12 +363,12 @@
   var NOMES_PLANILHA = {};
   var NOMES_SUB = { P1:"Frequência", P2:"Severidade", P3:"Maré", P4:"Rio/canal", P5:"Impermeabilização", P6:"Relevo",
     E1:"População", E2:"Equip. públicos", E3:"Comércio e serviços",
-    V2:"Pop. vulnerável", V3:"ZEIS/favelas", V4:"Tipo de moradia", V5:"Evacuação", V6:"Infra. precária", V1:"IVS",
+    V1:"Extrema pobreza", V2:"Moradia precária", V3:"Água fora da rede", V4:"Trabalho instável",
     I1:"Trânsito", I2:"Sanitário", I3:"Isolamento" };
   var GRUPOS_SUB = [
     { nome:"Probabilidade",   cods:["P1","P2","P3","P4","P5","P6"] },
     { nome:"Exposição",       cods:["E1","E2","E3"] },
-    { nome:"Vulnerabilidade", cods:["V2","V3","V4","V5","V6","V1"] },
+    { nome:"Vulnerabilidade", cods:["V1","V2","V3","V4"] },   // CadÚnico por bairro (Pedro, 12/11/2026)
     { nome:"Impacto",         cods:["I1","I2","I3"] }
   ];
 
@@ -381,7 +467,8 @@
     document.querySelectorAll(".list-panel").forEach(function(el){
       if(el.offsetWidth && !el.classList.contains("recolhida")) L = Math.max(L, el.getBoundingClientRect().right - cont.left);
     });
-    var topo = document.getElementById("kpiStrip");
+    // Faixa de KPIs retirada (15/11/2026): o topo ocupado passa a ser o dos filtros.
+    var topo = document.getElementById("kpiStrip") || document.querySelector(".kpi-panel .filter-float");
     if(topo && topo.offsetHeight) T = Math.max(0, topo.getBoundingClientRect().bottom - cont.top);
     // Quadro Camadas à direita (04/11/2026): o enquadramento não fica embaixo dele quando está aberto.
     var cam = document.getElementById("layerPanel");
@@ -528,7 +615,7 @@
       var esq = lista.getBoundingClientRect().left - view.container.getBoundingClientRect().left;
       if(esq > W / 2) W = esq - 10;
     }
-    cartao.querySelector(".rr-card-in").style.maxHeight = Math.floor(H * 0.85) + "px";
+    cartao.querySelector(".rr-card-in").style.maxHeight = Math.floor(H * 0.85 / escalaUI()) + "px";   // conteúdo ampliado por --ui
     var w = cartao.offsetWidth, h = cartao.offsetHeight;
     var direita = (pt.x + gap + w <= W - m) || (pt.x - gap - w < m);
     var left = direita ? pt.x + gap : pt.x - gap - w;

@@ -5,6 +5,7 @@
      ===================================================================== */
   var kpiStripEl = document.getElementById("kpiStrip");
   function renderKpiStrip(){
+    if(!kpiStripEl) return;   // faixa de KPIs retirada do painel (Pedro, 15/11/2026)
     var list = filteredProjects();
     var totalInvest = list.reduce(function(s,p){return s+(p.investNum||0);},0);
     var concluidas = list.filter(function(p){return p.status==="concluido";}).length;
@@ -43,8 +44,8 @@
     PROJECTS.forEach(function(p){
       var vis = visible.indexOf(p) > -1;
       p._graphic.visible = vis;
-      if(p._ponto) p._ponto.visible = vis;
-      (p._pontosExtras || []).forEach(function(g){ g.visible = vis; });
+      p._filtroVis = vis;
+      visibilidadeObra(p);   // filtro + escala (ícone de longe, traçado de perto) e nome da obra
     });
     countEl.textContent = visible.length + (visible.length===1 ? " item" : " itens");
     listEl.innerHTML = "";
