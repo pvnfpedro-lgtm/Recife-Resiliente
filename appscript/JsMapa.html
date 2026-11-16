@@ -125,38 +125,129 @@
      Não planejado cinza · conceitual roxo · em projeto índigo · em licitação rosa · em obra azul · concluída verde. */
   var GLIFOS_OBRA = {"canal": "<path d=\"M2 4 q1.375 -1.6 2.75 0 t2.75 0 t2.75 0 t2.75 0 M2 7.5 q1.375 -1.6 2.75 0 t2.75 0 t2.75 0 t2.75 0 M2 11 q1.375 -1.6 2.75 0 t2.75 0 t2.75 0 t2.75 0\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>", "dragagem": "<path d=\"M0.8 2.4 q1.1 -1.2 2.2 0 t2.2 0\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M14 1 L9.6 5.6\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M5 4.6 H11 L9.8 9.4 H6.2 Z\" fill=\"#fff\"/><path d=\"M0.5 14.5 Q7.5 9.6 14.5 14.5 Z\" fill=\"#fff\"/>", "reservatorio": "<path d=\"M1 2.5 L3.2 13 H11.8 L14 2.5\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M2.4 7.2 q1.275 -1.4 2.55 0 t2.55 0 t2.55 0 t2.55 0 L11.4 12 H3.6 Z\" fill=\"#fff\"/>", "dique": "<path d=\"M3.6 13.5 L6.3 3.5 H8.7 L11.4 13.5 Z\" fill=\"#fff\"/><path d=\"M0.6 6.5 q0.75 -1 1.5 0 t1.5 0 M0.6 9.5 q0.75 -1 1.5 0 t1.5 0\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M11.8 11 q0.7 -1 1.4 0 t1.4 0\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M0.5 13.8 H14.5\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>", "parque": "<circle cx=\"7.5\" cy=\"4.6\" r=\"3.9\" fill=\"#fff\"/><path d=\"M7.5 7.5 V10.4\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M2 13.2 q1.375 -1.6 2.75 0 t2.75 0 t2.75 0 t2.75 0\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>", "rede": "<path d=\"M0.5 1.5 H14.5\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"7.5\" cy=\"9\" r=\"5\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M3.6 10 H11.4 A3.9 3.9 0 0 1 3.6 10 Z\" fill=\"#fff\"/>", "generica": "<path d=\"M6.50 1.5 H8.50 L9.39 4.3 H5.61 Z\" fill=\"#fff\"/><path d=\"M5.13 5.8 H9.87 L10.73 8.5 H4.27 Z\" fill=\"#fff\"/><path d=\"M3.80 10 H11.20 L12.00 12.5 H3.00 Z\" fill=\"#fff\"/><rect x=\"1\" y=\"12.5\" width=\"13\" height=\"1.8\" rx=\"0.6\" fill=\"#fff\"/>"};
   // 16/10/2026: licitação em rosa (o ciano se confundia com o azul de "em obra") e concluída em verde (pedido de Pedro).
-  var COR_STATUS_OBRA = { nao_planejado:"#94a3b8", conceitual:"#A855F7", projeto:"#4F46E5",
-                          licitacao:"#DB2777", obra:"#0869A6", concluido:"#16A34A" };
+  /* Cores das etapas (revistas por Pedro em 15/11/2026, opção B): em obra = azul do painel (#0869A6; a água
+     fica apagada a 50%, então não se confunde); não planejado = cinza médio e conceitual = marrom-acinzentado
+     (visíveis, mas em segundo plano); em projeto e em licitação = roxos; concluída = verde.
+     Histórico: até 15/11 de manhã, cinza claro, roxo, índigo, rosa, azul e verde; depois, por algumas horas,
+     âmbar para "em obra" e cinzas claros, que ficaram sutis demais. */
+  // 15/11/2026, tarde: não planejado escurecido de #7D8796 para #4B5563 (grafite): sumia no mapa base cinza.
+  var COR_STATUS_OBRA = { nao_planejado:"#4B5563", conceitual:"#8C6E54", projeto:"#A78BFA",
+                          licitacao:"#7C3AED", obra:"#0869A6", concluido:"#16A34A" };
+  // Planejada (ainda no papel) x real (em obra ou concluída): muda o traço (tracejado) e o preenchimento (vazado).
+  function etapaPlanejada(status){ return status !== "obra" && status !== "concluido"; }
   function hexPontos(r){
     var p = [];
     for(var k = 0; k < 6; k++){ var a = Math.PI / 3 * k - Math.PI / 2; p.push((16 + r * Math.cos(a)).toFixed(2) + "," + (16 + r * Math.sin(a)).toFixed(2)); }
     return p.join(" ");
   }
   var ICONES_OBRA_CACHE = {};
-  // Hexágono preenchido na cor da etapa, desenho branco e contorno branco (03/11/2026, pedido de Pedro: a
-  // situação bem visível no mapa; antes, estilo D2 com fundo branco e traço na cor). "Não planejado" em cinza.
-  function iconeObraSvg(cat, status){
-    var cor = COR_STATUS_OBRA[status] || COR_STATUS_OBRA.nao_planejado;
-    var glifo = GLIFOS_OBRA[cat] || GLIFOS_OBRA.generica;
-    return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">' +
-      '<polygon points="' + hexPontos(15) + '" fill="' + cor + '" stroke="#fff" stroke-width="2" stroke-linejoin="round"/>' +
-      '<g transform="translate(9.6,9.6) scale(0.85)">' + glifo + '</g></svg>';
+  /* Ícones das obras pontuais: pictogramas soltos (opção 1, escolhida por Pedro em 15/11/2026), um desenho
+     que lembra a obra, na cor da etapa, sem moldura, com contorno branco para ler sobre o mapa. Viewbox 24×24.
+     Antes (15/11, manhã): símbolos geométricos do Plano de Ação (triângulo, quadrado...), que não diziam o tipo
+     sem consultar a legenda. "etapa" (só na legenda do quadro Camadas) continua um círculo cheio. */
+  var PICTO_TRACO = ' stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" fill="none"';
+  function pTraco(c, d){ return '<path d="' + d + '" stroke="' + c + '"' + PICTO_TRACO + '/>'; }
+  var ONDAS = "q1.25 -1.2 2.5 0 t2.5 0 t2.5 0 t2.5 0 t2.5 0 t2.5 0";
+  var SIMBOLOS_OBRA = {
+    // Reservatório de detenção: piscinão visto de cima (opção 4 de Pedro, 15/11/2026).
+    reservatorio: function(c){ return pTraco(c, "M6 5 C11 2.5 20 4 20.5 10 C21 16 16 20.5 10 19.5 C4 18.5 2.5 12 3.5 9 C4 7 5 5.6 6 5 Z") +
+      pTraco(c, "M7.5 10.5 q1.1 -1 2.2 0 t2.2 0 t2.2 0 M7.5 14.5 q1.1 -1 2.2 0 t2.2 0 t2.2 0"); },
+    // Microrreservatório: caixa enterrada com a água entrando (opção 2 de Pedro, 15/11/2026).
+    micro: function(c){ return pTraco(c, "M2 9 H22") +
+      '<rect x="6.5" y="12" width="11" height="8" rx="1" stroke="' + c + '"' + PICTO_TRACO + '/>' +
+      pTraco(c, "M12 3 V9.5 M9.8 7.3 L12 9.5 L14.2 7.3") + pTraco(c, "M8.5 16.5 q0.9 -0.9 1.75 0 t1.75 0 t1.75 0 t1.75 0"); },
+    // Bombeamento: motor + bomba (opção 5 de Pedro, 15/11/2026).
+    bombas: function(c){ return '<rect x="2.5" y="9" width="8" height="7" rx="1" stroke="' + c + '"' + PICTO_TRACO + '/>' +
+      pTraco(c, "M10.5 12.5 H12.5") + '<circle cx="16" cy="12.5" r="3.5" stroke="' + c + '"' + PICTO_TRACO + '/>' +
+      pTraco(c, "M16 9 V4 H21.5 M4 19.5 H20"); },
+    // Microdrenagem: tubo de drenagem com água (opção 6 de Pedro, 15/11/2026).
+    microdrenagem: function(c){ return '<circle cx="12" cy="12" r="8" stroke="' + c + '"' + PICTO_TRACO + '/>' +
+      '<path d="M4.6 14 A8 8 0 0 0 19.4 14 Z" fill="' + c + '" stroke="' + c + '" stroke-width="1" stroke-linejoin="round"/>' +
+      pTraco(c, "M1.5 12 H4 M20 12 H22.5"); },
+    comporta: function(c){ return pTraco(c, "M4.5 4V20 M19.5 4V20") +
+      '<rect x="7.5" y="10" width="9" height="8" rx="0.8" fill="' + c + '" stroke="' + c + '" stroke-width="1"/>' +
+      pTraco(c, "M12 8V3.5 M10 5.5 L12 3.5 L14 5.5"); },
+    // Dragagem: draga (barco) sobre a água (opção 3 de Pedro, 15/11/2026).
+    dragagem: function(c){ return '<path d="M4 14 H20 L18 17.5 H6 Z" fill="' + c + '" stroke="' + c + '" stroke-width="1" stroke-linejoin="round"/>' +
+      pTraco(c, "M9 14 V9 H14 V14 M14 9 L19 4 V11") + pTraco(c, "M2.5 20.5 " + ONDAS); },
+    // P1 (Pedro, 15/11/2026): árvore com a água no meio do tronco.
+    parque: function(c){ return pTraco(c, "M12 13 C6.5 13 6 8.5 8.6 7.2 C8.6 3.6 15.4 3.6 15.4 7.2 C18 8.5 17.5 13 12 13 Z") +
+      pTraco(c, "M12 13 V20") + pTraco(c, "M3 17 q1.4 -1.3 2.8 0 t2.8 0 M15.4 17 q1.4 -1.3 2.8 0 t2.8 0") + pTraco(c, "M4 20.5 H20"); },
+    // Dique: talude com a água alta de um lado (opção 2 de Pedro, 15/11/2026).
+    dique: function(c){ return pTraco(c, "M2 19 H22 M7 19 L11 8 H14 L18 19") +
+      pTraco(c, "M2 11.5 q1 -1 2 0 t2 0 t2 0") + pTraco(c, "M2 15 q1 -1 2 0 t2 0"); },
+    // Canal: seção com margens de concreto (opção 3 de Pedro, 15/11/2026).
+    canal: function(c){ return pTraco(c, "M2 6 H5 V18 H19 V6 H22") + pTraco(c, "M6.5 12 q1.2 -1.1 2.4 0 t2.4 0 t2.4 0 t2.4 0"); },
+    generica: function(c){ return pTraco(c, "M9.5 4 H14.5 L18 18 H6 Z") + pTraco(c, "M8.2 10H15.8 M7.1 14.5H16.9 M4 20H20"); },
+    etapa: function(c){ return '<circle cx="12" cy="12" r="7" fill="' + c + '" stroke="' + c + '" stroke-width="0.8"/>'; }
+  };
+  function iconeObraSvg(cat, status, neutro){
+    var cor = neutro ? "#475569" : (COR_STATUS_OBRA[status] || COR_STATUS_OBRA.nao_planejado);
+    var desenho = (SIMBOLOS_OBRA[cat] || SIMBOLOS_OBRA.generica)(cor);
+    // Contorno branco: o mesmo desenho em branco, com traço 3 px mais grosso, por baixo.
+    var halo = desenho.replace(/(stroke|fill)="(?!none)[^"]*"/g, '$1="#fff"')
+      .replace(/stroke-width="([\d.]+)"/g, function(m, w){ return 'stroke-width="' + (+w + 3) + '"'; });
+    return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">' + halo + desenho + '</svg>';
   }
 
   // Coluna "tipo" da aba "Obras" -> categoria do ícone (mesma tabela de scripts/gerar_pontos_obras.py).
   var CATEGORIA_OBRA = {
     "canal":"canal", "perfilamento do rio tejipio":"canal", "dragagem":"dragagem",
-    "reservatorios de detencao":"reservatorio", "microrreservatorio":"reservatorio",
-    "diques e comportas":"dique", "parques alagaveis":"parque", "requalificacoes na rede":"rede",
-    // Valores da coluna "tipo" usados na planilha desde 03/11/2026.
-    "requalificacao de canal":"canal", "parque alagavel":"parque", "dique":"dique", "comporta":"dique",
-    "requalificacao de microdrenagem":"rede", "sistema de bombas":"rede"
+    "reservatorios de detencao":"reservatorio", "microrreservatorio":"micro",
+    "diques e comportas":"dique", "parques alagaveis":"parque", "requalificacoes na rede":"microdrenagem",
+    // Valores da coluna "tipo" usados na planilha desde 03/11/2026. Separados em 15/11/2026 (pictogramas):
+    // microrreservatório ≠ reservatório, comporta ≠ dique, bombas ≠ microdrenagem.
+    "requalificacao de canal":"canal", "parque alagavel":"parque", "dique":"dique", "comporta":"comporta",
+    "requalificacao de microdrenagem":"microdrenagem", "sistema de bombas":"bombas"
   };
   function iconeObra(tipo, status){
-    var cat = CATEGORIA_OBRA[semAcento(tipo).replace(/\s+/g, " ")] || "generica";
+    return iconeObraCat(CATEGORIA_OBRA[semAcento(tipo).replace(/\s+/g, " ")] || "generica", status);
+  }
+  function iconeObraCat(cat, status){
     var chave = cat + "|" + status;
     if(!ICONES_OBRA_CACHE[chave]) ICONES_OBRA_CACHE[chave] = "data:image/svg+xml;base64," + btoa(iconeObraSvg(cat, status));
     return ICONES_OBRA_CACHE[chave];
+  }
+  /* Traçados das obras (KML do Google Earth, 15/11/2026, dados em DadosTracados): a obra que tem traçado
+     aparece pela extensão (linha) ou pela área, no lugar do ícone. Mesma linguagem da legenda do Plano de
+     Ação: canal = linha dupla, dique/comporta = linha com traços, demais = linha simples; área = preenchimento
+     claro com contorno, tudo na cor da etapa e com halo branco. */
+  function rgbHex(h){ return [parseInt(h.substr(1,2),16), parseInt(h.substr(3,2),16), parseInt(h.substr(5,2),16)]; }
+  function traco(rgba, largura, efeitos){
+    return { type:"CIMSolidStroke", enable:true, color:rgba, width:largura, capStyle:"Butt", joinStyle:"Round", effects:efeitos || [] };
+  }
+  // Planejada: linha tracejada e área só com contorno tracejado; em obra/concluída: contínua e preenchida (15/11/2026).
+  var TRACEJADO = { type:"CIMGeometricEffectDashes", dashTemplate:[7, 4], lineDashEnding:"NoConstraint" };
+  function simboloTracado(cat, status, tipo){
+    var c = rgbHex(COR_STATUS_OBRA[status] || COR_STATUS_OBRA.nao_planejado);
+    var plan = etapaPlanejada(status);
+    if(tipo === "area"){
+      return plan ? { type:"simple-fill", color:c.concat(0.06), outline:{ color:c.concat(1), width:2, style:"dash" } }
+                  : { type:"simple-fill", color:c.concat(0.30), outline:{ color:c.concat(1), width:2 } };
+    }
+    var cor = c.concat(255), branco = [255,255,255,235], camadas;
+    function ef(lista){ return plan ? lista.concat([TRACEJADO]) : lista; }
+    if(cat === "canal"){
+      var desloca = function(d){ return [{ type:"CIMGeometricEffectOffset", method:"Rounded", offset:d, option:"Fast" }]; };
+      camadas = [traco(cor, 1.8, ef(desloca(2.1))), traco(cor, 1.8, ef(desloca(-2.1))), traco(branco, 8)];
+    } else if(cat === "dique" || cat === "comporta"){
+      camadas = [traco(cor, 2.2, ef([])),
+                 traco(cor, 8, [{ type:"CIMGeometricEffectDashes", dashTemplate:[1.4, 4.6], lineDashEnding:"NoConstraint" }]),
+                 traco(branco, 10)];
+    } else {
+      camadas = [traco(cor, 3, ef([])), traco(branco, 6.5)];
+    }
+    return { type:"cim", data:{ type:"CIMSymbolReference", symbol:{ type:"CIMLineSymbol", symbolLayers:camadas } } };
+  }
+  // Ponto de referência do traçado (zoom, ligação com os pontos críticos): o vértice do meio da linha ou o centro da área.
+  function centroTracado(t){
+    var cs = t.coords;
+    if(t.tipo === "area"){
+      var n = cs.length - (cs.length > 1 && cs[0][0] === cs[cs.length-1][0] && cs[0][1] === cs[cs.length-1][1] ? 1 : 0), x = 0, y = 0;
+      for(var i = 0; i < n; i++){ x += cs[i][0]; y += cs[i][1]; }
+      return [x / n, y / n];
+    }
+    return cs[Math.floor((cs.length - 1) / 2)];
   }
   // "-8.08, -34.93" -> [lat, lon]; null se vazio, ilegível ou fora do Recife.
   function coordObra(texto){
@@ -239,6 +330,7 @@
   // Polígono do mapa sem linha correspondente na planilha fica de fora.
   function aplicarPlanilha(res){
     ETAPAS_OBRA.forEach(function(et){ CAMADA_ETAPA[et].removeAll(); });
+    rotulosLayer.removeAll(); destaqueLayer.removeAll();
     if(!res){ PROJECTS.forEach(function(p){ if(p._graphic) graphicsLayer.remove(p._graphic); }); PROJECTS = []; OBRAS_ESTADO = "sem-planilha"; return; }
     var naPlanilha = {};
     res.obras.forEach(function(o){ naPlanilha["obra-" + String(o.obra_id)] = true; });
@@ -282,18 +374,365 @@
       // Ponto da obra: a coordenada da planilha passa a ser o local da obra (centro do zoom ao selecionar).
       var locais = coordsObra(o.coordenadas);
       p._ponto = null; p._pontosExtras = [];
+      p._tracados = []; p._icones = []; p._rotulo = null;
+      var camadaEtapa = CAMADA_ETAPA[p.status] || CAMADA_ETAPA.nao_planejado;
+      var tracados = (typeof TRACADOS_OBRAS !== "undefined" && TRACADOS_OBRAS[num]) || null;
+      if(tracados){
+        var catT = CATEGORIA_OBRA[semAcento(o.tipo).replace(/\s+/g, " ")] || "generica";
+        tracados.forEach(function(t, i){
+          var g = new Graphic({
+            geometry: t.tipo === "area" ? { type:"polygon", rings:[t.coords], spatialReference:{ wkid:4326 } }
+                                        : { type:"polyline", paths:[t.coords], spatialReference:{ wkid:4326 } },
+            symbol: simboloTracado(catT, p.status, t.tipo),
+            attributes: { id:p.id }
+          });
+          camadaEtapa.add(g);
+          p._tracados.push(g);
+          if(i === 0) p.pos = centroTracado(t);
+        });
+        // Ícone: na coordenada da planilha, se houver (Pedro ajusta as posições lá, 15/11/2026);
+        // senão, no centro do traçado do KML.
+        if(locais.length) p.pos = [locais[0][1], locais[0][0]];
+        else locais = [[p.pos[1], p.pos[0]]];
+      }
       locais.forEach(function(xy, i){
         var g = new Graphic({
           geometry: { type:"point", longitude:xy[1], latitude:xy[0] },
-          symbol: { type:"picture-marker", url: iconeObra(o.tipo, p.status), width:"44px", height:"44px" },   // 36 → 44 px (16/10/2026)
+          symbol: { type:"picture-marker", url: iconeObra(o.tipo, p.status), width:"26px", height:"26px" },   // 44 → 26 px com os símbolos do Plano de Ação (15/11/2026)
           attributes: { id:p.id }
         });
-        (CAMADA_ETAPA[p.status] || CAMADA_ETAPA.nao_planejado).add(g);
-        if(i === 0){ p.pos = [xy[1], xy[0]]; p._ponto = g; } else p._pontosExtras.push(g);
+        camadaEtapa.add(g);
+        p._icones.push(g);
+        if(i === 0 && !tracados) p.pos = [xy[1], xy[0]];
       });
+      // _ponto/_pontosExtras: todos os desenhos da obra (o resto do painel usa estes nomes).
+      var todos = p._tracados.concat(p._icones);
+      p._ponto = todos[0] || null; p._pontosExtras = todos.slice(1);
+      // Rótulo com o nome curto, só de perto (zoom >= ZOOM_ROTULO).
+      if(p._ponto){
+        var nomeCurto = p.title.length > 30 ? p.title.slice(0, 28).replace(/\s+\S*$/, "") + "…" : p.title;
+        p._rotulo = new Graphic({
+          geometry: { type:"point", longitude:p.pos[0], latitude:p.pos[1] },
+          symbol: { type:"text", text:nomeCurto, color:[31,41,55,1], haloColor:[255,255,255,0.95], haloSize:1.6,
+                    yoffset:16, font:{ size:10, weight:"bold", family:"Arial Unicode MS" } },
+          attributes: { id:p.id, rotulo:true }
+        });
+        rotulosLayer.add(p._rotulo);
+      }
+      visibilidadeObra(p);
     });
     desenharLigacoes();
   }
+  /* =====================================================================
+     DESIGN DO MAPA DAS OBRAS (15/11/2026, pedido de Pedro: "faça tudo")
+     - de longe, ícone; de perto (zoom >= ZOOM_TRACADO), o traçado;
+     - nomes das obras de perto (zoom >= ZOOM_ROTULO);
+     - obra selecionada em destaque, as demais esmaecidas; contorno ao passar o mouse;
+     - camadas de contexto (canais, rios, bacias) mais apagadas;
+     - legenda dos tipos de intervenção no quadro Camadas.
+     ===================================================================== */
+  /* Só ícones (Pedro, 15/11/2026, "apenas os ícones das intervenções"): os traçados do KML continuam em
+     DadosTracados e servem para posicionar o ícone (centro do traçado), mas não são desenhados.
+     Para voltar a mostrar a extensão de perto, trocar Infinity por 14. */
+  var ZOOM_TRACADO = Infinity, ZOOM_ROTULO = 15;
+  var rotulosLayer = new GraphicsLayer({ title:"Nomes das obras", listMode:"hide" });
+  var destaqueLayer = new GraphicsLayer({ title:"Obra selecionada", listMode:"hide" });
+  map.add(destaqueLayer); map.add(rotulosLayer);
+  // O WebMap entra por cima depois de carregar: destaque e nomes voltam para o topo (depois das obras).
+  map.when(function(){ [destaqueLayer, rotulosLayer].forEach(function(l){ map.reorder(l, map.layers.length - 1); }); });
+  function etapaLigada(p){
+    var l = CAMADA_ETAPA[p.status] || CAMADA_ETAPA.nao_planejado;
+    return obrasPontosLayer.visible && l.visible;
+  }
+  function visibilidadeObra(p){
+    if(!p || !p._icones) return;
+    var f = p._filtroVis !== false, perto = view.zoom >= ZOOM_TRACADO, temTracado = p._tracados.length > 0;
+    p._tracados.forEach(function(g){ g.visible = f && perto; });
+    p._icones.forEach(function(g){ g.visible = f && (!temTracado || !perto); });
+    if(p._rotulo) p._rotulo.visible = f && etapaLigada(p) && view.zoom >= ZOOM_ROTULO;
+  }
+  function atualizarObrasNoMapa(){
+    PROJECTS.forEach(visibilidadeObra);
+    destacarObra(selected);
+  }
+  // Só refaz quando o zoom cruza um dos limites (não a cada passo do zoom).
+  var faixaZoom = null;
+  reactiveUtils.watch(function(){ return view.zoom; }, function(z){
+    var fx = (z >= ZOOM_TRACADO ? 1 : 0) + (z >= ZOOM_ROTULO ? 1 : 0);
+    if(fx !== faixaZoom){ faixaZoom = fx; atualizarObrasNoMapa(); }
+  });
+  ETAPAS_OBRA.forEach(function(et){
+    reactiveUtils.watch(function(){ return CAMADA_ETAPA[et].visible; }, atualizarObrasNoMapa);
+  });
+  reactiveUtils.watch(function(){ return obrasPontosLayer.visible; }, atualizarObrasNoMapa);
+
+  // Destaque: brilho na cor da etapa por baixo de uma cópia da obra; as demais obras ficam a 35%.
+  function destacarObra(p){
+    destaqueLayer.removeAll();
+    var dim = !!(p && p._icones);
+    ETAPAS_OBRA.forEach(function(et){ CAMADA_ETAPA[et].opacity = dim ? 0.35 : 1; });
+    if(!dim) return;
+    var c = [31, 41, 55];   // brilho neutro escuro: funciona em qualquer etapa (nos cinzas o brilho da cor some)
+    p._tracados.concat(p._icones).forEach(function(g){
+      if(!g.visible) return;
+      var t = g.geometry.type, brilho;
+      if(t === "polyline") brilho = { type:"simple-line", color:c.concat(0.22), width:14, cap:"round", join:"round" };
+      else if(t === "polygon") brilho = { type:"simple-fill", color:[0,0,0,0], outline:{ color:c.concat(0.28), width:7 } };
+      else brilho = { type:"simple-marker", style:"circle", size:38, color:c.concat(0.14), outline:{ color:c.concat(0.5), width:1.5 } };
+      destaqueLayer.add(new Graphic({ geometry:g.geometry, symbol:brilho, attributes:{ id:p.id } }));
+      destaqueLayer.add(new Graphic({ geometry:g.geometry, symbol:g.symbol, attributes:{ id:p.id } }));
+    });
+  }
+  function limparSelecaoObra(){
+    if(!selected) return;
+    selected = null;
+    destacarObra(null);
+    renderProjectList();
+  }
+  document.addEventListener("keydown", function(e){ if(e.key === "Escape") limparSelecaoObra(); });
+
+  // Passar o mouse: contorno escuro na obra ou no ponto crítico (pontos: pedido de Pedro, 15/11/2026) e cursor de clique.
+  view.highlightOptions = { color:[31,41,55,1], haloOpacity:0.9, fillOpacity:0.08 };
+  var vistasEtapa = {}, vistaPontos = null, realceHover = null, chaveHover = null, hoverPendente = false;
+  ETAPAS_OBRA.forEach(function(et){ view.whenLayerView(CAMADA_ETAPA[et]).then(function(lv){ vistasEtapa[et] = lv; }); });
+  view.whenLayerView(pontosLayer).then(function(lv){ vistaPontos = lv; });
+  /* Ligações ao passar o mouse no ponto crítico (Pedro, 15/11/2026): as mesmas linhas tracejadas do clique,
+     até as obras ligadas ao ponto, que somem quando o mouse sai. As obras ligadas ganham o contorno escuro.
+     Seguem o liga/desliga da camada "Ligação pontos críticos ↔ obras". */
+  var ligHoverLayer = new GraphicsLayer({ title:"Ligações (passar o mouse)", listMode:"hide" });
+  map.add(ligHoverLayer);
+  map.when(function(){ var i = map.layers.indexOf(ligacoesLayer); if(i > -1) map.reorder(ligHoverLayer, i); });
+  var animLigHover = null;
+  function limparLigHover(){ if(animLigHover){ cancelAnimationFrame(animLigHover); animLigHover = null; } ligHoverLayer.removeAll(); }
+  function ligarHover(pc){
+    limparLigHover();
+    var extras = [];
+    if(!pc || pc.lat == null || pc.lon == null || !ligacoesLayer.visible) return extras;
+    if(typeof cartaoPonto !== "undefined" && cartaoPonto === pc) return extras;   // o clique já desenhou
+    var obras = obrasDoPonto(pc), linhas = [];
+    obras.forEach(function(o){
+      var g = new Graphic({ geometry:{ type:"polyline", paths:[[[pc.lon, pc.lat], [pc.lon, pc.lat]]], spatialReference:{ wkid:4326 } },
+        symbol:{ type:"simple-line", color:[51,65,85,0.85], width:2, style:"dash" } });
+      ligHoverLayer.add(g); linhas.push([g, o]);
+      var lv = vistasEtapa[o.status];
+      if(lv) extras.push(lv.highlight((o._tracados || []).concat(o._icones || []).filter(function(x){ return x.visible; })));
+    });
+    var t0 = performance.now();
+    (function passo(){
+      var t = Math.min(1, (performance.now() - t0) / 350), e = 1 - Math.pow(1 - t, 3);
+      linhas.forEach(function(par){
+        var o = par[1];
+        par[0].geometry = { type:"polyline", spatialReference:{ wkid:4326 },
+          paths:[[[pc.lon, pc.lat], [pc.lon + (o.pos[0] - pc.lon) * e, pc.lat + (o.pos[1] - pc.lat) * e]]] };
+      });
+      animLigHover = t < 1 ? requestAnimationFrame(passo) : null;
+    })();
+    return extras;
+  }
+  view.on("pointer-move", function(evt){
+    if(hoverPendente) return;
+    hoverPendente = true;
+    var camadas = ETAPAS_OBRA.map(function(et){ return CAMADA_ETAPA[et]; }).concat([destaqueLayer, pontosLayer]);
+    view.hitTest(evt, { include: camadas }).then(function(res){
+      hoverPendente = false;
+      var r = res.results.find(function(x){ return x.graphic && x.graphic.attributes && x.graphic.attributes.id != null; });
+      var ehPonto = !!(r && r.graphic.layer === pontosLayer);
+      var chave = r ? (ehPonto ? "pc:" : "ob:") + r.graphic.attributes.id : null;
+      view.container.style.cursor = chave ? "pointer" : "";
+      if(chave === chaveHover) return;
+      chaveHover = chave;
+      if(realceHover){ realceHover.forEach(function(h){ h.remove(); }); realceHover = null; }
+      limparLigHover();
+      if(!r) return;
+      if(ehPonto){
+        realceHover = vistaPontos ? [vistaPontos.highlight(r.graphic)] : [];
+        var pc = PONTOS_POR_ID[r.graphic.attributes.id];
+        if(pc) realceHover = realceHover.concat(ligarHover(pc));
+        return;
+      }
+      var p = PROJECTS.find(function(x){ return x.id === r.graphic.attributes.id; });
+      if(!p || !p._icones) return;
+      var lv = vistasEtapa[p.status];
+      if(lv) realceHover = [lv.highlight(p._tracados.concat(p._icones).filter(function(g){ return g.visible; }))];
+    }, function(){ hoverPendente = false; });
+  });
+
+  // Camadas de contexto do WebMap mais apagadas: as intervenções são as protagonistas.
+  function apagarSimbolo(sym){
+    if(!sym) return sym;
+    if(sym.type === "simple-fill"){
+      sym = sym.clone();
+      sym.color = [0, 0, 0, 0];
+      if(sym.outline){ sym.outline.width = Math.min(sym.outline.width || 1, 1.3); }
+    }
+    return sym;
+  }
+  function apagarContexto(){
+    map.allLayers.forEach(function(l){
+      if(l.type === "group" || CAMADAS_OCULTAS.indexOf(l) >= 0) return;
+      var nome = nomeCamada(l.title);
+      if(/^canais\b/i.test(nome) || /riachos?\s+e\s+rios?|rios?\s+e\s+riachos?/i.test(nome)){
+        l.opacity = 0.5;
+      } else if(/bacias?\s+hidrogr/i.test(nome)){
+        l.when(function(){
+          var r = l.renderer;
+          if(r && (r.type === "simple" || r.type === "unique-value" || r.type === "class-breaks")){
+            r = r.clone();
+            if(r.type === "simple") r.symbol = apagarSimbolo(r.symbol);
+            if(r.uniqueValueInfos) r.uniqueValueInfos.forEach(function(i){ i.symbol = apagarSimbolo(i.symbol); });
+            if(r.classBreakInfos) r.classBreakInfos.forEach(function(i){ i.symbol = apagarSimbolo(i.symbol); });
+            if(r.defaultSymbol) r.defaultSymbol = apagarSimbolo(r.defaultSymbol);
+            l.renderer = r;
+          }
+          l.opacity = 0.7;
+          buildLayerToggle();
+        }, function(){ l.opacity = 0.5; });
+      }
+    });
+  }
+  map.when(apagarContexto);
+
+  /* =====================================================================
+     FOCO NA BACIA DO TEJIPIÓ (Pedro, 15/11/2026: "meu escopo é a bacia do Tejipió")
+     A geometria vem da camada "Bacias hidrográficas" do WebMap (feição cujo texto contém "Tejipió").
+     Fora da bacia: véu branco semitransparente (ofusca as outras bacias). Na bacia: contorno forte.
+     O mapa abre enquadrado na bacia e o botão "casa" volta para ela. Liga/desliga no quadro Camadas.
+     ===================================================================== */
+  var FOCO_TITULO = "Foco na bacia do Tejipió";
+  var VEU_OPACIDADE = 0.55;
+  var focoLayer = new GraphicsLayer({ title: FOCO_TITULO });
+  var BACIA_FOCO_EXTENT = null;
+  map.add(focoLayer);
+  function camadaBacias(){
+    return map.allLayers.find(function(l){ return l.type !== "group" && /bacias?\s+hidrogr/i.test(nomeCamada(l.title)); });
+  }
+  function ehTejipio(attrs){
+    return Object.keys(attrs || {}).some(function(k){ return typeof attrs[k] === "string" && /tejip/i.test(semAcento(attrs[k])); });
+  }
+  function aneisNoSentido(ring, horario){
+    // Área com sinal (fórmula do laço): negativa = horário nas coordenadas do mapa (y para cima).
+    var a = 0;
+    for(var i = 0, n = ring.length; i < n; i++){ var p = ring[i], q = ring[(i + 1) % n]; a += p[0] * q[1] - q[0] * p[1]; }
+    var ehHorario = a < 0;
+    return ehHorario === horario ? ring : ring.slice().reverse();
+  }
+  function montarFoco(){
+    var l = camadaBacias();
+    if(!l){ console.warn("Foco Tejipió: camada \"Bacias hidrográficas\" não encontrada no WebMap."); return; }
+    l.load().then(function(){
+      var fonte = l;
+      if(l.type === "map-image" || l.type === "tile"){
+        fonte = l.allSublayers && l.allSublayers.find(function(s){ return /bacia/i.test(s.title || ""); });
+      }
+      if(!fonte || !fonte.queryFeatures){ throw new Error("camada de bacias do tipo " + l.type + " não permite consulta"); }
+      return fonte.queryFeatures({ where:"1=1", outFields:["*"], returnGeometry:true, outSpatialReference: view.spatialReference });
+    }).then(function(res){
+      var feits = res.features.filter(function(f){ return ehTejipio(f.attributes) && f.geometry && f.geometry.rings; });
+      if(!feits.length){ console.warn("Foco Tejipió: nenhuma feição com \"Tejipió\" nos atributos da camada de bacias."); return; }
+      var aneis = [], ext = null;
+      feits.forEach(function(f){
+        f.geometry.rings.forEach(function(r){ aneis.push(r); });
+        ext = ext ? ext.union(f.geometry.extent) : f.geometry.extent.clone();
+      });
+      BACIA_FOCO_EXTENT = ext;
+      var w = ext.width * 15, h = ext.height * 15, c = ext.center;
+      var moldura = [[c.x - w, c.y + h], [c.x + w, c.y + h], [c.x + w, c.y - h], [c.x - w, c.y - h], [c.x - w, c.y + h]];
+      var sr = view.spatialReference;
+      // Véu: moldura grande (sentido horário = parte externa) com a bacia como furo (anti-horário).
+      focoLayer.add(new Graphic({
+        geometry: { type:"polygon", rings: [aneisNoSentido(moldura, true)].concat(aneis.map(function(r){ return aneisNoSentido(r, false); })), spatialReference: sr },
+        symbol: { type:"simple-fill", color:[255, 255, 255, VEU_OPACIDADE], outline:{ color:[0,0,0,0], width:0 } }
+      }));
+      // Contorno da bacia: halo branco + linha grafite.
+      aneis.forEach(function(r){
+        var g = { type:"polyline", paths:[r], spatialReference: sr };
+        focoLayer.add(new Graphic({ geometry:g, symbol:{ type:"simple-line", color:[255,255,255,0.9], width:5, join:"round" } }));
+        focoLayer.add(new Graphic({ geometry:g, symbol:{ type:"simple-line", color:[31,41,55,0.9], width:2.2, join:"round" } }));
+      });
+      // Logo abaixo dos anéis/ligações/pontos/obras (o véu cobre o WebMap e as camadas de contexto).
+      var idx = map.layers.indexOf(aneisLayer);
+      if(idx > -1){ map.reorder(focoLayer, idx); map.reorder(aneisLayer, map.layers.indexOf(focoLayer)); }
+      view.goTo(ext.clone().expand(1.08), { duration:600 }).catch(function(){});
+      console.log("Foco Tejipió: " + feits.length + " feição(ões) da bacia.");
+    }).catch(function(e){ console.warn("Foco Tejipió: não foi possível montar.", e); });
+  }
+  map.when(montarFoco);
+
+  /* =====================================================================
+     SUB-BACIAS E SUB-SUB-BACIAS DO TEJIPIÓ (aproximadas, 15/11/2026; dados em DadosSubbacias)
+     Entram dentro do grupo de hidrografia do WebMap (pedido de Pedro). Abrem desligadas.
+     Contorno tracejado (= aproximado) e nome; sub-sub-bacia com nome só de perto.
+     ===================================================================== */
+  function camadaGeoPoligonos(geo, titulo, campos, simbolo, rotulo, escalaRotulo, popup){
+    var oid = 0;
+    var graficos = (geo && geo.features || []).map(function(f){
+      var g = f.geometry, aneis = g.type === "MultiPolygon" ? [].concat.apply([], g.coordinates) : g.coordinates;
+      var at = { oid: ++oid }; campos.forEach(function(c){ at[c.name] = f.properties[c.name]; });
+      return new Graphic({ geometry:{ type:"polygon", rings: aneis, spatialReference:{ wkid:4326 } }, attributes: at });
+    });
+    return new FeatureLayer({
+      title: titulo, source: graficos, objectIdField:"oid", geometryType:"polygon", spatialReference:{ wkid:4326 },
+      fields: [{ name:"oid", type:"oid" }].concat(campos), visible:false,
+      renderer: { type:"simple", symbol: simbolo },
+      labelingInfo: [{ labelExpressionInfo:{ expression: rotulo }, minScale: escalaRotulo,
+        symbol:{ type:"text", color:[31,41,55,1], haloColor:[255,255,255,0.95], haloSize:1.5, font:{ size:10, weight:"bold" } } }],
+      popupTemplate: popup
+    });
+  }
+  var CAMPOS_SUB = [{ name:"nome", type:"string" }, { name:"cod_emlurb", type:"string" }, { name:"area_ha", type:"double" }];
+  var CAMPOS_SUBSUB = [{ name:"sub_bacia", type:"string" }, { name:"sub_sub_bacia", type:"string" }, { name:"canais", type:"string" },
+                       { name:"area_ha", type:"double" }];
+  var subbaciasLayer = typeof SUBBACIAS_GEO !== "undefined" ? camadaGeoPoligonos(SUBBACIAS_GEO, "Sub-bacias do Tejipió (aproximadas)", CAMPOS_SUB,
+    { type:"simple-fill", color:[0,0,0,0], outline:{ color:[30,64,120,0.95], width:2.2, style:"dash" } },
+    "$feature.nome", 0,
+    { title:"Sub-bacia {nome} (aproximada)", content:"Código Emlurb: {cod_emlurb}<br>Área: {area_ha} ha<br>" +
+      "<span style='color:#64748b'>Delimitação aproximada, derivada da rede de drenagem e dos canais da Emlurb (15/11/2026).</span>" }) : null;
+  var subsubLayer = typeof SUBSUB_GEO !== "undefined" ? camadaGeoPoligonos(SUBSUB_GEO, "Sub-sub-bacias do Tejipió (aproximadas)", CAMPOS_SUBSUB,
+    { type:"simple-fill", color:[0,0,0,0], outline:{ color:[30,64,120,0.6], width:1, style:"short-dash" } },
+    "Replace(Replace($feature.sub_sub_bacia, 'Canal ', ''), ' (drenagem direta)', ' (direta)')", 40000,
+    { title:"{sub_sub_bacia} (aproximada)", content:"Sub-bacia: {sub_bacia}<br>Canais: {canais}<br>Área: {area_ha} ha<br>" +
+      "<span style='color:#64748b'>Delimitação aproximada, derivada da rede de drenagem e dos canais da Emlurb (15/11/2026).</span>" }) : null;
+  map.when(function(){
+    var novas = [subsubLayer, subbaciasLayer].filter(Boolean);
+    if(!novas.length) return;
+    var canais = map.allLayers.find(function(l){ return l.type !== "group" && /^canais\b/i.test(nomeCamada(l.title)); });
+    var pai = map.allLayers.find(function(l){ return l.type === "group" && /hidrog/i.test(nomeCamada(l.title)); }) ||
+              (canais && canais.parent && canais.parent.type === "group" ? canais.parent : null);
+    if(pai){ novas.forEach(function(l){ pai.layers.add(l); }); }
+    else {
+      console.warn("Sub-bacias: grupo de hidrografia não encontrado no WebMap; entram num grupo próprio.");
+      pai = new GroupLayer({ title:"Hidrografia (sub-bacias)", visibilityMode:"independent", layers: novas });
+      map.add(pai);
+    }
+    buildLayerToggle();
+  });
+
+  // Legenda dos tipos de intervenção (só leitura), como a do Plano de Ação, em cor neutra.
+  var TIPOS_LEGENDA = [["canal","Canal"], ["dique","Dique"], ["comporta","Comporta"], ["reservatorio","Reservatório de detenção"],
+    ["micro","Microrreservatório"], ["bombas","Bombeamento"], ["microdrenagem","Microdrenagem"], ["dragagem","Dragagem"],
+    ["parque","Parque alagável"], ["generica","Outra"]];
+  function legendaTipos(container){
+    var col = document.createElement("div");
+    col.className = "lg-col";
+    var row = document.createElement("div");
+    row.className = "lg-item grp";
+    var nome = document.createElement("span");
+    nome.className = "lg-name"; nome.textContent = "Tipo de intervenção";
+    row.appendChild(nome); col.appendChild(row);
+    var kids = document.createElement("div"); kids.className = "lg-kids";
+    function linha(sw, txt){
+      var r = document.createElement("div"); r.className = "lg-item";
+      var s = document.createElement("span"); s.className = "lg-sw"; s.innerHTML = sw;
+      var n = document.createElement("span"); n.className = "lg-name"; n.textContent = txt; n.style.cursor = "default";
+      r.appendChild(s); r.appendChild(n); kids.appendChild(r);
+    }
+    TIPOS_LEGENDA.forEach(function(t){
+      linha('<img src="data:image/svg+xml;base64,' + btoa(iconeObraSvg(t[0], "obra", true)) + '" width="18" height="18" alt="">', t[1]);
+    });
+    col.appendChild(kids);
+    container.appendChild(col);
+  }
+
   var CAMADAS_OCULTAS = [];   // do WebMap, fora do mapa e do quadro Camadas
   function carregarObras(){
     var camada = map.allLayers.find(function(l){ return l.type === "feature" && /obra/i.test(l.title || ""); });
@@ -365,6 +804,37 @@
     });
   });
 
+  /* Camadas ligadas ao abrir o painel (Pedro, 15/11/2026): só estas seis; as demais abrem desligadas e
+     continuam no quadro Camadas para ligar quando precisar.
+     Do painel: Intervenções (localização e detalhe), pontos críticos e ligações ponto crítico ↔ obras.
+     Do WebMap, achadas pelo nome: Canais, Riachos e Rios, Bacias hidrográficas. */
+  var LIGADAS_AO_ABRIR_WEBMAP = [/^canais\b/i, /riachos?\s+e\s+rios?|rios?\s+e\s+riachos?/i, /bacias?\s+hidrogr/i];
+  function camadasAoAbrir(){
+    var doPainel = [obrasPontosLayer, pontosLayer, ligacoesLayer, rotulosLayer, destaqueLayer, focoLayer, ligHoverLayer].concat(projetosLayers);
+    // Camadas dentro dos grupos do painel (etapas das obras, pranchas) mantêm o estado de cada uma.
+    function dentroDoPainel(l){
+      return doPainel.some(function(g){ return g !== l && g.allLayers && g.allLayers.includes(l); });
+    }
+    var ligar = [];
+    map.allLayers.forEach(function(l){
+      if(l.type === "group" || dentroDoPainel(l)) return;
+      var liga = doPainel.indexOf(l) >= 0 ||
+        (CAMADAS_OCULTAS.indexOf(l) < 0 && LIGADAS_AO_ABRIR_WEBMAP.some(function(re){ return re.test(nomeCamada(l.title)); }));
+      l.visible = liga;
+      if(liga) ligar.push(l);
+    });
+    // Grupos: ligados só se tiverem dentro alguma camada ligada (os do painel, sempre).
+    map.allLayers.forEach(function(l){
+      if(l.type !== "group" || dentroDoPainel(l)) return;
+      l.visible = doPainel.indexOf(l) >= 0 || l.allLayers.some(function(f){ return ligar.indexOf(f) >= 0; });
+    });
+    // "Detalhe das intervenções" (pranchas) abre desligado (Pedro, 15/11/2026); continua no quadro Camadas.
+    projetosLayers.forEach(function(l){ l.visible = false; });
+    var achadas = ligar.filter(function(l){ return doPainel.indexOf(l) < 0; }).map(function(l){ return nomeCamada(l.title); });
+    console.log("Camadas do WebMap ligadas ao abrir:", achadas.join(", ") || "(nenhuma achada pelo nome)");
+  }
+  map.when(camadasAoAbrir);
+
   view.on("click", function(evt){
     view.hitTest(evt).then(function(res){
       var hitPonto = res.results.find(function(r){ return r.graphic && r.graphic.layer === pontosLayer; });
@@ -376,19 +846,23 @@
       // Ícones da infraestrutura crítica: popup com o tipo e o nome (04/11/2026).
       var hitInfra = res.results.find(function(r){ return r.graphic && r.graphic.layer === infraLayer && r.graphic.attributes && r.graphic.attributes.infra; });
       if(hitInfra){ abrirPopupInfra(hitInfra.graphic, evt.mapPoint); return; }
-      var hitProject = res.results.find(function(r){ return r.graphic && (ehCamadaDeObra(r.graphic.layer) || r.graphic.layer === graphicsLayer); });
+      var hitProject = res.results.find(function(r){ return r.graphic && (ehCamadaDeObra(r.graphic.layer) || r.graphic.layer === graphicsLayer || r.graphic.layer === destaqueLayer); });
       if(hitProject){
         var p = PROJECTS.find(function(pr){ return pr.id === hitProject.graphic.attributes.id; });
         selectProject(p, true);
         return;
       }
+      limparSelecaoObra();   // clique no vazio: tira o destaque (15/11/2026)
     });
   });
 
   var INITIAL_VIEW = { center: [-34.9020, -8.0600], zoom: 12 };
   document.getElementById("zoomIn").addEventListener("click", function(){ view.goTo({ zoom: view.zoom + 1 }, { duration:250 }); });
   document.getElementById("zoomOut").addEventListener("click", function(){ view.goTo({ zoom: view.zoom - 1 }, { duration:250 }); });
-  document.getElementById("btnHome").addEventListener("click", function(){ view.goTo(INITIAL_VIEW, { duration:500 }); });
+  // Casa: volta para a bacia do Tejipió quando ela foi achada no WebMap (15/11/2026); senão, a vista inicial antiga.
+  document.getElementById("btnHome").addEventListener("click", function(){
+    view.goTo(BACIA_FOCO_EXTENT ? BACIA_FOCO_EXTENT.clone().expand(1.08) : INITIAL_VIEW, { duration:500 });
+  });
   document.getElementById("btnFullExtent").addEventListener("click", function(){
     var allGraphics = pontosLayer.graphics.toArray();
     if(allGraphics.length){ view.goTo(allGraphics, { duration:500 }); }
@@ -403,10 +877,10 @@
       return '<img src="' + iconePonto(CLASSES_INDICE[CLASSES_INDICE.length - 1].cor) + '" width="16" height="16" alt="" style="vertical-align:middle">';
     }
     if(ETAPA_DA_CAMADA[title] !== undefined){
-      return '<img src="' + iconeObra("", ETAPA_DA_CAMADA[title]) + '" width="17" height="17" alt="" style="vertical-align:middle">';
+      return '<img src="' + iconeObraCat("etapa", ETAPA_DA_CAMADA[title]) + '" width="17" height="17" alt="" style="vertical-align:middle">';
     }
     if(title === OBRAS_PONTOS_TITULO){
-      return '<img src="' + iconeObra("", "obra") + '" width="17" height="17" alt="" style="vertical-align:middle">';
+      return '<img src="' + iconeObraCat("etapa", "obra") + '" width="17" height="17" alt="" style="vertical-align:middle">';
     }
     if(SWATCH_PROJETO[title]) return SWATCH_PROJETO[title];
     if(SWATCH_INFRA[title]) return SWATCH_INFRA[title];
@@ -600,22 +1074,27 @@
       return peso(a) - peso(b);
     });
     var jaMostradas = colunaTema("Intervenções", [obrasPontosLayer].concat(projetosOrdem));
+    // Coluna "Recorte" (15/11/2026): véu fora da bacia do Tejipió + contorno da bacia.
+    jaMostradas = jaMostradas.concat(colunaTema("Recorte", [focoLayer]));
     // Coluna 2, "Infraestrutura" (Pedro, 04/11/2026): infraestrutura crítica (OSM) e classificação de vias (WebMap).
     var vias = map.allLayers.find(function(l){ return /classifica[çc][ãa]o de vias/i.test(nomeCamada(l.title)); });
     jaMostradas = jaMostradas.concat(colunaTema("Infraestrutura", [infraLayer, vias]));
     // Coluna 3, "Vulnerabilidade" (Pedro, 04/11/2026): bairros, ZEIS e CIS (camadas do WebMap, achadas pelo nome).
+    // + Setores censitários do IBGE (Pedro, 12/11/2026), logo abaixo de Bairros.
     function camadaPorNome(re){
       return map.allLayers.find(function(l){ return l.type !== "group" && re.test(nomeCamada(l.title)); });
     }
     jaMostradas = jaMostradas.concat(colunaTema("Vulnerabilidade",
-      [camadaPorNome(/bairro/i), camadaPorNome(/^zeis\b/i), camadaPorNome(/^cis\b/i)]));
+      [camadaPorNome(/bairro/i), setoresLayer, camadaPorNome(/^zeis\b/i), camadaPorNome(/^cis\b/i)]));
     // Coluna "Exposição" (04/11/2026; antes "Economia", nome trocado por Pedro): mapa de calor do comércio e serviços (OSM).
     // + População (grade do IBGE 2022, pedido de Pedro, 04/11/2026).
-    jaMostradas = jaMostradas.concat(colunaTema("Exposição", [gradeLayer].concat(comercioLayer ? [comercioLayer] : [])));
+    // + Equipamentos que importam para o impacto nas pessoas (Base do Farol, pedido de Pedro, 12/11/2026).
+    jaMostradas = jaMostradas.concat(colunaTema("Exposição", [gradeLayer].concat(comercioLayer ? [comercioLayer] : []).concat(equipLayer ? [equipLayer] : [])));
     // Coluna 4, "Pontos críticos de alagamento" (Pedro, 04/11/2026): os pontos, as ligações com as obras e os anéis.
     jaMostradas = jaMostradas.concat(colunaTema("Pontos críticos de alagamento", [pontosLayer, ligacoesLayer, aneisLayer]));
-    pular = jaMostradas.concat(CAMADAS_OCULTAS);   // daqui em diante, as já mostradas não se repetem (nem dentro dos grupos do WebMap)
+    pular = jaMostradas.concat(CAMADAS_OCULTAS, [rotulosLayer, destaqueLayer, ligHoverLayer]);   // daqui em diante, as já mostradas não se repetem (nem dentro dos grupos do WebMap)
     addRows(map.layers, container, 0);
+    legendaTipos(container);
   }
   (function(){
     var box = document.getElementById("mapTools"), btn = document.getElementById("mapToolsMin");
@@ -683,8 +1162,10 @@
   });
   // Topo do quadro Camadas logo abaixo da faixa de indicadores (04/11/2026).
   function posicionarCamadas(){
+    // Sem a faixa de KPIs (retirada em 15/11/2026), o quadro Camadas sobe para o topo (12 px).
     var topo = document.getElementById("kpiStrip"), cont = view.container;
-    if(!topo || !cont) return;
+    if(!cont) return;
+    if(!topo){ document.documentElement.style.setProperty("--camadas-topo", "12px"); return; }
     var t = topo.offsetHeight ? topo.getBoundingClientRect().bottom - cont.getBoundingClientRect().top + 10 : 12;
     document.documentElement.style.setProperty("--camadas-topo", Math.max(12, Math.round(t)) + "px");
   }
@@ -750,6 +1231,7 @@
   var selected = null;
   function selectProject(p, fromMap){
     selected = p;
+    destacarObra(p);
     var target = p.kind === "canal" ? { center: p.path[Math.floor(p.path.length/2)], zoom:15 } : { center: p.pos, zoom:15 };
     view.goTo(target, { duration:800 });
     renderProjectList();
