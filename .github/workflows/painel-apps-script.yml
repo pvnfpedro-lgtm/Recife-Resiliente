@@ -1,0 +1,96 @@
+# Envia appscript/ para o projeto do painel no Apps Script ("Recife Resiliente_v0").
+# Só roda à mão (envio só com aprovação de Pedro). Configuração e regras: docs/08-painel.md,
+# seção "Envio pelo GitHub Actions".
+name: Painel → Apps Script
+
+on:
+  workflow_dispatch:
+    inputs:
+      publicar:
+        description: "Publicar também no link da equipe (/exec): cria uma versão nova da implantação"
+        type: boolean
+        default: false
+      descricao:
+        description: "Descrição da versão publicada (só com 'publicar')"
+        type: string
+        default: ""
+      ignorar_trava:
+        description: "Enviar mesmo que o projeto tenha sido editado direto no Apps Script (apaga essas edições)"
+        type: boolean
+        default: false
+
+concurrency:
+  group: painel-apps-script
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+env:
+  CLASP_VERSAO: "3.4.1"
+  # Implantação do link da equipe (docs/08-painel.md, "Implantações"); pode ser trocada pela variável do repositório.
+  DEPLOYMENT_ID: ${{ vars.APPS_SCRIPT_DEPLOYMENT_ID || 'AKfycbxXh5HsuhaBBF7z4-8f3bZvksWa7lRuzbj6vA9lLqX87GQlvXhWiluTtG8OTyLYxoXE' }}
+
+jobs:
+  enviar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Conferir a montagem da página
+        run: |
+          pip install -q pytest
+          python -m pytest -q tests/test_montar_painel.py
+
+      - name: Instalar o clasp
+        run: npm install -g "@google/clasp@${CLASP_VERSAO}"
+
+      - name: Credencial do Google (secret CLASPRC_JSON)
+        env:
+          CLASPRC_JSON: ${{ secrets.CLASPRC_JSON }}
+        run: |
+          if [ -z "$CLASPRC_JSON" ]; then
+            echo "::error::Falta o secret CLASPRC_JSON. Veja docs/08-painel.md, seção 'Envio pelo GitHub Actions'."
+            exit 1
+          fi
+          printf '%s' "$CLASPRC_JSON" > "$HOME/.clasprc.json"
+          chmod 600 "$HOME/.clasprc.json"
+
+      - name: Baixar o projeto como está no Apps Script
+        run: |
+          mkdir -p /tmp/remoto
+          cp appscript/.clasp.json /tmp/remoto/.clasp.json
+          cd /tmp/remoto && clasp pull
+          ls -la /tmp/remoto
+
+      - name: Trava — o Apps Script foi editado fora do repositório?
+        if: ${{ !inputs.ignorar_trava }}
+        run: python .github/scripts/conferir_apps_script.py /tmp/remoto appscript
+
+      - name: Enviar ao Apps Script (atualiza o link /dev)
+        working-directory: appscript
+        run: |
+          clasp show-file-status
+          clasp push --force
+
+      - name: Publicar no link da equipe (/exec)
+        if: ${{ inputs.publicar }}
+        working-directory: appscript
+        env:
+          DESCRICAO: ${{ inputs.descricao }}
+        run: |
+          clasp update-deployment "$DEPLOYMENT_ID" --description "${DESCRICAO:-GitHub ${GITHUB_SHA::7}}"
+
+      - name: Apagar a credencial
+        if: always()
+        run: rm -f "$HOME/.clasprc.json"
