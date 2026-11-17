@@ -1,0 +1,29 @@
+ponto,equipamentos_300m,grupo1_dependem_de_outros,grupo2_saude,grupo3_apoio,hospital_ou_upa,nota_E2,equipamentos
+5,0,0,0,0,não,1,
+6,0,0,0,0,não,1,
+7,0,0,0,0,não,1,
+11,0,0,0,0,não,1,
+12,0,0,0,0,não,1,
+18,1,0,1,0,não,2,US 330 CAPS Espaço Livremente (CAPS TM - Transtorno Mental)
+26,0,0,0,0,não,1,
+8,2,2,0,0,não,3,Escola Municipal Menino Jesus (Escola); Escola Municipal em Tempo Integral Oswaldo Lima Filho (Escola)
+24,2,1,1,0,não,3,US 310 CAPS Ad Prof Jose Lucena (CAPS AD - Alcool e Drogas); Grupo de Maes do Ipsep - Creche Brasil (Creche parceira)
+25,0,0,0,0,não,1,
+29,3,2,1,0,não,4,Associaçao Centro de Progressao Nossa Senhora das Graças - Matriz (Creche parceira); Nossa Senhora das Gracas Anexo I Jiquia (Creche parceira); US 343 CAPS Cempi Centro Médico Psico Pedagogico Infantil (CAPSi TM - Transtorno Mental Infanto Juvenil)
+31,0,0,0,0,não,1,
+37,1,1,0,0,não,2,Escola Municipal Clarice Lispector (Escola)
+32,2,2,0,0,não,3,Creche Escola Nosso Senhor Jesus do Bonfim (Creche Escola); Emti Andre de Melo (Escola de Tempo Integral)
+45,4,3,1,0,sim,5,Escola Municipal Santo Antonio do Cacote (Escola); Hospital da Criança do Recife (HCR) Antonio Carlos Figueira (Hospital); US 111 Hospital Eduardo Campos da Pessoa Idosa do Recife (Hospital); Serviço de Pronto Atendimento Spa / Centro de Reidratação e Urgência Pediatrica M Cravo Gama (Serviço de Pronto Atendimento)
+46,0,0,0,0,não,1,
+48,0,0,0,0,não,1,
+9,1,0,1,0,não,2,US 174 Usf+ Sitio Grande (USF+)
+22,2,2,0,0,não,3,Escola Municipal do Jordao (Escola); Escola Municipal Pastor Jose Munguba Sobrinho (Escola)
+36,0,0,0,0,não,1,
+41,3,2,0,1,não,4,CREAS Miguel Otávio (CREAS); Escola Municipal Menino Jesus (Escola); Escola Municipal em Tempo Integral Oswaldo Lima Filho (Escola)
+51,1,0,1,0,não,2,US 297 Usf+ do Pina (USF+)
+47,1,1,0,0,não,2,Creche Escola Estrelinha Torroes (Creche Escola)
+19,2,2,0,0,não,3,Escola Municipal Novo Pina (Escola); Creche Escola Novo Pina (Creche Escola)
+33,4,2,1,1,não,4,Escola Municipal Professor Simoes Barbosa (Escola); CRAS Ibura de Baixo (CRAS); Creche Municipal 08 de Marco (Creche); US 154 Usf+ Rio Pajeu (USF+)
+34,0,0,0,0,não,1,
+35,3,0,2,1,não,4,US 312 Usf+ Vila do Sesi (USF+); CRAS Ibura de Baixo (CRAS); US 116 Unidade Publica de Atendimento Especializado Upae Ibura (UPAE)
+54,3,3,0,0,não,4,Escola Municipal Ibura de Baixo (Escola); Escola Municipal Professor Florestan Fernandes (Escola); Escola Municipal Professor Simoes Barbosa (Escola)
