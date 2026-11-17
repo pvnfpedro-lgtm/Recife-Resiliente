@@ -71,6 +71,9 @@ não conectado.
   registrada aqui. Para voltar: Implantar → Gerenciar implantações → lápis → escolher a versão anterior.
   **Versão 20** (17/11/2026, "Ícones menores de longe, maior risco por cima e A+ nos ícones"), publicada pelo Claude
   depois de Pedro aprovar no `/dev` (Action, commit `a0d9c74`).
+  **Versão 21** (17/11/2026, "Tema escuro e mapa claro/escuro"), publicada pelo Claude a pedido de Pedro (Action,
+  commit `157e638`). O mapa escuro e as camadas do WebMap sobre ele não foram vistos antes de publicar (o ESIG não
+  abre no ambiente do Claude). Para voltar à versão 20: Implantar → Gerenciar implantações.
 - **Link da equipe (versão publicada):**
   https://script.google.com/macros/s/AKfycbxXh5HsuhaBBF7z4-8f3bZvksWa7lRuzbj6vA9lLqX87GQlvXhWiluTtG8OTyLYxoXE/exec
 - 02/10/2026: primeiro `clasp push` (pontos críticos lidos da planilha,
