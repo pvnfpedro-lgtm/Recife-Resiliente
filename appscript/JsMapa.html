@@ -628,6 +628,21 @@
      ===================================================================== */
   var FOCO_TITULO = "Foco na bacia do Tejipió";
   var VEU_OPACIDADE = 0.55;
+  /* Véu fora da bacia e contorno: brancos no mapa claro; no mapa escuro, véu grafite e contorno claro. */
+  function coresVeu(escuro){
+    return escuro ? { veu:[15, 18, 24, VEU_OPACIDADE], halo:[15, 18, 24, 0.9], linha:[226, 232, 240, 0.9] }
+                  : { veu:[255, 255, 255, VEU_OPACIDADE], halo:[255, 255, 255, 0.9], linha:[31, 41, 55, 0.9] };
+  }
+  function pintarVeu(escuro){
+    var c = coresVeu(escuro);
+    focoLayer.graphics.forEach(function(g){
+      var s = g.symbol && g.symbol.clone ? g.symbol.clone() : null;
+      if(!s) return;
+      if(s.type === "simple-fill") s.color = c.veu;
+      else if(s.type === "simple-line") s.color = s.width >= 4 ? c.halo : c.linha;
+      g.symbol = s;
+    });
+  }
   var focoLayer = new GraphicsLayer({ title: FOCO_TITULO });
   var BACIA_FOCO_EXTENT = null;
   map.add(focoLayer);
@@ -669,13 +684,13 @@
       // Véu: moldura grande (sentido horário = parte externa) com a bacia como furo (anti-horário).
       focoLayer.add(new Graphic({
         geometry: { type:"polygon", rings: [aneisNoSentido(moldura, true)].concat(aneis.map(function(r){ return aneisNoSentido(r, false); })), spatialReference: sr },
-        symbol: { type:"simple-fill", color:[255, 255, 255, VEU_OPACIDADE], outline:{ color:[0,0,0,0], width:0 } }
+        symbol: { type:"simple-fill", color:coresVeu(mapaAtual() === "escuro").veu, outline:{ color:[0,0,0,0], width:0 } }
       }));
       // Contorno da bacia: halo branco + linha grafite.
       aneis.forEach(function(r){
         var g = { type:"polyline", paths:[r], spatialReference: sr };
-        focoLayer.add(new Graphic({ geometry:g, symbol:{ type:"simple-line", color:[255,255,255,0.9], width:5, join:"round" } }));
-        focoLayer.add(new Graphic({ geometry:g, symbol:{ type:"simple-line", color:[31,41,55,0.9], width:2.2, join:"round" } }));
+        focoLayer.add(new Graphic({ geometry:g, symbol:{ type:"simple-line", color:coresVeu(mapaAtual() === "escuro").halo, width:5, join:"round" } }));
+        focoLayer.add(new Graphic({ geometry:g, symbol:{ type:"simple-line", color:coresVeu(mapaAtual() === "escuro").linha, width:2.2, join:"round" } }));
       });
       // Logo abaixo dos anéis/ligações/pontos/obras (o véu cobre o WebMap e as camadas de contexto).
       var idx = map.layers.indexOf(aneisLayer);
@@ -1277,7 +1292,24 @@
     b.addEventListener("click", function(){ setBasemap(b.getAttribute("data-bm")); });
   });
   // Mapa base: só o Original (o salvo no WebMap); os botões Cinza/Ruas/Satélite saíram em 16/10/2026 (pedido de Pedro).
-  map.when(function(){ originalBasemap = map.basemap; setBasemap("original"); });
+  // Mapa escuro (17/11/2026): "Escuro" no quadro Camadas troca para o cinza-escuro da Esri; "Claro" volta ao Original.
+  var MAPA_ESCURO = "dark-gray-vector";
+  function aplicarMapaTema(){
+    var m = mapaAtual();
+    document.querySelectorAll("#mapaTema button").forEach(function(b){ b.setAttribute("aria-pressed", String(b.dataset.mapa === m)); });
+    if(originalBasemap) setBasemap(m === "escuro" ? MAPA_ESCURO : "original");
+    pintarVeu(m === "escuro");
+  }
+  document.querySelectorAll("#mapaTema button").forEach(function(b){
+    b.addEventListener("click", function(){
+      // Escolha igual ao tema = sem escolha própria (volta a acompanhar o tema).
+      gravarPref("rr-mapa", b.dataset.mapa === temaAtual() ? null : b.dataset.mapa);
+      aplicarMapaTema();
+    });
+  });
+  window.addEventListener("rr-tema", aplicarMapaTema);
+  aplicarMapaTema();   // marca o botão já na abertura; o mapa base troca quando o WebMap carregar
+  map.when(function(){ originalBasemap = map.basemap; aplicarMapaTema(); });
 
   var TECH_FIELD_RE = /^(objectid|fid|globalid|shape.*|source\s*_?id|id\s*_?do\s*_?agrup.*|id\s*_?da\s*_?cor|created_.*|last_edited_.*)$/i;
   function hideTechFields(list){

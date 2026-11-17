@@ -527,3 +527,29 @@ Na visão da cidade, as gotas dos pontos críticos e os ícones das obras se sob
   Se ainda houver sobreposição, o próximo passo é agrupar (cluster) ou abrir em leque os "grupos de
   sobreposição" G1–G5 da planilha.
 
+## Tema escuro e mapa escuro (17/11/2026, pedido de Pedro)
+- **Botão ☾/☀** na barra do topo, ao lado do A−/A+. Liga `:root[data-tema="escuro"]` e fica guardado no
+  navegador (`localStorage` "rr-tema"). Começa claro. Aplicado no `JsBase`, antes do `require()`, para não
+  piscar claro ao abrir. O popup do ArcGIS troca para o tema escuro da Esri (`esri/themes/dark`).
+- **Cores do escuro geradas por script.** O CSS tem centenas de cores escritas direto, e
+  `python3 scripts/gerar_tema_escuro.py` lê cada declaração com cor e gera a mesma regra prefixada, com a cor
+  convertida. O resultado fica entre os marcadores `TEMA-ESCURO-INICIO/FIM` no fim de `Estilos`.
+  - Cinzas: fundos claros escurecem, textos escuros clareiam e as bordas se invertem.
+  - Cores: textos escuros clareiam e fundos pastel viram tons escuros da mesma cor.
+  - Fundos escuros, cores de botão e as cores de categoria (risco, etapas, bacias) ficam.
+  - **Depois de mudar o CSS do painel, rode o script de novo.** `tests/test_tema_escuro.py` falha se o bloco
+    estiver desatualizado.
+- **Ajustes à mão** depois de `TEMA-ESCURO-AJUSTES`, no fim de `Estilos`:
+  - o botão e a escolha do mapa;
+  - a barra do topo, os campos de formulário e o cartão do ponto (variáveis `--rr*`);
+  - as cores escritas pelos scripts no HTML (seletores `[style*="…"]`);
+  - a grade e os rótulos dos gráficos SVG das páginas 2 e 3.
+- **Mapa claro/escuro** no topo do quadro Camadas. "Escuro" troca o mapa base para o `dark-gray-vector` da
+  Esri; "Claro" volta ao Original do WebMap.
+  - Sem escolha, o mapa acompanha o tema. Escolher o mesmo que o tema apaga a escolha própria.
+  - A escolha fica em `localStorage` "rr-mapa".
+  - No mapa escuro, o véu fora da bacia do Tejipió fica grafite e o contorno fica claro (`pintarVeu`).
+- **Testado** sem o mapa (claro e escuro; notebook, celular e as 8 resoluções): sem erro de script.
+  - **A conferir no `/dev`:** o mapa escuro da Esri carregando, as camadas do WebMap (rios, bacias) legíveis
+    sobre ele, os popups e o véu.
+
