@@ -459,7 +459,20 @@
   }
   // Tamanho pelo zoom (17/11/2026): quando o fator muda, refaz o tamanho das gotas e dos ícones das obras.
   var fatorAtual = fatorZoom();
-  reactiveUtils.watch(function(){ return view.zoom; }, function(){
+  window.addEventListener("rr-escala", atualizarTamanhoIcones);   // A−/A+ e mudança de tela (JsBase)
+  // Infraestrutura crítica: só a escala dos painéis (não diminui de longe). Reescala na proporção.
+  var uiInfraAtual = uiInfra();
+  window.addEventListener("rr-escala", function(){
+    var u = uiInfra(), k = u / uiInfraAtual;
+    if(Math.abs(k - 1) < 0.001) return;
+    uiInfraAtual = u;
+    infraLayer.graphics.forEach(function(g){
+      var s = g.symbol;
+      if(s && s.type === "picture-marker") g.symbol = { type:"picture-marker", url: s.url, width: s.width * k, height: s.height * k };
+    });
+  });
+  reactiveUtils.watch(function(){ return view.zoom; }, atualizarTamanhoIcones);
+  function atualizarTamanhoIcones(){
     var f = fatorZoom();
     if(f === fatorAtual) return;
     fatorAtual = f;
@@ -469,7 +482,7 @@
       (p._icones || []).forEach(function(g){ if(g.symbol && g.symbol.url) g.symbol = simboloObra(g.symbol.url); });
     });
     destacarObra(selected);
-  });
+  }
   // Só refaz quando o zoom cruza um dos limites (não a cada passo do zoom).
   var faixaZoom = null;
   reactiveUtils.watch(function(){ return view.zoom; }, function(z){

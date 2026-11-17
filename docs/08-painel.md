@@ -517,7 +517,10 @@ Na visão da cidade, as gotas dos pontos críticos e os ícones das obras se sob
 
 - **Ordem de desenho:** as gotas sem índice ficam embaixo, e as demais seguem do menor para o maior índice.
   A gota mais crítica fica por cima quando há sobreposição. As obras continuam acima dos pontos (decisão de 15/10).
-- Os ícones da infraestrutura crítica não mudaram.
+- **Escala dos painéis também nos ícones do mapa** (17/11/2026, pedido de Pedro): o tamanho é multiplicado
+  por `--ui` (automático da tela × A−/A+). No telão 4K (`--ui` = 2), as gotas vão de 24 a 46 px na visão da
+  cidade; com A+ em 120% num Full HD, ficam 20% maiores. Os ícones da infraestrutura crítica seguem só essa
+  escala, sem diminuir de longe. O ajuste é refeito no evento `rr-escala` do `JsBase`.
 - **Não testado com o mapa** (o ESIG é bloqueado no ambiente do Claude): conferir no `/dev` antes de publicar.
   Se ainda houver sobreposição, o próximo passo é agrupar (cluster) ou abrir em leque os "grupos de
   sobreposição" G1–G5 da planilha.
