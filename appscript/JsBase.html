@@ -47,6 +47,31 @@ function mudarEscalaUI(delta){
   aplicarEscalaUI();
 })();
 
+/* =====================================================================
+   TEMA CLARO / ESCURO (17/11/2026, pedido de Pedro)
+   Botão ☾/☀ na barra do topo, guardado neste navegador ("rr-tema"). O escuro liga :root[data-tema="escuro"]:
+   as cores vêm do bloco gerado por scripts/gerar_tema_escuro.py e dos ajustes à mão no fim de Estilos.
+   O mapa de fundo tem escolha própria no quadro Camadas ("rr-mapa"); sem escolha, acompanha o tema.
+   ===================================================================== */
+function lerPref(k){ try { return localStorage.getItem(k); } catch(e){ return null; } }
+function gravarPref(k, v){ try { if(v === null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch(e){} }
+function temaAtual(){ return lerPref("rr-tema") === "escuro" ? "escuro" : "claro"; }
+function mapaAtual(){ var m = lerPref("rr-mapa"); return (m === "claro" || m === "escuro") ? m : temaAtual(); }
+function aplicarTema(){
+  var t = temaAtual(), raiz = document.documentElement;
+  if(t === "escuro") raiz.setAttribute("data-tema", "escuro"); else raiz.removeAttribute("data-tema");
+  var css = document.querySelector('link[href*="esri/themes/"]');   // popups e widgets do ArcGIS
+  if(css) css.href = css.href.replace(/themes\/(light|dark)\//, "themes/" + (t === "escuro" ? "dark" : "light") + "/");
+  var b = document.getElementById("temaBtn");
+  if(b){ b.setAttribute("aria-pressed", String(t === "escuro")); b.title = t === "escuro" ? "Tema claro" : "Tema escuro"; }
+  window.dispatchEvent(new CustomEvent("rr-tema"));
+}
+(function(){
+  var b = document.getElementById("temaBtn");
+  if(b) b.addEventListener("click", function(){ gravarPref("rr-tema", temaAtual() === "escuro" ? "claro" : "escuro"); aplicarTema(); });
+  aplicarTema();
+})();
+
 require([
   "esri/WebMap",
   "esri/views/MapView",

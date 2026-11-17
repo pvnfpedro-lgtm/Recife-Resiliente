@@ -44,8 +44,11 @@ ranking.
 - **O que é:** se a água da chuva deixa de escoar quando a maré sobe.
 - **Por que importa:** no Recife, muitos canais desaguam no mar ou em rios
   com maré; com maré alta, a drenagem trava.
-- **Como medimos:** classe. Nota 1 quando a maré não influencia, 3 quando
-  agrava às vezes, 5 quando o ponto alaga conforme a maré.
+- **Como medimos:** **sim ou não** (decisão de Pedro, 17/11/2026), gravado como nota **1 (não)** ou
+  **5 (sim)**, para entrar na média da Probabilidade como as outras notas. A classe intermediária
+  ("agrava às vezes" = 3) saiu.
+  - Por que não 0/1: na média, "sim" = 1 contaria como a nota mais baixa e "não" = 0 puxaria
+    a Probabilidade abaixo do mínimo. A maré acabaria reduzindo a Probabilidade justamente onde piora.
 - **De onde vem o dado:** ficha da EMLURB; APAC e tábua de marés.
 
 ### P4 — Proximidade de rio ou canal
@@ -85,6 +88,20 @@ contado aqui não é contado de novo no Impacto.
   moradores recebem nota 5.
 - **De onde vem o dado:** IBGE, Grade Estatística do Censo 2022 (quadrados de
   200 × 200 m com a população).
+- **Calculado em 17/11/2026** (`scripts/calcular_e1_populacao.py`, resultado em
+  `dados/processados/e1_populacao_300m.csv`, notas gravadas na aba "Notas dos pontos"
+  com aprovação de Pedro):
+  - **Fonte usada: setores censitários do Censo 2022, não a grade de 200 m.** A grade não
+    estava disponível. O círculo corta os setores, e cada um entra com a fração da área que
+    cai no círculo. Isso supõe a população espalhada por igual dentro de cada setor. A soma
+    dos setores (1.488.924) bate com a população do Recife no Censo 2022.
+  - **Nota por quintis entre os 28 pontos com coordenada.** Vai de 593 moradores (ponto 36)
+    a 7.536 (ponto 12).
+  - **Ponto 22 (Jordão):** só 69% do círculo fica no Recife, e o resto é Jaboatão, fora da
+    base. A população está subestimada.
+  - **Ponto 26 (Av. Boa Viagem):** 61% do círculo cai no mar, então o valor está certo.
+  - **Ponto 30:** sem coordenada, sem nota.
+  - **Coordenadas aproximadas:** a nota pode mudar quando forem conferidas.
 
 ### E2 — Equipamentos públicos
 - **O que é:** escolas, creches e unidades de saúde perto do ponto.
@@ -94,6 +111,28 @@ contado aqui não é contado de novo no Impacto.
   nota 5 com 5 ou mais, ou com hospital ou UPA.
 - **De onde vem o dado:** portal de dados abertos da Prefeitura (escolas, UBS,
   hospitais); IBGE (CNEFE 2022); CNES/DATASUS.
+- **Calculado em 17/11/2026** (`scripts/calcular_e2_equipamentos.py`, resultado em
+  `dados/processados/e2_equipamentos_1km.csv`, notas gravadas na aba "Notas dos pontos"
+  e régua atualizada na aba "Checklist variáveis", com aprovação de Pedro):
+  - **Fonte usada: Base de Equipamentos do Farol (04/08/2026),** a mesma camada do painel.
+    Contam os 3 grupos: pessoas que dependem de outros para sair (escolas, creches,
+    acolhimento), saúde (USF, policlínicas, pronto atendimento, CAPS) e apoio à população
+    atingida (CRAS, CREAS, Compaz).
+  - **Raio de 1 km e nota por quintis entre os 28 pontos** (decisão de Pedro, 17/11/2026).
+    - A 300 m, 13 pontos ficavam sem nenhum equipamento: a variável quase não diferenciava.
+    - Em 1 km, a régua fixa do checklist dava nota 5 a 21 dos 28 pontos.
+    - O raio de 1 km mede os serviços cujo acesso o alagamento corta para quem mora em volta.
+      É a segunda exceção aos 300 m da Exposição, como a E3.
+  - **Resultado:** de 1 equipamento (ponto 26) a 22 (pontos 45, 47, 34 e 54).
+  - **Empates:** caem no mesmo grupo, por isso os grupos ficaram desiguais (nota 1: 6 pontos;
+    2: 6; 3: 9; 4: 2; 5: 5).
+  - **As 5 notas anteriores** (pontos 12, 37, 32, 36 e 47, de origem não registrada) foram
+    substituídas, para que os 28 pontos sigam a mesma régua.
+  - **Viés da base:** a Base do Farol só tem equipamentos municipais. Por isso os pontos de
+    Boa Viagem, onde os serviços privados pesam mais, ficam com nota baixa. A variável se
+    sobrepõe em parte à Vulnerabilidade.
+  - **Em aberto:** confirmar com o grupo se CRAS, CREAS e Compaz entram como "equipamentos
+    públicos" (o checklist pedia para perguntar).
 
 ### E3 — Comércio e serviços
 - **O que é:** o peso da atividade econômica em volta do ponto. É a variável
@@ -115,6 +154,16 @@ contado aqui não é contado de novo no Impacto.
 - **De onde vem o dado:** IPTU 2026, portal de dados abertos da Prefeitura.
   Segundo Pedro, traz as coordenadas dos imóveis e o valor pago; colunas de
   tipo de uso e de valor lançado **não conferidas** (pendência 20).
+
+- **Calculado em 17/11/2026 com a densidade de comércio do mapa** (`scripts/calcular_e3_comercio.py`,
+  resultado em `dados/processados/e3_comercio_1km.csv`; notas na aba "Notas dos pontos" e régua na aba
+  "Checklist variáveis", com aprovação de Pedro):
+  - **Fonte:** o OpenStreetMap do mapa de calor do painel (04/11/2026: varejo, alimentação, mercados
+    e serviços), no lugar do IPTU, que não está disponível. Dado colaborativo, pode estar incompleto.
+  - **Raio e nota:** 1 km, com nota por quintis entre os 28 pontos. Vai de 25 estabelecimentos
+    (ponto 48) a 390 (ponto 19, Pina).
+  - **As 5 notas anteriores** (pontos 12, 37, 32, 36 e 47, de origem não registrada) foram
+    substituídas. Nenhum raio reproduzia essas notas.
 
 ## Vulnerabilidade
 
@@ -241,6 +290,19 @@ funcionar na cidade quando o ponto alaga, mesmo para quem não mora perto.
 - **Cuidado:** se quase todos os pontos ficarem acima de 2 km, a variável não
   diferencia os pontos e vira contexto no painel.
 
+- **Calculado em 17/11/2026** (`scripts/calcular_i2_infraestrutura.py`, resultado em
+  `dados/processados/i2_infraestrutura_critica.csv`; na aba "Notas dos pontos" é a coluna
+  **I2 Infraestrutura crítica**; notas e régua gravadas com aprovação de Pedro):
+  - **Distância** até a estação de metrô, o terminal de ônibus, a subestação ou o aeroporto
+    (borda do polígono) mais próximo, pela camada do OpenStreetMap do painel (03/11/2026, não
+    conferida).
+  - **Sem hospitais:** eles ficam no E2, para não contar duas vezes.
+  - **Nota por quintis da distância** (20% mais próximos = 5). A faixa fixa dava 4 ou 5 aos
+    28 pontos: o mais distante fica a 1,5 km (ponto 26).
+  - **Delegacias, bombeiros e SAMU,** previstos na lista, não estão na camada. Ficam de fora até
+    haver fonte.
+  - **As 5 notas anteriores** foram substituídas.
+
 ### Proposta em discussão (03/10/2026, Pedro + Claude; levar ao grupo e à Hellis)
 - **I2 Risco sanitário sai do Impacto e vira a definição do V6** (infraestrutura
   precária = % de domicílios sem ligação à rede de esgoto). Motivo: mede a
@@ -261,3 +323,15 @@ Estes temas aparecem no painel, mas não mudam o risco do ponto.
 | Causa do alagamento | Ficha do ponto | Explica por que alaga e qual órgão deve agir |
 | Obras | Camada do painel | O risco mede a situação de hoje |
 | Repercussão e pressão política | Contexto no painel | Não é parte do risco |
+
+## Estado do score em 17/11/2026
+- **Preenchidas para os 28 pontos com coordenada:** E1, E2, E3 e I2 (calculadas pelo Claude com
+  aprovação de Pedro) e V1–V4 (CadÚnico, 12/11).
+- **Preenchidas por Pedro só em 5 pontos (12, 37, 32, 36 e 47):** P1, P3, tempo de escoamento e I1.
+  São os únicos pontos com risco calculado.
+- **Pesos da linha 5 da aba "Notas dos pontos",** alterados por Pedro em 17/11: P1 = 5, P3 = 1,
+  E1 = 1, E2 = 5, E3 = 1, V1 = 1, V2 = 5, V3 = 4, V4 = 3, I1 = 5, I2 = 5. O critério desses pesos
+  não está registrado (pendência 1).
+- **A coluna "Tempo de escoamento" não tem código de variável.** Entra na nota da Probabilidade,
+  mas não aparece no detalhamento do cartão do ponto no painel, que lista as variáveis pelo código.
+
