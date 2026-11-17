@@ -69,6 +69,8 @@ não conectado.
   **Versão 19** (17/11/2026, "Legenda, escala para telão e modo celular"), publicada pelo Claude a pedido de Pedro,
   pela Action "Painel → Apps Script" (branch `claude/quirky-bell-mag4cz`, commit `d5276e8`). A versão 18 não foi
   registrada aqui. Para voltar: Implantar → Gerenciar implantações → lápis → escolher a versão anterior.
+  **Versão 20** (17/11/2026, "Ícones menores de longe, maior risco por cima e A+ nos ícones"), publicada pelo Claude
+  depois de Pedro aprovar no `/dev` (Action, commit `a0d9c74`).
 - **Link da equipe (versão publicada):**
   https://script.google.com/macros/s/AKfycbxXh5HsuhaBBF7z4-8f3bZvksWa7lRuzbj6vA9lLqX87GQlvXhWiluTtG8OTyLYxoXE/exec
 - 02/10/2026: primeiro `clasp push` (pontos críticos lidos da planilha,
