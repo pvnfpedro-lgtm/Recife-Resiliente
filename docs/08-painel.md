@@ -66,6 +66,11 @@ não conectado.
   **Versão 15** (04/11/2026, "Mapa de calor do comércio e serviços (OSM)"), publicada pelo Claude a pedido de Pedro.
   **Versão 16** (04/11/2026, "Mapa de calor do comércio em âmbar, coluna Exposição"), publicada pelo Claude depois de Pedro aprovar o âmbar.
   **Versão 17** (04/11/2026, "População: grade estatística IBGE 2022 na coluna Exposição"), publicada pelo Claude a pedido de Pedro.
+  **Versão 19** (17/11/2026, "Legenda, escala para telão e modo celular"), publicada pelo Claude a pedido de Pedro,
+  pela Action "Painel → Apps Script" (branch `claude/quirky-bell-mag4cz`, commit `d5276e8`). A versão 18 não foi
+  registrada aqui. Para voltar: Implantar → Gerenciar implantações → lápis → escolher a versão anterior.
+  **Versão 20** (17/11/2026, "Ícones menores de longe, maior risco por cima e A+ nos ícones"), publicada pelo Claude
+  depois de Pedro aprovar no `/dev` (Action, commit `a0d9c74`).
 - **Link da equipe (versão publicada):**
   https://script.google.com/macros/s/AKfycbxXh5HsuhaBBF7z4-8f3bZvksWa7lRuzbj6vA9lLqX87GQlvXhWiluTtG8OTyLYxoXE/exec
 - 02/10/2026: primeiro `clasp push` (pontos críticos lidos da planilha,
@@ -498,3 +503,27 @@ aprovação de Pedro": GitHub → Actions → "Painel → Apps Script" → Run w
 A credencial dá acesso aos projetos do Apps Script da conta. Os secrets não ficam expostos em forks, mas
 quem puder alterar as Actions deste repositório pode usá-los. Para cortar o acesso, revogue o "clasp" em
 https://myaccount.google.com/permissions.
+
+## Pontos e obras de longe (17/11/2026, pedido de Pedro)
+Na visão da cidade, as gotas dos pontos críticos e os ícones das obras se sobrepunham.
+
+- **Tamanho pelo zoom:** fator de 0,6 no zoom 12 (o inicial) até 1 no zoom 16, em passos de 0,05
+  (`fatorZoom` em `JsPontosCriticos`). Vale para as gotas, os ícones das obras e o brilho da obra
+  selecionada. Ao mudar o fator, o watch de `view.zoom` em `JsMapa` refaz os símbolos.
+
+  | Zoom | Gota sem índice | Gota de maior risco | Obra |
+  |---|---|---|---|
+  | 12 ou menos | 12 px | 23 px | 16 px |
+  | 14 | 16 px | 30 px | 21 px |
+  | 16 ou mais | 20 px | 38 px | 26 px |
+
+- **Ordem de desenho:** as gotas sem índice ficam embaixo, e as demais seguem do menor para o maior índice.
+  A gota mais crítica fica por cima quando há sobreposição. As obras continuam acima dos pontos (decisão de 15/10).
+- **Escala dos painéis também nos ícones do mapa** (17/11/2026, pedido de Pedro): o tamanho é multiplicado
+  por `--ui` (automático da tela × A−/A+). No telão 4K (`--ui` = 2), as gotas vão de 24 a 46 px na visão da
+  cidade; com A+ em 120% num Full HD, ficam 20% maiores. Os ícones da infraestrutura crítica seguem só essa
+  escala, sem diminuir de longe. O ajuste é refeito no evento `rr-escala` do `JsBase`.
+- **Não testado com o mapa** (o ESIG é bloqueado no ambiente do Claude): conferir no `/dev` antes de publicar.
+  Se ainda houver sobreposição, o próximo passo é agrupar (cluster) ou abrir em leque os "grupos de
+  sobreposição" G1–G5 da planilha.
+

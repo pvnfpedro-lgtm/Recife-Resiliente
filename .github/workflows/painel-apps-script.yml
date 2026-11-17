@@ -63,8 +63,27 @@ jobs:
             echo "::error::Falta o secret CLASPRC_JSON. Veja docs/08-painel.md, seção 'Envio pelo GitHub Actions'."
             exit 1
           fi
-          printf '%s' "$CLASPRC_JSON" > "$HOME/.clasprc.json"
-          chmod 600 "$HOME/.clasprc.json"
+          # O texto copiado do terminal costuma chegar estragado nas linhas longas (quebras, espaços).
+          # O clasp só precisa de client_id, client_secret e refresh_token: o access_token expira em
+          # 1 hora e é gerado de novo. Então lê só esses três e monta uma credencial limpa.
+          python3 - <<'PY'
+          import json, os, re, sys
+          bruto = os.environ["CLASPRC_JSON"]
+          def campo(nome):
+              m = re.search(r'"%s"\s*:\s*"([^"]+)"' % nome, bruto)
+              return re.sub(r"\s+", "", m.group(1)) if m else None
+          cred = {k: campo(k) for k in ("client_id", "client_secret", "refresh_token")}
+          faltam = [k for k, v in cred.items() if not v]
+          if faltam:
+              print("::error::No secret CLASPRC_JSON não achei: " + ", ".join(faltam) + ". Gere a credencial de novo e copie o texto inteiro.")
+              sys.exit(1)
+          cred["type"] = "authorized_user"
+          caminho = os.path.expanduser("~/.clasprc.json")
+          with open(caminho, "w") as f:
+              json.dump({"tokens": {"default": cred}}, f)
+          os.chmod(caminho, 0o600)
+          print("Credencial montada: client_id, client_secret e refresh_token encontrados.")
+          PY
 
       - name: Baixar o projeto como está no Apps Script
         run: |
