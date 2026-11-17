@@ -501,3 +501,24 @@ aprovação de Pedro": GitHub → Actions → "Painel → Apps Script" → Run w
 A credencial dá acesso aos projetos do Apps Script da conta. Os secrets não ficam expostos em forks, mas
 quem puder alterar as Actions deste repositório pode usá-los. Para cortar o acesso, revogue o "clasp" em
 https://myaccount.google.com/permissions.
+
+## Pontos e obras de longe (17/11/2026, pedido de Pedro)
+Na visão da cidade, as gotas dos pontos críticos e os ícones das obras se sobrepunham.
+
+- **Tamanho pelo zoom:** fator de 0,6 no zoom 12 (o inicial) até 1 no zoom 16, em passos de 0,05
+  (`fatorZoom` em `JsPontosCriticos`). Vale para as gotas, os ícones das obras e o brilho da obra
+  selecionada. Ao mudar o fator, o watch de `view.zoom` em `JsMapa` refaz os símbolos.
+
+  | Zoom | Gota sem índice | Gota de maior risco | Obra |
+  |---|---|---|---|
+  | 12 ou menos | 12 px | 23 px | 16 px |
+  | 14 | 16 px | 30 px | 21 px |
+  | 16 ou mais | 20 px | 38 px | 26 px |
+
+- **Ordem de desenho:** as gotas sem índice ficam embaixo, e as demais seguem do menor para o maior índice.
+  A gota mais crítica fica por cima quando há sobreposição. As obras continuam acima dos pontos (decisão de 15/10).
+- Os ícones da infraestrutura crítica não mudaram.
+- **Não testado com o mapa** (o ESIG é bloqueado no ambiente do Claude): conferir no `/dev` antes de publicar.
+  Se ainda houver sobreposição, o próximo passo é agrupar (cluster) ou abrir em leque os "grupos de
+  sobreposição" G1–G5 da planilha.
+

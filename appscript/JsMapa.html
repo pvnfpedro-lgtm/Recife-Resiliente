@@ -200,6 +200,8 @@
     "requalificacao de canal":"canal", "parque alagavel":"parque", "dique":"dique", "comporta":"comporta",
     "requalificacao de microdrenagem":"microdrenagem", "sistema de bombas":"bombas"
   };
+  var TAM_OBRA = 26;   // px no nível de rua (44 → 26 com os símbolos do Plano de Ação, 15/11/2026)
+  function simboloObra(url){ var t = TAM_OBRA * fatorZoom(); return { type:"picture-marker", url: url, width: t, height: t }; }
   function iconeObra(tipo, status){
     return iconeObraCat(CATEGORIA_OBRA[semAcento(tipo).replace(/\s+/g, " ")] || "generica", status);
   }
@@ -398,7 +400,7 @@
       locais.forEach(function(xy, i){
         var g = new Graphic({
           geometry: { type:"point", longitude:xy[1], latitude:xy[0] },
-          symbol: { type:"picture-marker", url: iconeObra(o.tipo, p.status), width:"26px", height:"26px" },   // 44 → 26 px com os símbolos do Plano de Ação (15/11/2026)
+          symbol: simboloObra(iconeObra(o.tipo, p.status)),   // 26 px de perto (15/11/2026); menor de longe (17/11/2026)
           attributes: { id:p.id }
         });
         camadaEtapa.add(g);
@@ -455,6 +457,19 @@
     PROJECTS.forEach(visibilidadeObra);
     destacarObra(selected);
   }
+  // Tamanho pelo zoom (17/11/2026): quando o fator muda, refaz o tamanho das gotas e dos ícones das obras.
+  var fatorAtual = fatorZoom();
+  reactiveUtils.watch(function(){ return view.zoom; }, function(){
+    var f = fatorZoom();
+    if(f === fatorAtual) return;
+    fatorAtual = f;
+    if(typeof pararAnimacoes === "function") pararAnimacoes();   // devolve as gotas ao tamanho do novo zoom
+    else pontosLayer.graphics.forEach(function(g){ var pc = PONTOS_POR_ID[g.attributes.id]; if(pc) g.symbol = simboloPonto(pc.indice); });
+    PROJECTS.forEach(function(p){
+      (p._icones || []).forEach(function(g){ if(g.symbol && g.symbol.url) g.symbol = simboloObra(g.symbol.url); });
+    });
+    destacarObra(selected);
+  });
   // Só refaz quando o zoom cruza um dos limites (não a cada passo do zoom).
   var faixaZoom = null;
   reactiveUtils.watch(function(){ return view.zoom; }, function(z){
@@ -478,7 +493,7 @@
       var t = g.geometry.type, brilho;
       if(t === "polyline") brilho = { type:"simple-line", color:c.concat(0.22), width:14, cap:"round", join:"round" };
       else if(t === "polygon") brilho = { type:"simple-fill", color:[0,0,0,0], outline:{ color:c.concat(0.28), width:7 } };
-      else brilho = { type:"simple-marker", style:"circle", size:38, color:c.concat(0.14), outline:{ color:c.concat(0.5), width:1.5 } };
+      else brilho = { type:"simple-marker", style:"circle", size:38 * fatorZoom(), color:c.concat(0.14), outline:{ color:c.concat(0.5), width:1.5 } };
       destaqueLayer.add(new Graphic({ geometry:g.geometry, symbol:brilho, attributes:{ id:p.id } }));
       destaqueLayer.add(new Graphic({ geometry:g.geometry, symbol:g.symbol, attributes:{ id:p.id } }));
     });
