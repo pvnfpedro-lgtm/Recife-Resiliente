@@ -63,8 +63,23 @@ jobs:
             echo "::error::Falta o secret CLASPRC_JSON. Veja docs/08-painel.md, seção 'Envio pelo GitHub Actions'."
             exit 1
           fi
-          printf '%s' "$CLASPRC_JSON" > "$HOME/.clasprc.json"
+          # Copiado do terminal, o texto pode vir com quebras de linha no meio dos tokens longos.
+          # Fora das aspas elas não importam no JSON; dentro, quebram o token. Tira todas.
+          printf '%s' "$CLASPRC_JSON" | tr -d '\r\n' > "$HOME/.clasprc.json"
           chmod 600 "$HOME/.clasprc.json"
+          python3 - <<'PY'
+          import json, os, sys
+          try:
+              d = json.load(open(os.path.expanduser("~/.clasprc.json")))
+          except ValueError as e:
+              print(f"::error::O secret CLASPRC_JSON não é um JSON válido ({e}). Gere a credencial de novo e copie o texto inteiro.")
+              sys.exit(1)
+          tok = (d.get("tokens") or {}).get("default") or d.get("token") or {}
+          if not tok.get("refresh_token"):
+              print("::error::O secret CLASPRC_JSON não tem refresh_token. Gere a credencial de novo.")
+              sys.exit(1)
+          print("Credencial lida: formato ok, refresh_token presente.")
+          PY
 
       - name: Baixar o projeto como está no Apps Script
         run: |
