@@ -38,6 +38,8 @@
 Tudo o que estiver aqui **não** pode ir para a apresentação sem conferência.
 
 - Coordenadas dos 21 trechos da RPA 6: aproximadas.
+- E1 População (17/11/2026): calculada com os setores do Censo 2022 rateados por área, não com a grade
+  de 200 m prevista. Ponto 22 subestimado (31% do círculo em Jaboatão, fora da base).
 - Papéis de cada órgão na prevenção (tabela em `01-contexto.md`): leitura
   preliminar.
 - Ano-base do IVS/Ipea por UDH: a confirmar.

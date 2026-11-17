@@ -85,6 +85,20 @@ contado aqui não é contado de novo no Impacto.
   moradores recebem nota 5.
 - **De onde vem o dado:** IBGE, Grade Estatística do Censo 2022 (quadrados de
   200 × 200 m com a população).
+- **Calculado em 17/11/2026** (`scripts/calcular_e1_populacao.py`, resultado em
+  `dados/processados/e1_populacao_300m.csv`, notas gravadas na aba "Notas dos pontos"
+  com aprovação de Pedro):
+  - **Fonte usada: setores censitários do Censo 2022, não a grade de 200 m.** A grade não
+    estava disponível. O círculo corta os setores, e cada um entra com a fração da área que
+    cai no círculo. Isso supõe a população espalhada por igual dentro de cada setor. A soma
+    dos setores (1.488.924) bate com a população do Recife no Censo 2022.
+  - **Nota por quintis entre os 28 pontos com coordenada.** Vai de 593 moradores (ponto 36)
+    a 7.536 (ponto 12).
+  - **Ponto 22 (Jordão):** só 69% do círculo fica no Recife, e o resto é Jaboatão, fora da
+    base. A população está subestimada.
+  - **Ponto 26 (Av. Boa Viagem):** 61% do círculo cai no mar, então o valor está certo.
+  - **Ponto 30:** sem coordenada, sem nota.
+  - **Coordenadas aproximadas:** a nota pode mudar quando forem conferidas.
 
 ### E2 — Equipamentos públicos
 - **O que é:** escolas, creches e unidades de saúde perto do ponto.
