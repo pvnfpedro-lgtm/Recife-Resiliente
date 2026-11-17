@@ -152,6 +152,16 @@ contado aqui não é contado de novo no Impacto.
   Segundo Pedro, traz as coordenadas dos imóveis e o valor pago; colunas de
   tipo de uso e de valor lançado **não conferidas** (pendência 20).
 
+- **Calculado em 17/11/2026 com a densidade de comércio do mapa** (`scripts/calcular_e3_comercio.py`,
+  resultado em `dados/processados/e3_comercio_1km.csv`; notas na aba "Notas dos pontos" e régua na aba
+  "Checklist variáveis", com aprovação de Pedro):
+  - **Fonte:** o OpenStreetMap do mapa de calor do painel (04/11/2026: varejo, alimentação, mercados
+    e serviços), no lugar do IPTU, que não está disponível. Dado colaborativo, pode estar incompleto.
+  - **Raio e nota:** 1 km, com nota por quintis entre os 28 pontos. Vai de 25 estabelecimentos
+    (ponto 48) a 390 (ponto 19, Pina).
+  - **As 5 notas anteriores** (pontos 12, 37, 32, 36 e 47, de origem não registrada) foram
+    substituídas. Nenhum raio reproduzia essas notas.
+
 ## Vulnerabilidade
 
 **Pergunta:** quem está ali consegue lidar com o alagamento? Duas comunidades
@@ -276,6 +286,19 @@ funcionar na cidade quando o ponto alaga, mesmo para quem não mora perto.
   aeroporto e Neoenergia. Camada ainda não montada.
 - **Cuidado:** se quase todos os pontos ficarem acima de 2 km, a variável não
   diferencia os pontos e vira contexto no painel.
+
+- **Calculado em 17/11/2026** (`scripts/calcular_i2_infraestrutura.py`, resultado em
+  `dados/processados/i2_infraestrutura_critica.csv`; na aba "Notas dos pontos" é a coluna
+  **I2 Infraestrutura crítica**; notas e régua gravadas com aprovação de Pedro):
+  - **Distância** até a estação de metrô, o terminal de ônibus, a subestação ou o aeroporto
+    (borda do polígono) mais próximo, pela camada do OpenStreetMap do painel (03/11/2026, não
+    conferida).
+  - **Sem hospitais:** eles ficam no E2, para não contar duas vezes.
+  - **Nota por quintis da distância** (20% mais próximos = 5). A faixa fixa dava 4 ou 5 aos
+    28 pontos: o mais distante fica a 1,5 km (ponto 26).
+  - **Delegacias, bombeiros e SAMU,** previstos na lista, não estão na camada. Ficam de fora até
+    haver fonte.
+  - **As 5 notas anteriores** foram substituídas.
 
 ### Proposta em discussão (03/10/2026, Pedro + Claude; levar ao grupo e à Hellis)
 - **I2 Risco sanitário sai do Impacto e vira a definição do V6** (infraestrutura
