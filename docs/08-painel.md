@@ -66,6 +66,9 @@ não conectado.
   **Versão 15** (04/11/2026, "Mapa de calor do comércio e serviços (OSM)"), publicada pelo Claude a pedido de Pedro.
   **Versão 16** (04/11/2026, "Mapa de calor do comércio em âmbar, coluna Exposição"), publicada pelo Claude depois de Pedro aprovar o âmbar.
   **Versão 17** (04/11/2026, "População: grade estatística IBGE 2022 na coluna Exposição"), publicada pelo Claude a pedido de Pedro.
+  **Versão 19** (17/11/2026, "Legenda, escala para telão e modo celular"), publicada pelo Claude a pedido de Pedro,
+  pela Action "Painel → Apps Script" (branch `claude/quirky-bell-mag4cz`, commit `d5276e8`). A versão 18 não foi
+  registrada aqui. Para voltar: Implantar → Gerenciar implantações → lápis → escolher a versão anterior.
 - **Link da equipe (versão publicada):**
   https://script.google.com/macros/s/AKfycbxXh5HsuhaBBF7z4-8f3bZvksWa7lRuzbj6vA9lLqX87GQlvXhWiluTtG8OTyLYxoXE/exec
 - 02/10/2026: primeiro `clasp push` (pontos críticos lidos da planilha,
