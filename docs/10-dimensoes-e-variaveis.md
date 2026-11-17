@@ -44,8 +44,11 @@ ranking.
 - **O que é:** se a água da chuva deixa de escoar quando a maré sobe.
 - **Por que importa:** no Recife, muitos canais desaguam no mar ou em rios
   com maré; com maré alta, a drenagem trava.
-- **Como medimos:** classe. Nota 1 quando a maré não influencia, 3 quando
-  agrava às vezes, 5 quando o ponto alaga conforme a maré.
+- **Como medimos:** **sim ou não** (decisão de Pedro, 17/11/2026), gravado como nota **1 (não)** ou
+  **5 (sim)**, para entrar na média da Probabilidade como as outras notas. A classe intermediária
+  ("agrava às vezes" = 3) saiu.
+  - Por que não 0/1: na média, "sim" = 1 contaria como a nota mais baixa e "não" = 0 puxaria
+    a Probabilidade abaixo do mínimo. A maré acabaria reduzindo a Probabilidade justamente onde piora.
 - **De onde vem o dado:** ficha da EMLURB; APAC e tábua de marés.
 
 ### P4 — Proximidade de rio ou canal
@@ -320,3 +323,15 @@ Estes temas aparecem no painel, mas não mudam o risco do ponto.
 | Causa do alagamento | Ficha do ponto | Explica por que alaga e qual órgão deve agir |
 | Obras | Camada do painel | O risco mede a situação de hoje |
 | Repercussão e pressão política | Contexto no painel | Não é parte do risco |
+
+## Estado do score em 17/11/2026
+- **Preenchidas para os 28 pontos com coordenada:** E1, E2, E3 e I2 (calculadas pelo Claude com
+  aprovação de Pedro) e V1–V4 (CadÚnico, 12/11).
+- **Preenchidas por Pedro só em 5 pontos (12, 37, 32, 36 e 47):** P1, P3, tempo de escoamento e I1.
+  São os únicos pontos com risco calculado.
+- **Pesos da linha 5 da aba "Notas dos pontos",** alterados por Pedro em 17/11: P1 = 5, P3 = 1,
+  E1 = 1, E2 = 5, E3 = 1, V1 = 1, V2 = 5, V3 = 4, V4 = 3, I1 = 5, I2 = 5. O critério desses pesos
+  não está registrado (pendência 1).
+- **A coluna "Tempo de escoamento" não tem código de variável.** Entra na nota da Probabilidade,
+  mas não aparece no detalhamento do cartão do ponto no painel, que lista as variáveis pelo código.
+
