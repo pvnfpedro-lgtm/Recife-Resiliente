@@ -109,22 +109,27 @@ contado aqui não é contado de novo no Impacto.
 - **De onde vem o dado:** portal de dados abertos da Prefeitura (escolas, UBS,
   hospitais); IBGE (CNEFE 2022); CNES/DATASUS.
 - **Calculado em 17/11/2026** (`scripts/calcular_e2_equipamentos.py`, resultado em
-  `dados/processados/e2_equipamentos_300m.csv`, notas gravadas na aba "Notas dos pontos"
-  com aprovação de Pedro):
+  `dados/processados/e2_equipamentos_1km.csv`, notas gravadas na aba "Notas dos pontos"
+  e régua atualizada na aba "Checklist variáveis", com aprovação de Pedro):
   - **Fonte usada: Base de Equipamentos do Farol (04/08/2026),** a mesma camada do painel.
     Contam os 3 grupos: pessoas que dependem de outros para sair (escolas, creches,
     acolhimento), saúde (USF, policlínicas, pronto atendimento, CAPS) e apoio à população
     atingida (CRAS, CREAS, Compaz).
-  - **Hospital/UPA:** tipo ou nome com hospital, UPA, pronto atendimento ou maternidade.
-  - **Escala do checklist:** nenhum = 1; 1 = 2; 2 = 3; 3–4 = 4; 5 ou mais, ou hospital/UPA = 5.
+  - **Raio de 1 km e nota por quintis entre os 28 pontos** (decisão de Pedro, 17/11/2026).
+    - A 300 m, 13 pontos ficavam sem nenhum equipamento: a variável quase não diferenciava.
+    - Em 1 km, a régua fixa do checklist dava nota 5 a 21 dos 28 pontos.
+    - O raio de 1 km mede os serviços cujo acesso o alagamento corta para quem mora em volta.
+      É a segunda exceção aos 300 m da Exposição, como a E3.
+  - **Resultado:** de 1 equipamento (ponto 26) a 22 (pontos 45, 47, 34 e 54).
+  - **Empates:** caem no mesmo grupo, por isso os grupos ficaram desiguais (nota 1: 6 pontos;
+    2: 6; 3: 9; 4: 2; 5: 5).
   - **As 5 notas anteriores** (pontos 12, 37, 32, 36 e 47, de origem não registrada) foram
-    substituídas pelas calculadas, para que os 28 pontos sigam a mesma régua (decisão de Pedro).
-    Ficaram 12 = 1, 37 = 2, 32 = 3, 36 = 1 e 47 = 2; antes eram 1, 4, 5, 3 e 5.
-  - **Resultado:** 13 pontos sem nenhum equipamento no círculo (nota 1). Ponto 45 com nota 5
-    (Hospital da Criança e Hospital da Pessoa Idosa no círculo).
+    substituídas, para que os 28 pontos sigam a mesma régua.
+  - **Viés da base:** a Base do Farol só tem equipamentos municipais. Por isso os pontos de
+    Boa Viagem, onde os serviços privados pesam mais, ficam com nota baixa. A variável se
+    sobrepõe em parte à Vulnerabilidade.
   - **Em aberto:** confirmar com o grupo se CRAS, CREAS e Compaz entram como "equipamentos
-    públicos" (o checklist pedia para perguntar). Hoje entram 3 itens desse grupo, nos pontos
-    41, 33 e 35.
+    públicos" (o checklist pedia para perguntar).
 
 ### E3 — Comércio e serviços
 - **O que é:** o peso da atividade econômica em volta do ponto. É a variável

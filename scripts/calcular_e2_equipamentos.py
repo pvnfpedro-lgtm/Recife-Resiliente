@@ -1,9 +1,12 @@
-"""E2 Equipamentos públicos: equipamentos no círculo de 300 m de cada ponto crítico (17/11/2026, pedido de Pedro).
+"""E2 Equipamentos públicos: equipamentos no círculo de 1 km de cada ponto crítico (17/11/2026, decisão de Pedro).
 
 Fonte: Base de Equipamentos do Farol (04/08/2026), já filtrada para o alagamento e usada no painel
 (appscript/DadosEquipamentos.html): (1) pessoas que dependem de outros para sair, (2) saúde que faz falta
 depois da chuva, (3) apoio à população atingida. Os 3 grupos contam. Distância em SIRGAS 2000 / UTM 25S.
-Escala do checklist (faixa fixa): nenhum = 1; 1 = 2; 2 = 3; 3–4 = 4; 5 ou mais, ou hospital/UPA no círculo = 5.
+Raio de 1 km (exceção aos 300 m da Exposição, como a E3): mede os serviços cujo acesso o alagamento corta.
+Nota por quintis entre os pontos (20% com menos equipamentos = 1; 20% com mais = 5; empates no mesmo grupo).
+A régua fixa do checklist (5 ou mais = 5) foi abandonada: em 1 km daria nota 5 a 21 dos 28 pontos.
+O CSV traz também a contagem em 300 m e se há hospital/UPA no círculo de 1 km, só como informação.
 
 Uso: python3 scripts/calcular_e2_equipamentos.py
 Saída: dados/processados/e2_equipamentos_300m.csv
@@ -28,22 +31,31 @@ txt = open(os.path.join(RAIZ, "appscript", "DadosEquipamentos.html"), encoding="
 dados = json.loads(re.search(r"var EQUIPAMENTOS = (\{.*\});", txt, re.S).group(1))
 equip = [(Point(tr(i[0], i[1])), i[2], i[3], i[4]) for i in dados["itens"]]
 
-def nota(n, hosp):
-    if n >= 5 or hosp:
-        return 5
-    return {0: 1, 1: 2, 2: 3}.get(n, 4)
+RAIO = 1000
 
-saida = os.path.join(RAIZ, "dados", "processados", "e2_equipamentos_300m.csv")
+def contar(c, raio):
+    dentro = [e for e in equip if e[0].distance(c) <= raio]
+    return dentro, any(HOSP.search(e[2] + " " + e[3]) for e in dentro)
+
+res = []
+for pid, lat, lon in PONTOS:
+    c = Point(tr(lon, lat))
+    d1, hosp = contar(c, RAIO)
+    d3, _ = contar(c, 300)
+    res.append((pid, d1, hosp, len(d3)))
+valores = sorted(len(r[1]) for r in res)
+
+def nota(n):   # quintil entre os pontos; empates no mesmo grupo
+    return min(5, 1 + (valores.index(n) * 5) // len(valores))
+
+saida = os.path.join(RAIZ, "dados", "processados", "e2_equipamentos_1km.csv")
 with open(saida, "w", newline="", encoding="utf-8") as f:
     w = csv.writer(f)
-    w.writerow(["ponto", "equipamentos_300m", "grupo1_dependem_de_outros", "grupo2_saude", "grupo3_apoio",
-                "hospital_ou_upa", "nota_E2", "equipamentos"])
-    for pid, lat, lon in PONTOS:
-        c = Point(tr(lon, lat))
-        dentro = [e for e in equip if e[0].distance(c) <= 300]
-        hosp = any(HOSP.search(e[2] + " " + e[3]) for e in dentro)
+    w.writerow(["ponto", "equipamentos_1km", "grupo1_dependem_de_outros", "grupo2_saude", "grupo3_apoio",
+                "hospital_ou_upa_1km", "equipamentos_300m", "nota_E2", "equipamentos_1km_lista"])
+    for pid, dentro, hosp, n300 in res:
         g = [sum(1 for e in dentro if e[1] == k) for k in (1, 2, 3)]
-        w.writerow([pid, len(dentro), *g, "sim" if hosp else "não", nota(len(dentro), hosp),
+        w.writerow([pid, len(dentro), *g, "sim" if hosp else "não", n300, nota(len(dentro)),
                     "; ".join("%s (%s)" % (e[3], e[2]) for e in dentro)])
-        print(f"{pid:>3}  {len(dentro):>2} equipamentos  {g}  {'hospital/UPA' if hosp else ''}  nota {nota(len(dentro), hosp)}")
+        print(f"{pid:>3}  {len(dentro):>2} em 1 km  {g}  nota {nota(len(dentro))}")
 print("gravado:", os.path.normpath(saida))
