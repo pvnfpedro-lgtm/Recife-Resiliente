@@ -556,3 +556,14 @@ Na visão da cidade, as gotas dos pontos críticos e os ícones das obras se sob
   - **A conferir no `/dev`:** o mapa escuro da Esri carregando, as camadas do WebMap (rios, bacias) legíveis
     sobre ele, os popups e o véu.
 
+## Ferramenta I1: vias em volta dos pontos (17/11/2026, pedido de Pedro)
+- **Como abrir:** pelo link de teste com `?i1` no fim (`…/dev?i1`). Sem o parâmetro, nada muda.
+- **O que faz:**
+  - consulta a camada "Classificação de vias" do WebMap num raio de 60 m de cada ponto da planilha;
+  - lista as vias encontradas, com a classe (rótulo da legenda do WebMap) e a distância, da mais perto para a mais longe;
+  - o botão "Copiar tabela" copia o resultado para colar na conversa com o Claude.
+- **Por que no painel:** o portal da Prefeitura não abre no ambiente do Claude, só no navegador de quem usa o painel.
+- **Campos:** a classe vem do campo do renderer da camada, e o nome da via do primeiro campo de texto com "nome",
+  "logr" ou "denomin". A janela mostra os campos que encontrou.
+- **Código:** `i1Abrir()` em `JsMapa`.
+

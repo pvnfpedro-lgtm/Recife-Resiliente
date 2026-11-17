@@ -1269,6 +1269,116 @@
       btn.title = min ? "Expandir" : "Recolher";
     });
   })();
+
+  /* =====================================================================
+     FERRAMENTA I1 (17/11/2026, pedido de Pedro): lê a camada "Classificação de vias" do WebMap em volta de
+     cada ponto crítico e mostra uma tabela para copiar. Só abre com ?i1 no endereço (/dev?i1); não muda o
+     resto do painel. Serve para preencher a I1 Hierarquia de vias na planilha (o portal da Prefeitura não
+     abre no ambiente do Claude, só no navegador de quem usa o painel).
+     ===================================================================== */
+  var I1_RAIO = 60;   // m em volta do ponto
+  function i1Distancia(lon, lat, geom){
+    // Distância em metros do ponto à linha (aproximação plana local; suficiente para dezenas de metros).
+    var kx = 111320 * Math.cos(lat * Math.PI / 180), ky = 110540, melhor = Infinity;
+    (geom.paths || geom.rings || []).forEach(function(path){
+      for(var i = 0; i < path.length - 1; i++){
+        var ax = (path[i][0] - lon) * kx, ay = (path[i][1] - lat) * ky;
+        var bx = (path[i + 1][0] - lon) * kx, by = (path[i + 1][1] - lat) * ky;
+        var dx = bx - ax, dy = by - ay, l2 = dx * dx + dy * dy;
+        var t = l2 ? Math.max(0, Math.min(1, -(ax * dx + ay * dy) / l2)) : 0;
+        var px = ax + t * dx, py = ay + t * dy;
+        melhor = Math.min(melhor, Math.sqrt(px * px + py * py));
+      }
+    });
+    return melhor;
+  }
+  function i1Camada(){
+    var l = map.allLayers.find(function(x){ return /classifica[çc][ãa]o de vias/i.test(nomeCamada(x.title)); });
+    if(!l) return Promise.reject(new Error('camada "Classificação de vias" não encontrada no WebMap'));
+    return l.load().then(function(){
+      if(l.queryFeatures) return l;
+      var sub = l.allSublayers && l.allSublayers.find(function(s){ return !s.sublayers || !s.sublayers.length; });
+      if(!sub) throw new Error("camada do tipo " + l.type + " sem subcamada consultável");
+      return sub.load().then(function(){ return sub; });
+    });
+  }
+  function i1Abrir(){
+    var caixa = document.createElement("div");
+    caixa.id = "i1Ferramenta";
+    caixa.style.cssText = "position:fixed;inset:5vh 5vw;z-index:200;background:#fff;color:#1e2430;border-radius:12px;" +
+      "box-shadow:0 10px 40px rgba(0,0,0,.35);display:flex;flex-direction:column;font:13px Inter,system-ui,sans-serif;";
+    caixa.innerHTML = '<div style="display:flex;gap:10px;align-items:center;padding:12px 16px;border-bottom:1px solid #e2e8f0">' +
+      '<b style="font-size:15px">I1 — vias em volta dos pontos críticos (' + I1_RAIO + ' m)</b>' +
+      '<span id="i1Status" style="color:#64748b;margin-right:auto">Lendo a camada…</span>' +
+      '<button id="i1Copiar" type="button" style="padding:6px 14px;border-radius:8px;border:none;background:#0869A6;color:#fff;font-weight:600;cursor:pointer" disabled>Copiar tabela</button>' +
+      '<button id="i1Fechar" type="button" style="padding:6px 12px;border-radius:8px;border:1px solid #cbd5e1;background:#fff;cursor:pointer">Fechar</button></div>' +
+      '<div style="overflow:auto;flex:1;padding:8px 16px"><table id="i1Tabela" style="border-collapse:collapse;width:100%"></table></div>' +
+      '<textarea id="i1Texto" style="position:absolute;left:-9999px"></textarea>';
+    document.body.appendChild(caixa);
+    var status = document.getElementById("i1Status"), tab = document.getElementById("i1Tabela"), linhas = [];
+    document.getElementById("i1Fechar").addEventListener("click", function(){ caixa.remove(); });
+    document.getElementById("i1Copiar").addEventListener("click", function(){
+      var txt = linhas.map(function(l){ return l.join("\t"); }).join("\n"), ta = document.getElementById("i1Texto");
+      function ok(){ status.textContent = "Tabela copiada (" + (linhas.length - 1) + " linhas). Cole na conversa com o Claude."; }
+      function planoB(){ ta.value = txt; ta.select(); try{ if(document.execCommand("copy")){ ok(); return; } }catch(e){}
+        status.textContent = "Não consegui copiar sozinho: selecione a tabela com o mouse e use Ctrl+C."; }
+      if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(ok, planoB); else planoB();
+    });
+    function esperarPontos(){
+      return new Promise(function(ok){ (function t(){ if(PONTOS_LISTA && PONTOS_LISTA.length) ok(PONTOS_LISTA); else setTimeout(t, 500); })(); });
+    }
+    Promise.all([i1Camada(), esperarPontos()]).then(function(r){
+      var camada = r[0], pontos = r[1].filter(function(p){ return p.lat != null && p.lon != null; });
+      var campos = camada.fields || [], rend = camada.renderer || {};
+      var campoClasse = rend.field || (campos.find(function(f){ return /classe|hierarq|categ|tipo/i.test(f.name + " " + (f.alias || "")); }) || {}).name;
+      var campoNome = (campos.find(function(f){ return /nome|logr|denomin/i.test(f.name + " " + (f.alias || "")) && f.type === "string"; }) || {}).name;
+      var rotulos = {};
+      (rend.uniqueValueInfos || []).forEach(function(u){ rotulos[String(u.value)] = u.label || String(u.value); });
+      var textos = campos.filter(function(f){ return f.type === "string" && f.name !== campoNome && f.name !== campoClasse; }).slice(0, 4);
+      linhas = [["ponto", "bairro", "trecho (planilha)", "via", "classe", "distancia_m", "outros campos"]];
+      tab.innerHTML = '<tr>' + linhas[0].map(function(c){ return '<th style="text-align:left;padding:4px 8px;border-bottom:2px solid #cbd5e1;position:sticky;top:0;background:#fff">' + c + '</th>'; }).join("") + '</tr>';
+      status.textContent = "Campos: via = " + (campoNome || "?") + ", classe = " + (campoClasse || "?") + ". Consultando " + pontos.length + " pontos…";
+      var feitos = 0;
+      return pontos.reduce(function(fila, p){
+        return fila.then(function(){
+          var q = camada.createQuery();
+          q.geometry = { type: "point", longitude: p.lon, latitude: p.lat, spatialReference: { wkid: 4326 } };
+          q.distance = I1_RAIO; q.units = "meters"; q.spatialRelationship = "intersects";
+          q.outFields = ["*"]; q.returnGeometry = true; q.outSpatialReference = { wkid: 4326 };
+          return camada.queryFeatures(q).then(function(res){
+            var achados = res.features.map(function(f){
+              var a = f.attributes, cl = campoClasse ? a[campoClasse] : "";
+              return { via: campoNome ? a[campoNome] : "", classe: rotulos[String(cl)] || cl,
+                       d: Math.round(i1Distancia(p.lon, p.lat, f.geometry)),
+                       outros: textos.map(function(t){ return t.name + "=" + (a[t.name] == null ? "" : a[t.name]); }).join("; ") };
+            }).sort(function(x, y){ return x.d - y.d; });
+            var vistos = {};
+            achados = achados.filter(function(x){ var k = x.via + "|" + x.classe; if(vistos[k]) return false; vistos[k] = 1; return true; });
+            if(!achados.length) achados = [{ via: "(nenhuma via a " + I1_RAIO + " m)", classe: "", d: "", outros: "" }];
+            achados.forEach(function(x, i){
+              var l = [p.id, p.bairro, p.trecho, x.via, x.classe, x.d, x.outros];
+              linhas.push(l);
+              tab.insertAdjacentHTML("beforeend", '<tr style="' + (i === 0 ? "border-top:1px solid #e2e8f0" : "") + '">' +
+                l.map(function(c, k){ return '<td style="padding:3px 8px;vertical-align:top;' + (k === 2 ? "max-width:360px;" : "") + (i && k < 3 ? "color:#cbd5e1;" : "") + '">' + escHtml(c) + '</td>'; }).join("") + '</tr>');
+            });
+          }).catch(function(e){
+            linhas.push([p.id, p.bairro, p.trecho, "ERRO: " + (e && e.message ? e.message : e), "", "", ""]);
+            tab.insertAdjacentHTML("beforeend", '<tr><td colspan="7" style="color:#b91c1c;padding:3px 8px">Ponto ' + p.id + ': erro na consulta</td></tr>');
+          }).then(function(){ feitos++; status.textContent = "Consultando… " + feitos + " de " + pontos.length; });
+        });
+      }, Promise.resolve()).then(function(){
+        status.textContent = "Pronto: " + pontos.length + " pontos. Clique em Copiar tabela e cole na conversa.";
+        document.getElementById("i1Copiar").disabled = false;
+      });
+    }).catch(function(e){ status.textContent = "Não foi possível ler a camada de vias: " + (e && e.message ? e.message : e); });
+  }
+  // Abre com ?i1 no endereço do web app (o Apps Script entrega os parâmetros por google.script.url).
+  if(typeof google !== "undefined" && google.script && google.script.url){
+    google.script.url.getLocation(function(loc){ if(loc && loc.parameter && "i1" in loc.parameter) map.when(i1Abrir, function(){ i1Abrir(); }); });
+  } else if(/[?&]i1\b/.test(location.search)){
+    map.when(i1Abrir, function(){ i1Abrir(); });
+  }
+
   /* =====================================================================
      MAPA BASE (Original = o do WebMap, padrão desde 16/10/2026)
      ===================================================================== */
